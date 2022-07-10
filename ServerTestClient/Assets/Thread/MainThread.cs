@@ -5,10 +5,7 @@ using System.Threading;
 using System;
 public class MainThread : Singleton_Ver2.Singleton<MainThread>
 {
-    enum PROTOCOL
-    {
-
-    }
+  
     struct ThreadArgs
     {
         public ClientManager M_Client;
@@ -21,12 +18,18 @@ public class MainThread : Singleton_Ver2.Singleton<MainThread>
     LoginManager M_Login;
     ProtocolManager M_Protocol;
 
-    private Queue<Byte[]> m_send_queue;
+	public static EventWaitHandle m_WaitforSendThread;
+
+	private Queue<Byte[]> m_send_queue;
     private Queue<Byte[]> m_recv_queue;
     private Thread m_sendThread;
     private Thread m_recvThread;
-    private delegate void RecvProcess(Byte[] _packet);
-    private Dictionary<PROTOCOL, RecvProcess> m_RecvProcess;
+    public delegate void RecvProcess(Byte[] _packet);
+    private Dictionary<uint, RecvProcess> m_RecvProcess;
+	public void RecvProcess_Register(uint _protocol,RecvProcess _recvprocess)
+	{
+		m_RecvProcess.Add(_protocol, _recvprocess);
+	}
     private void Create()
     {
         M_Client = ClientManager.Instance;
@@ -40,12 +43,17 @@ public class MainThread : Singleton_Ver2.Singleton<MainThread>
     {
         m_send_queue = new Queue<byte[]>();
         m_recv_queue = new Queue<byte[]>();
-        m_RecvProcess = new Dictionary<PROTOCOL, RecvProcess>();
+        m_RecvProcess = new Dictionary<uint, RecvProcess>();
+		m_WaitforSendThread = new EventWaitHandle(false,EventResetMode.AutoReset);
         M_Client.Init();
         M_Mouse.Init();
         M_Menu.Init();
         M_Login.Init();
     }
+	private void End()
+	{
+		M_Client.End();
+	}
     private void CreateServerThread()
     {
         ThreadArgs th1_param;
@@ -78,7 +86,7 @@ public class MainThread : Singleton_Ver2.Singleton<MainThread>
             uint protocol = M_Packet.GetPROTOCOL(databuf);
             //프로토콜 매니저를 통해서 mainprotocol 추출해서 밑에 넣기.
             uint main_protocol = M_Protocol.GetMainProtocol(protocol);
-            m_RecvProcess[(PROTOCOL)main_protocol]?.Invoke(databuf);
+            m_RecvProcess[main_protocol]?.Invoke(databuf);
         }
     }
     private void OnApplicationQuit()
@@ -91,12 +99,14 @@ public class MainThread : Singleton_Ver2.Singleton<MainThread>
         {
             m_recvThread.Abort();
         }
+		End();
     }
     void SendThread(ThreadArgs args)
     {
         bool flag = false;
         while (true)
         {
+			m_WaitforSendThread.WaitOne();
             if (args.queue.Count > 0)
             {
                 Byte[] sendbuf = args.queue.Dequeue();
@@ -116,3 +126,5 @@ public class MainThread : Singleton_Ver2.Singleton<MainThread>
         }
     }
 }
+
+// RecvProcess 메인 프로토콜 분해해서 해당 작업 수행하는 함수 연결하는거 다시 고치기 

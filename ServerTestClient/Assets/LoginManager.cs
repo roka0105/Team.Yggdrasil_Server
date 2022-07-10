@@ -12,6 +12,28 @@ public enum LoginUseWindow
 }
 public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
 {
+	enum MAINPROTOCOL
+	{
+		NONE,
+		LOGIN,
+		JOIN,
+		LOGOUT,
+		LOBBY,
+		MAX
+	}
+	enum SUBPROTOCOL
+	{
+		NONE,
+		LoginInfo,
+		LoginResult,
+		JoinInfo,
+		JoinResult,
+		LogoutInfo,
+		LogoutResult,
+		LobbyEnter,
+		LobbyResult,
+		MAX
+	}
     [SerializeField]
     List<GameObject> m_Windows;
     [SerializeField]
@@ -68,20 +90,26 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
     private void LoginProcess()
     {
         Debug.Log("LProcess");
-        //input field에서 데이터 빼오기
-        //sendqueue에 넣기
-        //결과 응답 대기
-        //결과 출력 y:메뉴돌아감  n:다시입력 에러메세지 뜨고 머무름.
-    }
-    private void JoinProcess()
+		//input field에서 데이터 빼오기
+		string ID = m_input_fields[LoginUseWindow.Login][0].text;
+		string PW = m_input_fields[LoginUseWindow.Login][1].text;
+
+		//sendqueue에 넣기
+
+	}
+	private void JoinProcess()
     {
         Debug.Log("JProcess");
         //input field에서 데이터 빼오기
         //sendqueue에 넣기
-        //결과 응답 대기
-        //결과 출력 y:메뉴돌아감  n:다시입력 에러메세지 뜨고 머무름.
+       
     }
-    private void ExcuteProcess(Process _process)
+	private void ResultProcess()
+	{
+		//결과 응답 대기
+		//결과 출력 y:메뉴돌아감  n:다시입력 에러메세지 뜨고 머무름.
+	}
+	private void ExcuteProcess(Process _process)
     {
         _process?.Invoke();
     }
