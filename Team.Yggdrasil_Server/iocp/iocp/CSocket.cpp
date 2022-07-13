@@ -1,5 +1,50 @@
 #include "pch.h"
 #include "CSocket.h"
+#include "CLock.h"
+#include "CLockGuard.h"
+
+CSocket::CSocket(int _port)
+{
+	m_lock = new CLock();
+
+	int retval = 0;
+
+	m_sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (m_sock == INVALID_SOCKET)
+	{
+		err_quit("socket()");
+	}
+	ZeroMemory(&m_addr, sizeof(SOCKADDR_IN));
+	m_addr.sin_family = AF_INET;
+	m_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	m_addr.sin_port = htons(_port);
+
+	retval = bind(m_sock, (SOCKADDR*)&m_addr, sizeof(m_addr));
+	if (retval == SOCKET_ERROR)
+	{
+		err_quit("bind()");
+	}
+	retval = listen(m_sock, SOMAXCONN);
+	if (retval == SOCKET_ERROR)
+	{
+		err_quit("listen()");
+	}
+}
+CSocket::CSocket(SOCKET _sock)
+{
+	m_lock = new CLock();
+	m_sock = _sock;
+	int len = 0;
+	SOCKADDR_IN addr;
+	len = sizeof(addr);
+	ZeroMemory(&m_addr, sizeof(SOCKADDR));
+	getpeername(_sock, (SOCKADDR*)&m_addr, &len);
+	printf("Á¢¼Ó %s %d\n", inet_ntoa(m_addr.sin_addr), ntohs(m_addr.sin_port));
+}
+CSocket::~CSocket()
+{
+	delete m_lock;
+}
 bool CSocket::WSASEND()
 {
 	wsasend();
@@ -8,6 +53,7 @@ bool CSocket::WSASEND()
 
 bool CSocket::WSASEND(char* _buf, int _size)
 {
+	CLock_Guard<CLock> lock(m_lock);
 	t_sendbuf* sendbuf = new t_sendbuf(_buf, _size);
 	m_send_que.push(sendbuf);
 	
@@ -106,6 +152,7 @@ SOC CSocket::CompRecv(int _cb_t)
 	{
 		if (m_trecvbuf.com_recvbytes == m_trecvbuf.recvbytes)
 		{
+			//CCrypt::Encrypt((BYTE*)m_trecvbuf.recvbuf, (BYTE*)m_trecvbuf.recvbuf, m_trecvbuf.recvbytes);
 			m_trecvbuf.recvbytes = sizeof(int);
 			m_trecvbuf.com_recvbytes = 0;
 			m_trecvbuf.is_recvmode = false;

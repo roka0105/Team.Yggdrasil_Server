@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CLogMgr.h"
-
+#include "CLock.h"
+#include "CLockGuard.h"
 CLogMgr* CLogMgr::m_instance = nullptr;
 
 CLogMgr* CLogMgr::GetInst()
@@ -59,7 +60,9 @@ char* CLogMgr::FileWriteLog(const char* fmt, ...)
 	vsprintf(cbuf + size, fmt, arg);
 	va_end(arg);
 	sprintf(m_logfilename, "[%d_%d_%d]  Log.txt", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
-
+	
+	CLock_Guard<CLock> lock(m_lock);
+	
 	writeFile.open(m_logfilename,std::ios::app);
 	size = strlen(cbuf);
 	writeFile.write(cbuf, size);
@@ -74,7 +77,9 @@ char* CLogMgr::FileReadLogLast()
 	ZeroMemory(temp, 256);
 	t = localtime(&timer);
 	sprintf(m_logfilename, "[%d_%d_%d]  Log.txt", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
-
+	
+	CLock_Guard<CLock> lock(m_lock);
+	
 	if (readFile.is_open())
 	{
 		while (!readFile.eof())
@@ -89,6 +94,7 @@ char* CLogMgr::FileReadLogLast()
 }
 char* CLogMgr::FileReadLogAll()
 {
+	CLock_Guard<CLock> lock(m_lock);
 	if (readFile.is_open())
 	{
 		while (!readFile.eof())
@@ -105,12 +111,12 @@ char* CLogMgr::FileReadLogAll()
 }
 CLogMgr::CLogMgr()
 {
-
+	m_lock = new CLock();
 }
 
 CLogMgr::~CLogMgr()
 {
-
+	delete m_lock;
 }
 
 void err_quit(const char* msg)

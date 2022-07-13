@@ -64,6 +64,12 @@
     <Filter Include="Sources\01. Mgr\CLobbyMgr">
       <UniqueIdentifier>{bf4f1db9-7db4-4db7-bc17-2e4fe668420d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\02. Core\Lock">
+      <UniqueIdentifier>{5a1db254-aa81-4810-a2c7-4caa7b5c1882}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\02. Core\Char">
+      <UniqueIdentifier>{9182f723-ae60-4962-8f52-4c5ebd808afd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CSocket.cpp">
@@ -115,13 +121,15 @@
     <ClCompile Include="CCrypt.cpp">
       <Filter>Sources\06. Crypt</Filter>
     </ClCompile>
-    <ClCompile Include="CLockGuard.cpp">
-      <Filter>Sources\02. Core</Filter>
-    </ClCompile>
     <ClCompile Include="CLock.cpp">
-      <Filter>Sources\02. Core</Filter>
+      <Filter>Sources\02. Core\Lock</Filter>
     </ClCompile>
-    <ClCompile Include="CLockGuard_Static.cpp" />
+    <ClCompile Include="CLockGuard.cpp">
+      <Filter>Sources\02. Core\Lock</Filter>
+    </ClCompile>
+    <ClCompile Include="CLockGuard_Static.cpp">
+      <Filter>Sources\02. Core\Lock</Filter>
+    </ClCompile>
     <ClCompile Include="CLobbyMgr.cpp">
       <Filter>Sources\01. Mgr\CLobbyMgr</Filter>
     </ClCompile>
@@ -182,15 +190,20 @@
     <ClInclude Include="CCrypt.h">
       <Filter>Sources\06. Crypt</Filter>
     </ClInclude>
-    <ClInclude Include="CLockGuard.h">
-      <Filter>Sources\02. Core</Filter>
-    </ClInclude>
     <ClInclude Include="CLock.h">
-      <Filter>Sources\02. Core</Filter>
+      <Filter>Sources\02. Core\Lock</Filter>
     </ClInclude>
-    <ClInclude Include="CLockGuard_Static.h" />
+    <ClInclude Include="CLockGuard.h">
+      <Filter>Sources\02. Core\Lock</Filter>
+    </ClInclude>
+    <ClInclude Include="CLockGuard_Static.h">
+      <Filter>Sources\02. Core\Lock</Filter>
+    </ClInclude>
     <ClInclude Include="CLobbyMgr.h">
       <Filter>Sources\01. Mgr\CLobbyMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectString.h">
+      <Filter>Sources\02. Core\Char</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

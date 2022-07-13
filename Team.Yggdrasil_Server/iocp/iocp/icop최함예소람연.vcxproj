@@ -43,7 +43,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -80,7 +80,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\user\Desktop\Team.Yggdrasil_SerVer\Team.Yggdrasil_Server\Team.Yggdrasil_Server\iocp\iocp\include</IncludePath>
+    <IncludePath>C:\Users\pc\Desktop\Team.Yggdrasil_Server-main\Team.Yggdrasil_Server-main\Team.Yggdrasil_Server\iocp\iocp\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -170,11 +170,13 @@
     <ClCompile Include="C_SetCtrlHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ProjectString.h" />
     <ClInclude Include="CCrypt.h" />
     <ClInclude Include="CDBMgr.h" />
     <ClInclude Include="CIocp.h" />
     <ClInclude Include="CLobbyMgr.h" />
     <ClInclude Include="CLobbyState.h" />
+    <ClInclude Include="CLock.h" />
     <ClInclude Include="CLockGuard.h" />
     <ClInclude Include="CLockGuard_Static.h" />
     <ClInclude Include="CLoginMgr.h" />
@@ -192,7 +194,6 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="C_SetCtrlHandler.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="CLock.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icop최함예소람연.rc" />

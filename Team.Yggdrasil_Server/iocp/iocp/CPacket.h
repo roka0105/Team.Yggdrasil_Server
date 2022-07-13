@@ -14,10 +14,10 @@ public:
 		m_r_packNo = 1;
 	}
 	// 패킹, 언패킹 기능을 명시적으로 
-	void Packing(unsigned long _protocol, char* _data, int _size);
-	void UnPacking(unsigned long& _protocol, char* _buf);
+	void Packing(unsigned long _protocol, byte* _data, int _size);
+	void UnPacking(unsigned long& _protocol, byte* _buf);
 	void UnPacking(unsigned long& _protocol);
-	void UnPacking(char* _data);
+	void UnPacking(byte* _data);
 
 private:
 	int m_s_packNo; 

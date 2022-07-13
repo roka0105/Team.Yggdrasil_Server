@@ -6,7 +6,7 @@
 // 사이즈를 뺴고 암호화를 하여 패킹
 // 암호화하고 복호화하고
 
-void CPacket::Packing(unsigned long _protocol, char* _data, int _size)
+void CPacket::Packing(unsigned long _protocol, byte* _data, int _size)
 {
 	char buf[BUFSIZE];
 	ZeroMemory(buf, BUFSIZE);
@@ -55,7 +55,7 @@ void CPacket::Packing(unsigned long _protocol, char* _data, int _size)
 //받아왔을때 패킷 구조 packetno/protocol/data
 
 //protocol size data 
-void CPacket::UnPacking(unsigned long &_protocol, char* _buf)
+void CPacket::UnPacking(unsigned long &_protocol, byte* _buf)
 {
 	//클라에서 packetno 붙여서 보내줬어야 했는데 일단 테스트를 위해 packetno가 없다는 가정하에 진행.
 	const char* ptr = m_trecvbuf.recvbuf + sizeof(int);
@@ -81,7 +81,7 @@ void CPacket::UnPacking(unsigned long& _protocol)
 	memcpy(&_protocol, ptr, sizeof(int));
 }
 
-void CPacket::UnPacking(char* _data)
+void CPacket::UnPacking(byte* _data)
 {
 	//클라에서 packetno 붙여서 보내줬어야 했는데 일단 테스트를 위해 packetno가 없다는 가정하에 진행.
 	const char* ptr = m_trecvbuf.recvbuf + sizeof(int);

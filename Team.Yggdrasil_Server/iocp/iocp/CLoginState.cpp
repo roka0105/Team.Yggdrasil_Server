@@ -14,10 +14,10 @@ void CLoginState::Recv()
 	switch ((MAINPROTOCOL)mainprotocol)
 	{
 	case MAINPROTOCOL::LOGIN:
-		CLoginMgr::GetInst()->LoginFunc(m_session);
+		CLoginMgr::GetInst()->LoginProcess(m_session);
 		break;
 	case MAINPROTOCOL::LOBBY:
-		CLoginMgr::GetInst()->EnterLobbyFunc(m_session);
+		CLoginMgr::GetInst()->EnterLobbyProcess(m_session);
 		is_lobby = true;
 		break;
 	}

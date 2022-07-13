@@ -5,6 +5,8 @@
 #include "CDBMgr.h"
 #include "CLogMgr.h"
 #include "CProtocolMgr.h"
+#include "CLock.h"
+#include "CLockGuard.h"
 
 #define CS CMainMgr::GetInst()->GetCS()
 
@@ -38,6 +40,7 @@ CLoginMgr::~CLoginMgr()
 
 void CLoginMgr::Init()
 {
+	m_lock = new CLock();
 }
 
 void CLoginMgr::End()
@@ -47,24 +50,13 @@ void CLoginMgr::End()
 	//로그인 정보 모두 로그아웃 시키기.
 	m_loginlist.clear();
 	m_joinlist.clear();
-
+	delete m_lock;
 }
 
 
 /* 메뉴 로그인버튼 회원가입버튼 */
 void CLoginMgr::LoginProcess(CSession* _ptr)
 {
-	char buf[BUFSIZE], ID[BUFSIZE], PW[BUFSIZE], NICK[BUFSIZE], sendbuf[BUFSIZE], temp[BUFSIZE];
-	ZeroMemory(buf, BUFSIZE);
-	ZeroMemory(ID, BUFSIZE);
-	ZeroMemory(PW, BUFSIZE);
-	ZeroMemory(NICK, BUFSIZE);
-	ZeroMemory(sendbuf, BUFSIZE);
-	ZeroMemory(temp, BUFSIZE);
-	int size = 0;
-	int p;
-
-	bool result = false;
 	unsigned long protocol = 0;
 	unsigned long subprotocol = 0;
 
@@ -88,7 +80,9 @@ void CLoginMgr::LoginProcess(CSession* _ptr)
 }
 void CLoginMgr::LoginFunc(CSession* _ptr)
 {
-	char buf[BUFSIZE], ID[BUFSIZE], PW[BUFSIZE], NICK[BUFSIZE], sendbuf[BUFSIZE], temp[BUFSIZE];
+	CLock_Guard<CLock> lock(m_lock);
+	TCHAR ID[BUFSIZE], PW[BUFSIZE], NICK[BUFSIZE], sendbuf[BUFSIZE], temp[BUFSIZE];
+	byte buf[BUFSIZE];
 	ZeroMemory(buf, BUFSIZE);
 	ZeroMemory(ID, BUFSIZE);
 	ZeroMemory(PW, BUFSIZE);
@@ -130,6 +124,7 @@ void CLoginMgr::LoginFunc(CSession* _ptr)
 }
 void CLoginMgr::JoinFunc(CSession* _ptr)
 {
+	CLock_Guard<CLock> lock(m_lock);
 	//1. 클라가 보낸 회원가입 정보를 받으면, 
 	//2. 등록된 정보인지 확인하여 결과에 따라 packet을 조립하여 Send한다.
 
@@ -191,6 +186,7 @@ void CLoginMgr::JoinFunc(CSession* _ptr)
 
 void CLoginMgr::LogOutFunc(CSession* _ptr)
 {
+	CLock_Guard<CLock> lock(m_lock);
 	char sendbuf[BUFSIZE];
 	ZeroMemory(sendbuf, BUFSIZE);
 
@@ -207,6 +203,8 @@ void CLoginMgr::LogOutFunc(CSession* _ptr)
 
 void CLoginMgr::EnterLobbyProcess(CSession* _ptr)
 {
+	CLock_Guard<CLock> lock(m_lock);
+
 	unsigned long protocol = 0;
 	unsigned long subprotocol = 0;
 
@@ -221,7 +219,7 @@ void CLoginMgr::EnterLobbyProcess(CSession* _ptr)
 	//로딩자료들 넘기는 역할수행 현재는 dummy 보냄
 }
 
-BOOL CLoginMgr::LoginCheck(char* _id, char* _pw, char* _nick)
+BOOL CLoginMgr::LoginCheck(TCHAR* _id, TCHAR* _pw, TCHAR* _nick)
 {
 	//1.회원정보와 일치하는 지 체크
 	if (m_joinlist.size() > 0)
@@ -256,7 +254,7 @@ BOOL CLoginMgr::LoginCheck(char* _id, char* _pw, char* _nick)
 	return false;
 }
 
-BOOL CLoginMgr::joinCheck(char* _msg, char* _id, char* _nick)
+BOOL CLoginMgr::joinCheck(TCHAR* _msg, TCHAR* _id, TCHAR* _nick)
 {
 	for (t_UserInfo* tuserinfo : m_joinlist)
 	{
@@ -276,15 +274,15 @@ BOOL CLoginMgr::joinCheck(char* _msg, char* _id, char* _nick)
 	return true;
 }
 
-unsigned long CLoginMgr::GetProtocol(char* _recvbuf)
+unsigned long CLoginMgr::GetProtocol(byte* _recvbuf)
 {
 	unsigned long protocol;
 	memcpy(&protocol, _recvbuf, sizeof(unsigned long));
 	return protocol;
 }
-void CLoginMgr::Packing(char* _buf, unsigned long _protocol, const char* _id, const char* _pw, CSession* _ptr)
+void CLoginMgr::Packing(byte* _buf, unsigned long _protocol, const TCHAR* _id, const TCHAR* _pw, CSession* _ptr)
 {
-	char* ptr = _buf;
+	byte* ptr = _buf;
 	int size = 0;
 	int strsize = strlen(_id);
 	unsigned long protocol = _protocol;
@@ -308,9 +306,9 @@ void CLoginMgr::Packing(char* _buf, unsigned long _protocol, const char* _id, co
 
 	_ptr->Packing(protocol, _buf, size);
 }
-void CLoginMgr::Packing(char* _buf, unsigned long _protocol, const char* _str, CSession* _ptr)
+void CLoginMgr::Packing(byte* _buf, unsigned long _protocol, const TCHAR* _str, CSession* _ptr)
 {
-	char* ptr = _buf;
+	byte* ptr = _buf;
 	int size = 0;
 	int strsize = strlen(_str);
 	unsigned long protocol = _protocol;
@@ -325,9 +323,9 @@ void CLoginMgr::Packing(char* _buf, unsigned long _protocol, const char* _str, C
 
 	_ptr->Packing(protocol, _buf, size);
 }
-void CLoginMgr::Packing(char* _buf, unsigned long _protocol, bool _flag, const char* _str, CSession* _ptr)
+void CLoginMgr::Packing(byte* _buf, unsigned long _protocol, bool _flag, const TCHAR* _str, CSession* _ptr)
 {
-	char* ptr = _buf;
+	byte* ptr = _buf;
 	int size = 0;
 	int strsize = strlen(_str);
 	unsigned long protocol = _protocol;
@@ -346,9 +344,9 @@ void CLoginMgr::Packing(char* _buf, unsigned long _protocol, bool _flag, const c
 
 	_ptr->Packing(protocol, _buf, size);
 }
-void CLoginMgr::UnPacking(const char* _buf, char* _id, char* _pw)
+void CLoginMgr::UnPacking(const byte* _buf, TCHAR* _id, TCHAR* _pw)
 {
-	const char* ptr = _buf;
+	const byte* ptr = _buf;
 	int strsize = 0;
 
 	memcpy(&strsize, ptr, sizeof(int));
@@ -364,9 +362,9 @@ void CLoginMgr::UnPacking(const char* _buf, char* _id, char* _pw)
 	ptr += strsize;
 }
 
-void CLoginMgr::UnPacking(const char* _buf, char* _id, char* _pw, char* _nickname)
+void CLoginMgr::UnPacking(const byte* _buf, TCHAR* _id, TCHAR* _pw, TCHAR* _nickname)
 {
-	const char* ptr = _buf;
+	const byte* ptr = _buf;
 	int strsize = 0;
 
 	memcpy(&strsize, ptr, sizeof(int));
@@ -388,7 +386,7 @@ void CLoginMgr::UnPacking(const char* _buf, char* _id, char* _pw, char* _nicknam
 	ptr += strsize;
 }
 
-BOOL CLoginMgr::SearchFile(const char* filename)
+BOOL CLoginMgr::SearchFile(const TCHAR* filename)
 {
 	WIN32_FIND_DATA FindFileData;
 	HANDLE hFindFile = FindFirstFile(filename, &FindFileData);
@@ -402,7 +400,7 @@ BOOL CLoginMgr::SearchFile(const char* filename)
 
 bool CLoginMgr::FileDataLoad()
 {
-	if (!SearchFile("UserInfo.info"))
+	if (!SearchFile(L"UserInfo.info"))
 	{
 		FILE* fp = fopen("UserInfo.info", "wb");
 		fclose(fp);

@@ -1,13 +1,14 @@
 #include "pch.h"
 #include "CSessionMgr.h"
-
 #include "CSession.h"
+#include "CLock.h"
+#include "CLockGuard.h"
 
 CSessionMgr* CSessionMgr::m_instance = nullptr;
 
 void CSessionMgr::Init()
 {
-
+  
 }
 
 void CSessionMgr::End()
@@ -38,18 +39,19 @@ void CSessionMgr::Destroy()
 
 CSessionMgr::CSessionMgr()
 {
-
+    m_lock = new CLock();
 }
 
 CSessionMgr::~CSessionMgr()
 {
-
+    delete m_lock;
 }
 
 CSession* CSessionMgr::AddSession(SOCKET _sock)
 {
     CSession* session = new CSession(_sock);
     
+    CLock_Guard<CLock> lock(m_lock);
     session->Init();
     
    
@@ -61,6 +63,7 @@ CSession* CSessionMgr::AddSession(SOCKET _sock)
 void CSessionMgr::RemoveSession(CSession* _ptr)
 {
     CSession* item;
+    CLock_Guard<CLock> lock(m_lock);
     for (CSession* session : m_session_list)
     {
         if (!memcmp(session, _ptr, sizeof(CSession)))

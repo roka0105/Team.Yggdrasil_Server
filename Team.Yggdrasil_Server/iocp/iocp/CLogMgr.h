@@ -1,4 +1,5 @@
 #pragma once
+class CLock;
 class CLogMgr
 {
 public:
@@ -12,14 +13,15 @@ public:
 	char* FileReadLogLast();
 	char* FileReadLogAll();
 private:
+	CLogMgr();
+	~CLogMgr();
+private:
+	CLock* m_lock;
 	ifstream readFile;
 	ofstream writeFile;
 	static CLogMgr* m_instance;
 	char m_logfilename[100];
 	time_t timer;
 	tm* t;
-	CLogMgr();
-	~CLogMgr();
-
 };
 

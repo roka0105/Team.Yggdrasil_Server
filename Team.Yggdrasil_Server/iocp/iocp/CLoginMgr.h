@@ -1,7 +1,7 @@
 #pragma once
 
 class CSession;
-
+class CLock;
 #include "CSession.h"
 
 class CLoginMgr
@@ -51,15 +51,15 @@ public:
 		MAX
 	};
 
-	unsigned long GetProtocol(char* _recvbuf);
-	void Packing(char* _sendbuf, unsigned long _protocol, const char* _id, const char* _pw, CSession* _ptr);
-	void Packing(char* _sendbuf, unsigned long _protocol, const char* _str, CSession* _ptr);
-	void Packing(char* _sendbuf, unsigned long _protocol, bool _flag, const char* _str, CSession* _ptr);
+	unsigned long GetProtocol(byte* _recvbuf);
+	void Packing(byte* _sendbuf, unsigned long _protocol, const TCHAR* _id, const TCHAR* _pw, CSession* _ptr);
+	void Packing(byte* _sendbuf, unsigned long _protocol, const TCHAR* _str, CSession* _ptr);
+	void Packing(byte* _sendbuf, unsigned long _protocol, bool _flag, const TCHAR* _str, CSession* _ptr);
 
-	void UnPacking(const char* _recvbuf, char* _id, char* _pw);
-	void UnPacking(const char* _recvbuf, char* _id, char* _pw, char* _nickname);
-
-	BOOL SearchFile(const char* filename);
+	void UnPacking(const byte* _recvbuf, TCHAR* _id, TCHAR* _pw);
+	void UnPacking(const byte* _recvbuf, TCHAR* _id, TCHAR* _pw, TCHAR* _nickname);
+						
+	BOOL SearchFile(const TCHAR* filename);
 	bool FileDataLoad();
 	bool FileDataAdd(t_UserInfo* _info);
 
@@ -73,6 +73,7 @@ public:
 	}
 
 private:
+	CLock* m_lock;
 	list<t_UserInfo*> m_loginlist;
 	list<t_UserInfo*> m_joinlist;
 };

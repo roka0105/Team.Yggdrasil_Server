@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "CDBMgr.h"
 #include "CLoginMgr.h"
-
+#include "CLock.h"
+#include "CLockGuard.h"
 CDBMgr* CDBMgr::m_instance = nullptr;
 
 CDBMgr* CDBMgr::GetInst()
@@ -40,12 +41,15 @@ void CDBMgr::Init()
 	m_stmt_set = mysql_stmt_init(&m_mysql);
 
 	CLoginMgr::GetInst()->SetJoinlist(GetJoin());
+
+	m_lock = new CLock;
 }
 
 void CDBMgr::End()
 {
 	mysql_stmt_close(m_stmt_set);
 	mysql_close(&m_mysql);
+	delete m_lock;
 }
 
 void CDBMgr::SetJoin(list<t_UserInfo*> _users)
@@ -103,9 +107,20 @@ list<t_UserInfo*> CDBMgr::GetJoin()
 	mysql_free_result(m_sql_result);
 	return users;
 }
+void CDBMgr::InsertJointbl(t_UserInfo* _user)
+{
+	CLock_Guard<CLock> lock(m_lock);
 
+	char temp[100]; ZeroMemory(temp, 100);
+	sprintf(temp, "insert into jointbl values('%s','%s','%s');", _user->id, _user->pw, _user->nickname);
+	if (mysql_query(&m_mysql, temp))
+	{
+		printf("** %s **\n", mysql_error(&m_mysql));
+	}
+}
 void CDBMgr::InsertJoinLog(char* _content)
 {
+	CLock_Guard<CLock> lock(m_lock);
 	const char* query;
 	char temp[BUFSIZE];
 	ZeroMemory(temp, BUFSIZE);

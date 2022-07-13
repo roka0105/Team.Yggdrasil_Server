@@ -22,7 +22,7 @@ public:
 	void RemoveSession(CSession* _ptr);
 
 private:
+	CLock* m_lock;
 	list<CSession*> m_session_list;
-
 };
 

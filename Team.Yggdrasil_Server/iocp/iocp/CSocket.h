@@ -1,6 +1,6 @@
 #pragma once
 #define BUFSIZE 4096
-
+class CLock;
 enum class IO_TYPE
 {
 	ACCEPT,
@@ -61,42 +61,9 @@ struct t_recvbuf
 class CSocket
 {
 public:
-	CSocket(int _port)
-	{
-		int retval = 0;
-
-		m_sock = socket(AF_INET, SOCK_STREAM, 0);
-		if (m_sock == INVALID_SOCKET)
-		{
-			err_quit("socket()");
-		}
-		ZeroMemory(&m_addr, sizeof(SOCKADDR_IN));
-		m_addr.sin_family = AF_INET;
-		m_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-		m_addr.sin_port = htons(_port);
-
-		retval = bind(m_sock, (SOCKADDR*)&m_addr, sizeof(m_addr));
-		if (retval == SOCKET_ERROR)
-		{
-			err_quit("bind()");
-		}
-		retval = listen(m_sock, SOMAXCONN);
-		if (retval == SOCKET_ERROR)
-		{
-			err_quit("listen()");
-		}
-	}
-	CSocket(SOCKET _sock)
-	{
-		m_sock = _sock;
-		int len = 0;
-		SOCKADDR_IN addr;
-		len = sizeof(addr);
-		ZeroMemory(&m_addr, sizeof(SOCKADDR));
-		getpeername(_sock, (SOCKADDR*)&m_addr, &len);
-		printf("Á¢¼Ó %s %d\n", inet_ntoa(m_addr.sin_addr), ntohs(m_addr.sin_port));
-	}
-	CSocket() {}
+	CSocket(int _port);
+	CSocket(SOCKET _sock);
+	~CSocket();
 
 	bool WSASEND(char* _buf, int _size);
 	bool WSASEND();
@@ -131,6 +98,8 @@ public:
 
 
 protected:
+	CLock* m_lock;
+
 	OVERLAP_EX r_overlap;
 	OVERLAP_EX s_overlap;
 	SOCKET m_sock;
