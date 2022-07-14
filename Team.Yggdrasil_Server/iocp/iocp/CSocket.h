@@ -61,6 +61,7 @@ struct t_recvbuf
 class CSocket
 {
 public:
+	CSocket();
 	CSocket(int _port);
 	CSocket(SOCKET _sock);
 	~CSocket();

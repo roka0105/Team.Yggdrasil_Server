@@ -75,7 +75,7 @@ bool CSocket::wsasend()
 	ZeroMemory(&s_overlap.overlapped, sizeof(OVERLAPPED));
 
 	wsa_sendbuf.len = sendbuf->sendbytes - sendbuf->com_sendbytes;
-	wsa_sendbuf.buf = sendbuf->sendbuf + sendbuf->com_sendbytes;
+	wsa_sendbuf.buf = (char*)sendbuf->sendbuf + sendbuf->com_sendbytes;
 
 	retval = WSASend(m_sock, &wsa_sendbuf, 1, &sendbytes, flags, &s_overlap.overlapped, NULL);
 	if (retval == SOCKET_ERROR)
@@ -97,7 +97,7 @@ bool CSocket::WSARECV()
 	WSABUF wsa_recvbuf;
 
 	wsa_recvbuf.len = m_trecvbuf.recvbytes - m_trecvbuf.com_recvbytes;
-	wsa_recvbuf.buf = m_trecvbuf.recvbuf + m_trecvbuf.com_recvbytes;
+	wsa_recvbuf.buf = (char*)m_trecvbuf.recvbuf + m_trecvbuf.com_recvbytes;
 
 	retval = WSARecv(m_sock, &wsa_recvbuf, 1, &recvbytes, &flags, &r_overlap.overlapped, NULL);
 	if (retval == SOCKET_ERROR)

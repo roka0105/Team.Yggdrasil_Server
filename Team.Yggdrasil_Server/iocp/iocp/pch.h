@@ -10,6 +10,7 @@
 #include <iostream>
 #include <time.h>
 #include <list>
+#include <vector>
 #include <queue>
 #include <fstream>
 #include <tchar.h>
@@ -18,6 +19,7 @@ using std::wofstream;
 using std::wifstream;
 using std::list;
 using std::queue;
+using std::vector;
 
 #include <mysql.h>
 

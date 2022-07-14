@@ -3,7 +3,7 @@
 class CPacket :public CSocket
 {
 public:
-	CPacket() 
+	CPacket():CSocket()
 	{ 
 		m_s_packNo = 1;
 		m_r_packNo = 1;
