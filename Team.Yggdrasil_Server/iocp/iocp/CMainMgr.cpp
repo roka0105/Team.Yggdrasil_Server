@@ -68,15 +68,15 @@ void CMainMgr::End()
 {
 	printf("end!!!!!\n");
 	CLoginMgr::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog("itewyhfdrihtoeriyt\n");
+	CLogMgr::GetInst()->FileWriteLog(L"itewyhfdrihtoeriyt\n");
 	CSessionMgr::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog("itewyhfdrihtoeriyt\n");
+	CLogMgr::GetInst()->FileWriteLog(L"itewyhfdrihtoeriyt\n");
 	CDBMgr::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog("itewyhfdrihtoeriyt\n");
+	CLogMgr::GetInst()->FileWriteLog(L"itewyhfdrihtoeriyt\n");
 	CLogMgr::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog("itewyhfdrihtoeriyt\n");
+	CLogMgr::GetInst()->FileWriteLog(L"itewyhfdrihtoeriyt\n");
 	C_SetCtrlHandler::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog("마지막\n");
+	CLogMgr::GetInst()->FileWriteLog(L"마지막\n");
 	CLobbyMgr::GetInst()->End();
 	printf("end!!!!!\n");
 	DeleteCriticalSection(&m_cs);
@@ -104,13 +104,13 @@ void CMainMgr::Destroy()
 {
 	delete m_instance;
 	CLoginMgr::Destroy();
-	CLogMgr::GetInst()->FileWriteLog("itewyhfdrihtoeriyt\n");
+	CLogMgr::GetInst()->FileWriteLog(L"itewyhfdrihtoeriyt\n");
 	CSessionMgr::Destroy();
-	CLogMgr::GetInst()->FileWriteLog("itewyhfdrihtoeriyt\n");
+	CLogMgr::GetInst()->FileWriteLog(L"itewyhfdrihtoeriyt\n");
 	CDBMgr::Destroy();
-	CLogMgr::GetInst()->FileWriteLog("itewyhfdrihtoeriyt\n");
+	CLogMgr::GetInst()->FileWriteLog(L"itewyhfdrihtoeriyt\n");
 	C_SetCtrlHandler::Destroy();
-	CLogMgr::GetInst()->FileWriteLog("마지막\n");
+	CLogMgr::GetInst()->FileWriteLog(L"마지막\n");
 	CLogMgr::Destroy();
 	CProtocolMgr::Destroy();
 	CLobbyMgr::Destroy();

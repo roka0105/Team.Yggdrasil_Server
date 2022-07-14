@@ -28,11 +28,11 @@ public:
 	void LogOutFunc(CSession* _ptr);
 private:
 	//---- login func----
-	BOOL LoginCheck(char* _id, char* _pw, char* _nick);
+	BOOL LoginCheck(TCHAR* _id, TCHAR* _pw, TCHAR* _nick);
 	//-------------------
 
 	//---- join func ----
-	BOOL joinCheck(char* _msg, char* _id, char* _nick);
+	BOOL joinCheck(TCHAR* _msg, TCHAR* _id, TCHAR* _nick);
 	//-------------------
 
 public:

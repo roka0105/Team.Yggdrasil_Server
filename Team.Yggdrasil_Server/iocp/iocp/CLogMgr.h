@@ -8,19 +8,19 @@ public:
 	static void Destroy();
 	void Init();
 	void End();
-	char* WriteLog(const char* fmt, ...);
-	char* FileWriteLog(const char* fmt, ...);
-	char* FileReadLogLast();
-	char* FileReadLogAll();
+	TCHAR* WriteLog(const TCHAR* fmt, ...);
+	TCHAR* FileWriteLog(const TCHAR* fmt, ...);
+	TCHAR* FileReadLogLast();
+	TCHAR* FileReadLogAll();
 private:
 	CLogMgr();
 	~CLogMgr();
 private:
 	CLock* m_lock;
-	ifstream readFile;
-	ofstream writeFile;
+	wifstream readFile;
+	wofstream writeFile;
 	static CLogMgr* m_instance;
-	char m_logfilename[100];
+	TCHAR m_logfilename[100];
 	time_t timer;
 	tm* t;
 };

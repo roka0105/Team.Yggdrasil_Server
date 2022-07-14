@@ -24,7 +24,7 @@ void CLogMgr::Init()
 { 
 	timer = time(NULL);
 	t = localtime(&timer);
-	sprintf(m_logfilename, "[%d_%d_%d]  Log.txt", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
+	_stprintf(m_logfilename, L"[%d_%d_%d]  Log.txt", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
 	readFile.open(m_logfilename);
 }
 
@@ -33,50 +33,52 @@ void CLogMgr::End()
 	readFile.close();
 }
 
-char* CLogMgr::WriteLog(const char* fmt, ...)
+TCHAR* CLogMgr::WriteLog(const TCHAR* fmt, ...)
 {
 	va_list arg;
 	va_start(arg, fmt);
 
-	char cbuf[256];
+	TCHAR cbuf[BUFSIZE];
+	ZeroMemory(cbuf, BUFSIZE);
 	t = localtime(&timer);
-	sprintf(cbuf,"날짜:%d년%d월%d일 시간: %d시 %d분 ", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min);
-	int size = strlen(cbuf);
-	vsprintf(cbuf+size, fmt, arg);
+	_stprintf(cbuf,L"날짜:%d년%d월%d일 시간: %d시 %d분 ", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min);
+	int size = _tcslen(cbuf);
+	_vstprintf(cbuf+size, fmt, arg);
 	printf("%s", cbuf);
 
 	va_end(arg);
 	return cbuf;
 }
-char* CLogMgr::FileWriteLog(const char* fmt, ...)
+TCHAR* CLogMgr::FileWriteLog(const TCHAR* fmt, ...)
 {
 	va_list arg;
 	va_start(arg, fmt);
 
-	char cbuf[256];
+	TCHAR cbuf[BUFSIZE];
+	ZeroMemory(cbuf, BUFSIZE);
 	t = localtime(&timer);
-	sprintf(cbuf, "[날짜:%d년%d월%d일] [시간: %d시 %d분] ", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min);
-	int size = strlen(cbuf);
-	vsprintf(cbuf + size, fmt, arg);
+	_stprintf(cbuf, L"[날짜:%d년%d월%d일] [시간: %d시 %d분] ", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min);
+	int size = _tcslen(cbuf);
+	_vstprintf(cbuf + size, fmt, arg);
 	va_end(arg);
-	sprintf(m_logfilename, "[%d_%d_%d]  Log.txt", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
+	_stprintf(m_logfilename, L"[%d_%d_%d]  Log.txt", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
 	
 	CLock_Guard<CLock> lock(m_lock);
 	
 	writeFile.open(m_logfilename,std::ios::app);
-	size = strlen(cbuf);
+	size = _tcslen(cbuf);
 	writeFile.write(cbuf, size);
 	writeFile.close();
 
 	return cbuf;
 }
 //고치기 안나옴
-char* CLogMgr::FileReadLogLast()
+TCHAR* CLogMgr::FileReadLogLast()
 {
-	char temp[256];
-	ZeroMemory(temp, 256);
+	TCHAR temp[BUFSIZE];
+	ZeroMemory(temp, BUFSIZE);
 	t = localtime(&timer);
-	sprintf(m_logfilename, "[%d_%d_%d]  Log.txt", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
+	_stprintf(m_logfilename, L"[%d_%d_%d]  Log.txt", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
 	
 	CLock_Guard<CLock> lock(m_lock);
 	
@@ -84,25 +86,25 @@ char* CLogMgr::FileReadLogLast()
 	{
 		while (!readFile.eof())
 		{
-			readFile.getline(temp, 256);
+			readFile.getline(temp, BUFSIZE);
 		}
-		printf("%s\n", temp);
+		_tprintf(L"%s\n", temp);
 		readFile.clear();
 		readFile.seekg(0, std::ios_base::beg);
 	}
 	return 0;
 }
-char* CLogMgr::FileReadLogAll()
+TCHAR* CLogMgr::FileReadLogAll()
 {
 	CLock_Guard<CLock> lock(m_lock);
 	if (readFile.is_open())
 	{
 		while (!readFile.eof())
 		{
-			char temp[256];
-			ZeroMemory(temp, 256);
-			readFile.getline(temp, 256);
-			printf("%s\n", temp);
+			TCHAR temp[BUFSIZE];
+			ZeroMemory(temp, BUFSIZE);
+			readFile.getline(temp, BUFSIZE);
+			_tprintf(:"%s\n", temp);
 		}
 		readFile.clear();
 		readFile.seekg(0, std::ios_base::beg);
@@ -119,7 +121,7 @@ CLogMgr::~CLogMgr()
 	delete m_lock;
 }
 
-void err_quit(const char* msg)
+void err_quit(const TCHAR* msg)
 {
 	LPVOID lpMsgBuf;
 	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
@@ -130,12 +132,12 @@ void err_quit(const char* msg)
 	exit(-1);
 }
 
-void err_display(const char* msg)
+void err_display(const TCHAR* msg)
 {
 	LPVOID lpMsgBuf;
 	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
 		WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf,
 		0, NULL);
-	printf("[%s] %s", msg, lpMsgBuf);
+	_tprintf(L"[%s] %s", msg, lpMsgBuf);
 	LocalFree(lpMsgBuf);
 }

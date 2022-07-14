@@ -7,7 +7,7 @@ void CLoginState::Recv()
 {
 	unsigned long protocol;
 	unsigned long mainprotocol;
-	char buf[BUFSIZE]; ZeroMemory(buf, BUFSIZE);
+	
 	m_session->UnPacking(protocol);
 	mainprotocol = CProtocolMgr::GetInst()->GetMainProtocol(protocol);
 	//현재 받아온게 메뉴정보인지 로그인정보인지 회원가입정보인지 구분

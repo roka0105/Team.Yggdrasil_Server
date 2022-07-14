@@ -12,9 +12,10 @@
 #include <list>
 #include <queue>
 #include <fstream>
+#include <tchar.h>
 
-using std::ofstream;
-using std::ifstream;
+using std::wofstream;
+using std::wifstream;
 using std::list;
 using std::queue;
 
@@ -24,6 +25,7 @@ using std::queue;
 #include "define.h"
 
 #define new new( _NORMAL_BLOCK, __FILE__,__LINE__)
+#define BUFSIZE 4096
 
 #ifdef UNICODE
 #define CODESIZE 2

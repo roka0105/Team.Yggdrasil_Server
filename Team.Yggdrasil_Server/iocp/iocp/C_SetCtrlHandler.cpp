@@ -40,7 +40,7 @@ BOOL WINAPI C_SetCtrlHandler::CtrlHandler(DWORD _CtrlType)
         CMainMgr::GetInst()->Destroy();
         break;
     }
-    MessageBox(NULL, "1234", "1234", MB_OK);
+    MessageBox(NULL, L"1234", L"1234", MB_OK);
     return true;
 }
 

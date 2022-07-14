@@ -89,7 +89,7 @@ list<t_UserInfo*> CDBMgr::GetJoin()
 	m_sql_result = mysql_store_result(&m_mysql);
 
 	list<t_UserInfo*>users;
-	char ID[IDSIZE], PW[PWSIZE], NICK[NAMESIZE];
+	TCHAR ID[IDSIZE], PW[PWSIZE], NICK[NAMESIZE];
 	ZeroMemory(ID, IDSIZE);
 	ZeroMemory(PW, PWSIZE);
 	ZeroMemory(NICK, NAMESIZE);
@@ -118,7 +118,7 @@ void CDBMgr::InsertJointbl(t_UserInfo* _user)
 		printf("** %s **\n", mysql_error(&m_mysql));
 	}
 }
-void CDBMgr::InsertJoinLog(char* _content)
+void CDBMgr::InsertJoinLog(TCHAR* _content)
 {
 	CLock_Guard<CLock> lock(m_lock);
 	const char* query;

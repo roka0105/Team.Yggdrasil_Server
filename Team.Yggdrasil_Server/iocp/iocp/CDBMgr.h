@@ -21,7 +21,7 @@ public:
 	list<t_UserInfo*> GetJoin();
 
 	void InsertJointbl(t_UserInfo* _user);
-	void InsertJoinLog(char* _content);
+	void InsertJoinLog(TCHAR* _content);
 
 private:
 	CLock* m_lock;

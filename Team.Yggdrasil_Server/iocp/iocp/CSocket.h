@@ -1,5 +1,5 @@
 #pragma once
-#define BUFSIZE 4096
+
 class CLock;
 enum class IO_TYPE
 {
@@ -23,7 +23,7 @@ struct t_sendbuf
 		ZeroMemory(sendbuf, BUFSIZE);
 		sendbytes = com_sendbytes = 0;
 	}
-	t_sendbuf(char* _data, int _sendbytes)
+	t_sendbuf(byte* _data, int _sendbytes)
 	{
 		ZeroMemory(sendbuf, BUFSIZE);
 		memcpy(sendbuf, _data, _sendbytes);
@@ -33,7 +33,7 @@ struct t_sendbuf
 
 	int com_sendbytes;
 	int sendbytes;
-	char sendbuf[BUFSIZE];
+	byte sendbuf[BUFSIZE];
 };
 
 struct t_recvbuf
@@ -45,7 +45,7 @@ struct t_recvbuf
 		com_recvbytes = 0;
 		ZeroMemory(recvbuf, BUFSIZE);
 	}
-	t_recvbuf(char* _data, int _recvbytes)
+	t_recvbuf(byte* _data, int _recvbytes)
 	{
 		memcpy(recvbuf, _data, _recvbytes);
 		recvbytes = _recvbytes;
@@ -54,7 +54,7 @@ struct t_recvbuf
 
 	int com_recvbytes;
 	int recvbytes;
-	char recvbuf[BUFSIZE];
+	byte recvbuf[BUFSIZE];
 	bool is_recvmode;
 };
 
@@ -65,7 +65,7 @@ public:
 	CSocket(SOCKET _sock);
 	~CSocket();
 
-	bool WSASEND(char* _buf, int _size);
+	bool WSASEND(byte* _buf, int _size);
 	bool WSASEND();
 	bool WSARECV();
 

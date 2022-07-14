@@ -16,20 +16,20 @@ struct t_UserInfo
 		ZeroMemory(nickname, NAMESIZE);
 		is_login = false;
 	}
-	t_UserInfo(char* _id, char* _pw, char* _nickname)
+	t_UserInfo(TCHAR* _id, TCHAR* _pw, TCHAR* _nickname)
 	{
 		ZeroMemory(id, IDSIZE);
 		ZeroMemory(pw, PWSIZE);
 		ZeroMemory(nickname, NAMESIZE);
-		strcpy(id, _id);
-		strcpy(pw, _pw);
-		strcpy(nickname, _nickname);
+		_tcscpy(id, _id);
+		_tcscpy(pw, _pw);
+		_tcscpy(nickname, _nickname);
 		is_login = false;
 	}
 
-	char id[IDSIZE];
-	char pw[PWSIZE];
-	char nickname[NAMESIZE];
+	TCHAR id[IDSIZE];
+	TCHAR pw[PWSIZE];
+	TCHAR nickname[NAMESIZE];
 	bool is_login;
 };
 
@@ -50,11 +50,11 @@ public:
 	{
 		return m_userinfo;
 	}
-	void SetUserInfo(t_UserInfo _tuserinfo) 
+	void SetUserInfo(t_UserInfo _tuserinfo)
 	{
 		memcpy(&m_userinfo, &_tuserinfo, sizeof(t_UserInfo));
 	}
-	void SetUserInfo(char* _id, char* _pw, char* _nick, bool _flag)
+	void SetUserInfo(TCHAR* _id, TCHAR* _pw, TCHAR* _nick, bool _flag)
 	{
 		ZeroMemory(m_userinfo->id, IDSIZE);
 		ZeroMemory(m_userinfo->pw, PWSIZE);
@@ -64,9 +64,9 @@ public:
 			m_userinfo->is_login = _flag;
 			return;
 		}
-		strcpy(m_userinfo->id, _id);
-		strcpy(m_userinfo->pw, _pw);
-		strcpy(m_userinfo->nickname, _nick);
+		_tcsncpy(m_userinfo->id, _id,_tcslen(_id)*CODESIZE);
+		_tcscpy(m_userinfo->pw, _pw);
+		_tcscpy(m_userinfo->nickname, _nick);
 		m_userinfo->is_login = _flag;
 	}
 
@@ -74,8 +74,8 @@ public:
 	CState* GetLoginState() { return m_loginstate; }
 	CState* GetLobbyState() { return m_lobbystate; }
 
-	void SetState(CState* _state) 
-	{ 
+	void SetState(CState* _state)
+	{
 		m_curstate = _state;
 	}
 private:

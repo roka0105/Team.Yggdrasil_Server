@@ -4,10 +4,6 @@
 
 #include <tchar.h>
 
-#ifdef UNICODE
-
-#else
-#endif
 namespace ProjectString
 {
 	void StringInit()
