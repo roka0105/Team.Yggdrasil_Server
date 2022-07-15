@@ -17,9 +17,10 @@ public :
 		ChatRecv,
 		RoomlistUpdate,
 		RoomlistResult,
+		BackPage,
 		MAX
 	};
-	enum class DETAILPROCOTOL
+	enum class DETAILPROTOCOL
 	{
 		NONE = -1,
 		Multi = 1,
@@ -35,8 +36,13 @@ public :
 	static void Destroy();
 	void Init();
 	void End();
-	void MultiModeProcess();
-	void SingleModeProcess();
+	void LobbyProcess(CSession* _session);
+	void EnterRoomProcess(CSession* _session);
+	void BackPageProcess(CSession* _session);
+
+	void MultiAllRoomFunc(CSession* _session);
+	void MultiPageRoomFunc(CSession* _session);
+
 private:
 	CLobbyMgr();
 	~CLobbyMgr();
