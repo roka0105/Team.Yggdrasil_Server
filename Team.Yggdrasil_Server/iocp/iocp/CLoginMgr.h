@@ -45,15 +45,13 @@ public:
 		JoinResult,
 		LogoutInfo,
 		LogoutResult,
-		LobbyEnter,
-		LobbyResult,
 		MAX
 	};
 
 	unsigned long GetProtocol(byte* _recvbuf);
-	void Packing(byte* _sendbuf, unsigned long _protocol, const TCHAR* _id, const TCHAR* _pw, CSession* _ptr);
-	void Packing(byte* _sendbuf, unsigned long _protocol, const TCHAR* _str, CSession* _ptr);
-	void Packing(byte* _sendbuf, unsigned long _protocol, bool _flag, const TCHAR* _str, CSession* _ptr);
+	void Packing(unsigned long _protocol, const TCHAR* _id, const TCHAR* _pw, CSession* _ptr);
+	void Packing(unsigned long _protocol, const TCHAR* _str, CSession* _ptr);
+	void Packing(unsigned long _protocol, bool _flag, const TCHAR* _str, CSession* _ptr);
 
 	void UnPacking(const byte* _recvbuf, TCHAR* _id, TCHAR* _pw);
 	void UnPacking(const byte* _recvbuf, TCHAR* _id, TCHAR* _pw, TCHAR* _nickname);

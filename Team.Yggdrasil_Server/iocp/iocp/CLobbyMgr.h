@@ -6,6 +6,30 @@ class CLock;
 class CLobbyMgr
 {
 public :
+	enum class SUBPROTOCOL
+	{
+		NONE,
+		LobbyEnter,
+		LobbyResult,
+		CreateRoom,
+		CreateRoomResult,
+		ChatSend,
+		ChatRecv,
+		RoomlistUpdate,
+		RoomlistResult,
+		MAX
+	};
+	enum class DETAILPROCOTOL
+	{
+		NONE = -1,
+		Multi = 1,
+		Sigle = 2,
+		NoticeMsg = 4,//공지 메세지 (운영자가 전송)
+		AllMsg = 8,//전체 메세지 (일반 유저들이 사용)
+		AllRoom = 16,
+		PageRoom = 32,
+		MAX
+	};
 	static CLobbyMgr* GetInst();
 	static void Create();
 	static void Destroy();
@@ -22,3 +46,5 @@ private :
 	list<CSession*> lobby_session_list; //로비에 들어와 있는 유저 정보.
 };
 
+//multi 들어갈때 전송되어야 할 정보 
+//1.방 리스트(방번호=ID,방 이름, 모드정보,방 참여 인원수,방인원제한) 이미지는 그냥 클라에서 load

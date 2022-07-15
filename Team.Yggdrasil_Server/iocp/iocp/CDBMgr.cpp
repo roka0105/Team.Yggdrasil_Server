@@ -91,15 +91,15 @@ list<t_UserInfo*> CDBMgr::GetJoin()
 	m_sql_result = mysql_store_result(&m_mysql);
 
 	list<t_UserInfo*>users;
-	TCHAR ID[IDSIZE], PW[PWSIZE], NICK[NAMESIZE];
-	ZeroMemory(ID, IDSIZE);
-	ZeroMemory(PW, PWSIZE);
-	ZeroMemory(NICK, NAMESIZE);
+	TCHAR ID[STRINGSIZE], PW[STRINGSIZE], NICK[STRINGSIZE];
+	ZeroMemory(ID, STRINGSIZE);
+	ZeroMemory(PW, STRINGSIZE);
+	ZeroMemory(NICK, STRINGSIZE);
 	while ((m_sql_row = mysql_fetch_row(m_sql_result)) != NULL)
 	{
-		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[0], strlen(m_sql_row[0]), ID, IDSIZE);
-		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[1], strlen(m_sql_row[1]), PW, IDSIZE);
-		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[2], strlen(m_sql_row[2]), NICK, IDSIZE);
+		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[0], strlen(m_sql_row[0]), ID, STRINGSIZE);
+		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[1], strlen(m_sql_row[1]), PW, STRINGSIZE);
+		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[2], strlen(m_sql_row[2]), NICK, STRINGSIZE);
 		t_UserInfo* user = new t_UserInfo(ID, PW, NICK);
 		users.push_back(user);
 	}

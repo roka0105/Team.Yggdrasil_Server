@@ -1,6 +1,7 @@
 #pragma once
 #pragma comment(lib,"ws2_32")
 #pragma comment(lib,"libmysql.lib")
+#pragma pack(1)
 
 #include <Winsock2.h>
 #include <stdio.h>

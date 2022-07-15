@@ -70,6 +70,9 @@
     <Filter Include="Sources\02. Core\Char">
       <UniqueIdentifier>{9182f723-ae60-4962-8f52-4c5ebd808afd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\01. Mgr\CRoomMgr">
+      <UniqueIdentifier>{853cb84c-6070-4a35-896a-9cea98de3c88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CSocket.cpp">
@@ -134,6 +137,9 @@
       <Filter>Sources\01. Mgr\CLobbyMgr</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="CRoomMgr.cpp">
+      <Filter>Sources\01. Mgr\CRoomMgr</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CSocket.h">
@@ -205,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="ProjectString.h">
       <Filter>Sources\02. Core\Char</Filter>
+    </ClInclude>
+    <ClInclude Include="CRoomMgr.h">
+      <Filter>Sources\01. Mgr\CRoomMgr</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

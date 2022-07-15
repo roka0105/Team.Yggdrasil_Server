@@ -8,5 +8,8 @@ enum class SOC
 
 #define HOST_IP "127.0.0.1"
 #define USER "root"
-#define PASSWORD "6869"
+#define PASSWORD "1234"
 #define DATABASE "Yggdrasil"
+
+
+#define STRINGSIZE 32 

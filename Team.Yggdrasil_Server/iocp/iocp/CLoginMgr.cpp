@@ -7,6 +7,7 @@
 #include "CProtocolMgr.h"
 #include "CLock.h"
 #include "CLockGuard.h"
+#include "CLobbyMgr.h"
 
 #define CS CMainMgr::GetInst()->GetCS()
 
@@ -212,10 +213,14 @@ void CLoginMgr::EnterLobbyProcess(CSession* _ptr)
 	_ptr->UnPacking(protocol);
 
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, (unsigned long)MAINPROTOCOL::LOBBY);
-	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)SUBPROTOCOL::LobbyResult - (unsigned long)SUBPROTOCOL::LobbyResult);
+	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)CLobbyMgr::SUBPROTOCOL::LobbyEnter);
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROCOTOL::Multi);
+
+	// 방 리스트 정보 보낸다.
+
 	_ptr->Packing(protocol, nullptr, 0);
 
-	//로딩자료들 넘기는 역할수행 현재는 dummy 보냄
+	
 }
 
 BOOL CLoginMgr::LoginCheck(TCHAR* _id, TCHAR* _pw, TCHAR* _nick)
@@ -279,8 +284,10 @@ unsigned long CLoginMgr::GetProtocol(byte* _recvbuf)
 	memcpy(&protocol, _recvbuf, sizeof(unsigned long));
 	return protocol;
 }
-void CLoginMgr::Packing(byte* _buf, unsigned long _protocol, const TCHAR* _id, const TCHAR* _pw, CSession* _ptr)
+void CLoginMgr::Packing(unsigned long _protocol, const TCHAR* _id, const TCHAR* _pw, CSession* _ptr)
 {
+	byte _buf[BUFSIZE];
+	ZeroMemory(_buf, BUFSIZE);
 	byte* ptr = _buf;
 	int size = 0;
 	int strsize = _tcslen(_id)*CODESIZE;
@@ -305,8 +312,10 @@ void CLoginMgr::Packing(byte* _buf, unsigned long _protocol, const TCHAR* _id, c
 
 	_ptr->Packing(protocol, _buf, size);
 }
-void CLoginMgr::Packing(byte* _buf, unsigned long _protocol, const TCHAR* _str, CSession* _ptr)
+void CLoginMgr::Packing(unsigned long _protocol, const TCHAR* _str, CSession* _ptr)
 {
+	byte _buf[BUFSIZE];
+	ZeroMemory(_buf, BUFSIZE);
 	byte* ptr = _buf;
 	int size = 0;
 	int strsize = _tcslen(_str)*CODESIZE;
@@ -322,8 +331,10 @@ void CLoginMgr::Packing(byte* _buf, unsigned long _protocol, const TCHAR* _str, 
 
 	_ptr->Packing(protocol, _buf, size);
 }
-void CLoginMgr::Packing(byte* _buf, unsigned long _protocol, bool _flag, const TCHAR* _str, CSession* _ptr)
+void CLoginMgr::Packing(unsigned long _protocol, bool _flag, const TCHAR* _str, CSession* _ptr)
 {
+	byte _buf[BUFSIZE];
+	ZeroMemory(_buf, BUFSIZE);
 	byte* ptr = _buf;
 	int size = 0;
 	int strsize = _tcslen(_str)*CODESIZE;

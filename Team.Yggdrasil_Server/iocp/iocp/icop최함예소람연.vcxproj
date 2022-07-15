@@ -72,19 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\user\Desktop\Team.Yggdrasil_SerVer\Team.Yggdrasil_Server\Team.Yggdrasil_Server\iocp\iocp\include</IncludePath>
+    <IncludePath>C:\Users\pc\Desktop\Team.Yggdrasil_Server-main\Team.Yggdrasil_Server-main\Team.Yggdrasil_Server\iocp\iocp\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\user\Desktop\Team.Yggdrasil_SerVer\Team.Yggdrasil_Server\Team.Yggdrasil_Server\iocp\iocp\include</IncludePath>
+    <IncludePath>C:\Users\pc\Desktop\Team.Yggdrasil_Server-main\Team.Yggdrasil_Server-main\Team.Yggdrasil_Server\iocp\iocp\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\user\Desktop\Team.Yggdrasil_SerVer\Team.Yggdrasil_Server\iocp\iocp\include</IncludePath>
+    <IncludePath>C:\Users\pc\Desktop\Team.Yggdrasil_Server-main\Team.Yggdrasil_Server-main\Team.Yggdrasil_Server\iocp\iocp\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\user\Desktop\Team.Yggdrasil_SerVer\Team.Yggdrasil_Server\Team.Yggdrasil_Server\iocp\iocp\include</IncludePath>
+    <IncludePath>C:\Users\pc\Desktop\Team.Yggdrasil_Server-main\Team.Yggdrasil_Server-main\Team.Yggdrasil_Server\iocp\iocp\include</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -161,6 +161,7 @@
     <ClCompile Include="CMainMgr.cpp" />
     <ClCompile Include="CPacket.cpp" />
     <ClCompile Include="CProtocolMgr.cpp" />
+    <ClCompile Include="CRoomMgr.cpp" />
     <ClCompile Include="CSession.cpp" />
     <ClCompile Include="CSessionMgr.cpp" />
     <ClCompile Include="CSocket.cpp" />
@@ -173,6 +174,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CRoomMgr.h" />
     <ClInclude Include="ProjectString.h" />
     <ClInclude Include="CCrypt.h" />
     <ClInclude Include="CDBMgr.h" />

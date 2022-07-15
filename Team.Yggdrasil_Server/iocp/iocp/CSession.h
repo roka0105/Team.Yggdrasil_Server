@@ -4,34 +4,32 @@
 #include "CLoginState.h"
 #include "CLobbyState.h"
 
-#define IDSIZE 32
-#define PWSIZE 32
-#define NAMESIZE 32
+
 
 class CLock;
 struct t_UserInfo
 {
 	t_UserInfo()
 	{
-		ZeroMemory(id, IDSIZE);
-		ZeroMemory(pw, PWSIZE);
-		ZeroMemory(nickname, NAMESIZE);
+		ZeroMemory(id, STRINGSIZE);
+		ZeroMemory(pw, STRINGSIZE);
+		ZeroMemory(nickname, STRINGSIZE);
 		is_login = false;
 	}
 	t_UserInfo(TCHAR* _id, TCHAR* _pw, TCHAR* _nickname)
 	{
-		ZeroMemory(id, IDSIZE);
-		ZeroMemory(pw, PWSIZE);
-		ZeroMemory(nickname, NAMESIZE);
+		ZeroMemory(id, STRINGSIZE);
+		ZeroMemory(pw, STRINGSIZE);
+		ZeroMemory(nickname, STRINGSIZE);
 		_tcscpy(id, _id);
 		_tcscpy(pw, _pw);
 		_tcscpy(nickname, _nickname);
 		is_login = false;
 	}
 
-	TCHAR id[IDSIZE];
-	TCHAR pw[PWSIZE];
-	TCHAR nickname[NAMESIZE];
+	TCHAR id[STRINGSIZE];
+	TCHAR pw[STRINGSIZE];
+	TCHAR nickname[STRINGSIZE];
 	bool is_login;
 };
 
@@ -58,9 +56,9 @@ public:
 	}
 	void SetUserInfo(TCHAR* _id, TCHAR* _pw, TCHAR* _nick, bool _flag)
 	{
-		ZeroMemory(m_userinfo->id, IDSIZE);
-		ZeroMemory(m_userinfo->pw, PWSIZE);
-		ZeroMemory(m_userinfo->nickname, NAMESIZE);
+		ZeroMemory(m_userinfo->id, STRINGSIZE);
+		ZeroMemory(m_userinfo->pw, STRINGSIZE);
+		ZeroMemory(m_userinfo->nickname, STRINGSIZE);
 		if (_id == NULL || _pw == NULL || _nick == NULL)
 		{
 			m_userinfo->is_login = _flag;
