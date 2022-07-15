@@ -73,6 +73,9 @@
     <Filter Include="Sources\01. Mgr\CRoomMgr">
       <UniqueIdentifier>{853cb84c-6070-4a35-896a-9cea98de3c88}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\04. State\RoomState">
+      <UniqueIdentifier>{add47f65-40d8-40db-9c74-468a9507e3fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CSocket.cpp">
@@ -139,6 +142,9 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="CRoomMgr.cpp">
       <Filter>Sources\01. Mgr\CRoomMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CRoomState.cpp">
+      <Filter>Sources\04. State\RoomState</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -214,6 +220,9 @@
     </ClInclude>
     <ClInclude Include="CRoomMgr.h">
       <Filter>Sources\01. Mgr\CRoomMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CRoomState.h">
+      <Filter>Sources\04. State\RoomState</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

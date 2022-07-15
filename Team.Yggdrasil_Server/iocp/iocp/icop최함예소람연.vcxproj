@@ -162,6 +162,7 @@
     <ClCompile Include="CPacket.cpp" />
     <ClCompile Include="CProtocolMgr.cpp" />
     <ClCompile Include="CRoomMgr.cpp" />
+    <ClCompile Include="CRoomState.cpp" />
     <ClCompile Include="CSession.cpp" />
     <ClCompile Include="CSessionMgr.cpp" />
     <ClCompile Include="CSocket.cpp" />
@@ -175,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CRoomMgr.h" />
+    <ClInclude Include="CRoomState.h" />
     <ClInclude Include="ProjectString.h" />
     <ClInclude Include="CCrypt.h" />
     <ClInclude Include="CDBMgr.h" />

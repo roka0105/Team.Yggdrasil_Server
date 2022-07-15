@@ -3,6 +3,7 @@
 #include "CState.h"
 #include "CLoginState.h"
 #include "CLobbyState.h"
+#include "CRoomState.h"
 
 
 
@@ -73,7 +74,7 @@ public:
 	CState* GetState() { return m_curstate; }
 	CState* GetLoginState() { return m_loginstate; }
 	CState* GetLobbyState() { return m_lobbystate; }
-
+	CState* GetRoomState() { return m_roomstate; }
 	void SetState(CState* _state)
 	{
 		m_curstate = _state;
@@ -84,6 +85,7 @@ private:
 	CState* m_curstate;
 	CLoginState* m_loginstate;
 	CLobbyState* m_lobbystate;
+	CRoomState* m_roomstate;
 	friend class CState;
 	//int substate;
 };

@@ -53,8 +53,8 @@ void CRoomMgr::SendRoom(CSession* _session)
 	unsigned long protocol = 0;
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, (unsigned long)MAINPROTOCOL::LOBBY);
 	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)CLobbyMgr::SUBPROTOCOL::RoomlistUpdate);
-	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROCOTOL::Multi);
-	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROCOTOL::AllRoom);
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROTOCOL::Multi);
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROTOCOL::AllRoom);
 
 	// 방 리스트(방번호 = ID, 방 이름, 모드정보, 방 참여 인원수, 방인원제한)
 	// structsize = uint + uint + str + uint + uint + uint = 20+32 = 52byte
@@ -76,20 +76,11 @@ void CRoomMgr::SendRoom(CSession* _session)
 		remainder = m_rooms.size() % m_packet_room_count;
 		endindex = m_packet_room_count;
 	}
-	list<t_RoomInfo*> templist = m_rooms;
+	list<t_RoomInfo*> templist(m_rooms);
 	for (int i = 0; i < forcount + 1; i++)
 	{
 		list<t_RoomInfo*> roomlist;
-		if (i == forcount + 1)
-		{
-			startindex = endindex;
-			endindex = endindex + remainder;
-		}
-		else
-		{
-			startindex = endindex;
-			endindex = endindex + endindex;
-		}
+		
 
 		for (int j = startindex; j < endindex; j++)
 		{
@@ -101,6 +92,17 @@ void CRoomMgr::SendRoom(CSession* _session)
 			templist.pop_front();
 			count++;
 		}
+
+		if (i + 1 == forcount)
+		{
+			startindex = endindex;
+			endindex = endindex + remainder;
+		}
+		else
+		{
+			startindex = endindex;
+			endindex = endindex + endindex;
+		}
 		Packing(protocol,roomlist,_session);
 	}
 }
@@ -111,8 +113,8 @@ void CRoomMgr::SendRoom(unsigned int page, CSession* _session)
 	unsigned long protocol = 0;
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, (unsigned long)MAINPROTOCOL::LOBBY);
 	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)CLobbyMgr::SUBPROTOCOL::RoomlistUpdate);
-	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROCOTOL::Multi);
-	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROCOTOL::PageRoom);
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROTOCOL::Multi);
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROTOCOL::PageRoom);
 
 	int count = 0;
 	int room_count = m_rooms.size();

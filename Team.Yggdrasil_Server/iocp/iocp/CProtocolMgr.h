@@ -5,6 +5,8 @@ enum class MAINPROTOCOL
 	NONE,
 	LOGIN,
 	LOBBY,
+	ROOM,
+	GAME,
 	MAX
 };
 
@@ -18,6 +20,8 @@ public:
 	unsigned long GetMainProtocol(unsigned long _protocolmem);
 	unsigned long GetSubProtocol(unsigned long _protocolmem);
 	unsigned long GetDetailProtocol(unsigned long _protocolmem);
+
+	bool CheckDetailProtocol(unsigned long _protocolmem, unsigned long _protocoltype);
 
 	void AddMainProtocol(unsigned long* _protocolmem, unsigned long _protocoltype);
 	void AddSubProtocol(unsigned long* _protocolmem, unsigned long _protocoltype);
