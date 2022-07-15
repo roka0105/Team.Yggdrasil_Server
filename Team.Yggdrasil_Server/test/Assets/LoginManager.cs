@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Text;
 public enum LoginUseWindow
 {
     None = -1,
@@ -121,7 +122,7 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
         M_Protocol.SetMainProtocol(ref protocol, (uint)MAINPROTOCOL.LOGIN);
         M_Protocol.SetSubProtocol(ref protocol, (uint)SUBPROTOCOL.JoinInfo);
 
-        byte[] senddata = M_Packet.PackPacking(protocol, ID, PW);
+        byte[] senddata = M_Packet.PackPacking(protocol, ID, PW,NICK);
         M_MainTh.SendQueue_Push(senddata);
         MainThread.m_WaitforSendThread.Set();
     }
@@ -182,7 +183,7 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
         index += sizeof(bool);
         strsize = BitConverter.ToInt32(_recvbuf, index);
         index += sizeof(int);
-        _msg = BitConverter.ToString(_recvbuf, index, strsize);
+        _msg = Encoding.Unicode.GetString(_recvbuf, index, strsize);
     }
     private void UnPackPacket(byte[] _recvbuf, ref string _msg)
     {
@@ -190,7 +191,7 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
         int strsize = 0;
         strsize = BitConverter.ToInt32(_recvbuf, index);
         index += sizeof(int);
-        _msg = BitConverter.ToString(_recvbuf, index, strsize);
+        _msg = Encoding.Unicode.GetString(_recvbuf, index, strsize);
     }
     private void ActiveChangeWindow(LoginUseWindow _truewindow, LoginUseWindow _falsewindow)
     {

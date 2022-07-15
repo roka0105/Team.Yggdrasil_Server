@@ -13,13 +13,21 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
     {
         NONE = -1,
         LobbyResult,
+        CreateRoom,
+        CreateRoomResult,
+        ChatSend,
+        ChatRecv,
+        RoomlistUpdate,
+        RoomlistResult,
         Max
     }
     enum DERAILPROCOTOL
     {
         NONE=-1,
-        Multi,
-        Sigle,
+        Multi=1,
+        Sigle=2,
+        NoticeMsg=4,//공지 메세지 (운영자가 전송)
+        AllMsg=8,//전체 메세지 (일반 유저들이 사용)
         MAX
     }
     public void LobbyEnterProcess(bool _multi)

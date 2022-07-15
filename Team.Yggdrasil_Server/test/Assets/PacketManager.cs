@@ -50,7 +50,7 @@ public class PacketManager : Singleton_Ver2.Singleton<PacketManager>
 {
     private t_LoginInfoPacket m_LoginInfoPacket = new t_LoginInfoPacket();
     private t_JoinInfoPacket m_JoinInfoPacket = new t_JoinInfoPacket();
-
+    private const int CODESIZE = 2;
     public Byte[] PackPacking(uint _protocol)
     {
         int BUFSIZE = sizeof(uint) + sizeof(int);
@@ -59,10 +59,10 @@ public class PacketManager : Singleton_Ver2.Singleton<PacketManager>
         BitConverter.GetBytes(_protocol).CopyTo(senddata, 0);
         return senddata;
     }
-    public Byte[] PackPacking(uint _protocol,string str1,string str2)
+    public Byte[] PackPacking(uint _protocol, string str1, string str2)
     {
-        int BUFSIZE = sizeof(uint) * 4 + str1.Length + str2.Length;
-        int DATASIZE = sizeof(int) * 2 + str1.Length + str2.Length;
+        int BUFSIZE = sizeof(uint) * 4 + str1.Length*CODESIZE + str2.Length*CODESIZE;
+        int DATASIZE = sizeof(int) * 2 + str1.Length*CODESIZE + str2.Length*CODESIZE ;
         Byte[] senddata = new byte[BUFSIZE];
         int index = 0;
         BitConverter.GetBytes(_protocol).CopyTo(senddata, index);
@@ -71,53 +71,72 @@ public class PacketManager : Singleton_Ver2.Singleton<PacketManager>
         index += sizeof(int);
         BitConverter.GetBytes(str1.Length).CopyTo(senddata, index);
         index += sizeof(int);
-        Buffer.BlockCopy(Encoding.ASCII.GetBytes(str1), 0, senddata, index, str1.Length);
-        index += str1.Length;
+        Buffer.BlockCopy(Encoding.Unicode.GetBytes(str1), 0, senddata, index, str1.Length * CODESIZE);
+        index += str1.Length * CODESIZE;
         BitConverter.GetBytes(str2.Length).CopyTo(senddata, index);
         index += sizeof(int);
-        Buffer.BlockCopy(Encoding.ASCII.GetBytes(str2), 0, senddata, index, str2.Length);
-        index += str2.Length;
+        Buffer.BlockCopy(Encoding.Unicode.GetBytes(str2), 0, senddata, index, str2.Length * CODESIZE);
+        index += str2.Length * CODESIZE;
         return senddata;
     }
-    public Byte[] PackPacking(uint _protocol,string str1,string str2,string str3)
+    public Byte[] PackPacking(uint _protocol, string str1, string str2, string str3)
     {
-
-        return null;
+        int BUFSIZE = sizeof(uint) * 5 + str1.Length * CODESIZE + str2.Length * CODESIZE+str3.Length*CODESIZE;
+        int DATASIZE = sizeof(int) * 3 + str1.Length * CODESIZE + str2.Length * CODESIZE+str3.Length*CODESIZE;
+        Byte[] senddata = new byte[BUFSIZE];
+        int index = 0;
+        BitConverter.GetBytes(_protocol).CopyTo(senddata, index);
+        index += sizeof(uint);
+        BitConverter.GetBytes(DATASIZE).CopyTo(senddata, index);
+        index += sizeof(int);
+        BitConverter.GetBytes(str1.Length).CopyTo(senddata, index);
+        index += sizeof(int);
+        Buffer.BlockCopy(Encoding.Unicode.GetBytes(str1), 0, senddata, index, str1.Length * CODESIZE);
+        index += str1.Length * CODESIZE;
+        BitConverter.GetBytes(str2.Length).CopyTo(senddata, index);
+        index += sizeof(int);
+        Buffer.BlockCopy(Encoding.Unicode.GetBytes(str2), 0, senddata, index, str2.Length * CODESIZE);
+        index += str2.Length * CODESIZE;
+        BitConverter.GetBytes(str3.Length).CopyTo(senddata, index);
+        index += sizeof(int);
+        Buffer.BlockCopy(Encoding.Unicode.GetBytes(str3), 0, senddata, index, str3.Length * CODESIZE);
+        index += str3.Length * CODESIZE;
+        return senddata;
     }
-   // public Byte[] GetLoginInfoPacket(uint _protocol, string _id, string _pw)
+    // public Byte[] GetLoginInfoPacket(uint _protocol, string _id, string _pw)
     //{
 
-        /*m_LoginInfoPacket.m_protocol = _protocol;
-        m_LoginInfoPacket.m_datasize = (uint)(_id.Length + _pw.Length+sizeof(int)*2);
-        m_LoginInfoPacket.m_idLength = _id.Length;
-        m_LoginInfoPacket.m_id = _id;
-        m_LoginInfoPacket.m_pwLength = _pw.Length;
-        m_LoginInfoPacket.m_pw = _pw;
+    /*m_LoginInfoPacket.m_protocol = _protocol;
+    m_LoginInfoPacket.m_datasize = (uint)(_id.Length + _pw.Length+sizeof(int)*2);
+    m_LoginInfoPacket.m_idLength = _id.Length;
+    m_LoginInfoPacket.m_id = _id;
+    m_LoginInfoPacket.m_pwLength = _pw.Length;
+    m_LoginInfoPacket.m_pw = _pw;
 
-        // 시리얼 라이즈 할때 값이 공백이 크게 들어가는 부분 수정해서 사용하기.
-        //return Serialize<t_LoginInfoPacket>(m_LoginInfoPacket);
+    // 시리얼 라이즈 할때 값이 공백이 크게 들어가는 부분 수정해서 사용하기.
+    //return Serialize<t_LoginInfoPacket>(m_LoginInfoPacket);
+*/
+    //return null;
+    // }
+    /* public Byte[] GetJoinInfoPacket(uint _protocol, string _id, string _pw, string _nick)
+     {
+         m_JoinInfoPacket.m_protocol = _protocol;
+         m_JoinInfoPacket.m_datasize = (uint)(_id.Length + _pw.Length + _nick.Length + sizeof(int) * 2);
+         m_JoinInfoPacket.m_idLength = _id.Length;
+         m_JoinInfoPacket.m_id = _id;
+         m_JoinInfoPacket.m_pwLength = _pw.Length;
+         m_JoinInfoPacket.m_pw = _pw;
+         m_JoinInfoPacket.m_nickLength = _nick.Length;
+         m_JoinInfoPacket.m_nick = _nick;
+         return Serialize<t_JoinInfoPacket>(m_JoinInfoPacket);
+     }
     */
-        //return null;
-   // }
-   /* public Byte[] GetJoinInfoPacket(uint _protocol, string _id, string _pw, string _nick)
-    {
-        m_JoinInfoPacket.m_protocol = _protocol;
-        m_JoinInfoPacket.m_datasize = (uint)(_id.Length + _pw.Length + _nick.Length + sizeof(int) * 2);
-        m_JoinInfoPacket.m_idLength = _id.Length;
-        m_JoinInfoPacket.m_id = _id;
-        m_JoinInfoPacket.m_pwLength = _pw.Length;
-        m_JoinInfoPacket.m_pw = _pw;
-        m_JoinInfoPacket.m_nickLength = _nick.Length;
-        m_JoinInfoPacket.m_nick = _nick;
-        return Serialize<t_JoinInfoPacket>(m_JoinInfoPacket);
-    }
-   */
     public uint GetPROTOCOL(Byte[] _recvbuf)
     {
         Byte[] protocol = new Byte[sizeof(uint)];
         Buffer.BlockCopy(_recvbuf, 0, protocol, 0, sizeof(uint));
         uint _protocol = BitConverter.ToUInt32(protocol);
-        return _protocol ;
+        return _protocol;
     }
     public int Packing(uint _packetNo, Byte[] _databuf, out Byte[] _sendbuf)
     {
