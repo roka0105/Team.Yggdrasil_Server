@@ -1,8 +1,11 @@
 #pragma once
 
+//그 헤더에서는 lock 변수만 만들려고 CLock 전방선언한거고 cpp에서 쓰거든 그래서 cpp에서 인클루드함.
 class CLock;
+
 enum class IO_TYPE
 {
+	NONE,
 	ACCEPT,
 	SEND,
 	RECV,
@@ -11,6 +14,12 @@ enum class IO_TYPE
 
 struct OVERLAP_EX
 {
+	OVERLAP_EX()
+	{
+		ZeroMemory(&overlapped,sizeof(OVERLAPPED));
+		type = IO_TYPE::NONE;
+		session = nullptr;
+	}
 	OVERLAPPED overlapped;
 	IO_TYPE type;
 	void* session;
@@ -47,6 +56,7 @@ struct t_recvbuf
 	}
 	t_recvbuf(byte* _data, int _recvbytes)
 	{
+		is_recvmode = false;
 		memcpy(recvbuf, _data, _recvbytes);
 		recvbytes = _recvbytes;
 		com_recvbytes = 0;
@@ -100,7 +110,6 @@ public:
 
 protected:
 	CLock* m_lock;
-
 	OVERLAP_EX r_overlap;
 	OVERLAP_EX s_overlap;
 	SOCKET m_sock;

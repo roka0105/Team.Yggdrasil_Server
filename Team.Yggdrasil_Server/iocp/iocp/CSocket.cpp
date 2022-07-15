@@ -3,6 +3,15 @@
 #include "CLock.h"
 #include "CLockGuard.h"
 
+CSocket::CSocket()
+{
+	m_lock = new CLock();
+	m_sock = NULL;
+	ZeroMemory(&m_addr, sizeof(m_addr));
+	r_overlap = OVERLAP_EX();
+	s_overlap = OVERLAP_EX();
+}
+
 CSocket::CSocket(int _port)
 {
 	m_lock = new CLock();
@@ -12,7 +21,7 @@ CSocket::CSocket(int _port)
 	m_sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (m_sock == INVALID_SOCKET)
 	{
-		err_quit("socket()");
+		err_quit(L"socket()");
 	}
 	ZeroMemory(&m_addr, sizeof(SOCKADDR_IN));
 	m_addr.sin_family = AF_INET;
@@ -22,12 +31,12 @@ CSocket::CSocket(int _port)
 	retval = bind(m_sock, (SOCKADDR*)&m_addr, sizeof(m_addr));
 	if (retval == SOCKET_ERROR)
 	{
-		err_quit("bind()");
+		err_quit(L"bind()");
 	}
 	retval = listen(m_sock, SOMAXCONN);
 	if (retval == SOCKET_ERROR)
 	{
-		err_quit("listen()");
+		err_quit(L"listen()");
 	}
 }
 CSocket::CSocket(SOCKET _sock)
@@ -53,7 +62,7 @@ bool CSocket::WSASEND()
 
 bool CSocket::WSASEND(byte* _buf, int _size)
 {
-	CLock_Guard<CLock> lock(m_lock);
+	CLockGuard<CLock> lock(m_lock);
 	t_sendbuf* sendbuf = new t_sendbuf(_buf, _size);
 	m_send_que.push(sendbuf);
 	
@@ -82,7 +91,7 @@ bool CSocket::wsasend()
 	{
 		if (WSAGetLastError() != ERROR_IO_PENDING)
 		{
-			err_display("WSASend()"); // 이 경우만 수동으로 큐에 넣어준다.
+			err_display(L"WSASend()"); // 이 경우만 수동으로 큐에 넣어준다.
 			return false;
 		}
 	}
@@ -104,7 +113,7 @@ bool CSocket::WSARECV()
 	{
 		if (WSAGetLastError() != ERROR_IO_PENDING)
 		{
-			err_display("WSARecv()");
+			err_display(L"WSARecv()");
 			return false;
 		}
 	}

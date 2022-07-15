@@ -1,5 +1,6 @@
 #pragma once
 #include "CSession.h"
+class CLock;
 class CDBMgr
 {
 

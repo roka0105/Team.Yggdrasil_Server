@@ -51,7 +51,7 @@ CSession* CSessionMgr::AddSession(SOCKET _sock)
 {
     CSession* session = new CSession(_sock);
     
-    CLock_Guard<CLock> lock(m_lock);
+    CLockGuard<CLock> lock(m_lock);
     session->Init();
     
    
@@ -63,7 +63,7 @@ CSession* CSessionMgr::AddSession(SOCKET _sock)
 void CSessionMgr::RemoveSession(CSession* _ptr)
 {
     CSession* item;
-    CLock_Guard<CLock> lock(m_lock);
+    CLockGuard<CLock> lock(m_lock);
     for (CSession* session : m_session_list)
     {
         if (!memcmp(session, _ptr, sizeof(CSession)))

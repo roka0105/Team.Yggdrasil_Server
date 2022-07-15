@@ -17,10 +17,10 @@ private:
 	~CLogMgr();
 private:
 	CLock* m_lock;
-	wifstream readFile;
-	wofstream writeFile;
+	ifstream readFile;
+	ofstream writeFile;
 	static CLogMgr* m_instance;
-	TCHAR m_logfilename[100];
+	char m_logfilename[100];
 	time_t timer;
 	tm* t;
 };

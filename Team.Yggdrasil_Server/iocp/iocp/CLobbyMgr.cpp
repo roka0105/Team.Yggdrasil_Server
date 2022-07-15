@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "CLobbyMgr.h"
 #include "CLock.h"
 #include "CLockGuard.h"

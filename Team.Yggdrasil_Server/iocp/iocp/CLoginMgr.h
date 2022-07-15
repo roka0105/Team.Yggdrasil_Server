@@ -1,8 +1,7 @@
 #pragma once
-
-class CSession;
-class CLock;
 #include "CSession.h"
+
+class CLock;
 
 class CLoginMgr
 {

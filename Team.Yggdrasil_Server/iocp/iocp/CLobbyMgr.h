@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "CSession.h"
+
 class CLock;
 class CLobbyMgr
 {

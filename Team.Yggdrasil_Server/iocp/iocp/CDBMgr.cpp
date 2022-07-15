@@ -3,6 +3,7 @@
 #include "CLoginMgr.h"
 #include "CLock.h"
 #include "CLockGuard.h"
+
 CDBMgr* CDBMgr::m_instance = nullptr;
 
 CDBMgr* CDBMgr::GetInst()
@@ -32,6 +33,7 @@ CDBMgr::~CDBMgr()
 void CDBMgr::Init()
 {
 	mysql_init(&m_mysql);
+
 	if (!mysql_real_connect(&m_mysql, HOST_IP, USER, PASSWORD, DATABASE, 3306, NULL, 0))
 	{
 		std::cout << "mysql connected error : " << mysql_error(&m_mysql) << std::endl;
@@ -42,7 +44,7 @@ void CDBMgr::Init()
 
 	CLoginMgr::GetInst()->SetJoinlist(GetJoin());
 
-	m_lock = new CLock;
+	m_lock = new CLock();
 }
 
 void CDBMgr::End()
@@ -95,9 +97,9 @@ list<t_UserInfo*> CDBMgr::GetJoin()
 	ZeroMemory(NICK, NAMESIZE);
 	while ((m_sql_row = mysql_fetch_row(m_sql_result)) != NULL)
 	{
-		memcpy(ID, m_sql_row[0], sizeof(m_sql_row[0]));
-		memcpy(PW, m_sql_row[1], sizeof(m_sql_row[1]));
-		memcpy(NICK, m_sql_row[2], sizeof(m_sql_row[2]));
+		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[0], strlen(m_sql_row[0]), ID, IDSIZE);
+		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[1], strlen(m_sql_row[1]), PW, IDSIZE);
+		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[2], strlen(m_sql_row[2]), NICK, IDSIZE);
 		t_UserInfo* user = new t_UserInfo(ID, PW, NICK);
 		users.push_back(user);
 	}
@@ -109,23 +111,28 @@ list<t_UserInfo*> CDBMgr::GetJoin()
 }
 void CDBMgr::InsertJointbl(t_UserInfo* _user)
 {
-	CLock_Guard<CLock> lock(m_lock);
-
-	char temp[100]; ZeroMemory(temp, 100);
-	sprintf(temp, "insert into jointbl values('%s','%s','%s');", _user->id, _user->pw, _user->nickname);
-	if (mysql_query(&m_mysql, temp))
+	CLockGuard<CLock> lock(m_lock);
+	char query[100];
+	ZeroMemory(query, 100);
+	TCHAR temp[100]; 
+	ZeroMemory(temp, 100);
+	_stprintf(temp, L"insert into jointbl values('%s','%s','%s');", _user->id, _user->pw, _user->nickname);
+	WideCharToMultiByte(CP_ACP, 0, temp, -1, query, 100, NULL, NULL);
+	if (mysql_query(&m_mysql, (char*)query))
 	{
 		printf("** %s **\n", mysql_error(&m_mysql));
 	}
 }
 void CDBMgr::InsertJoinLog(TCHAR* _content)
 {
-	CLock_Guard<CLock> lock(m_lock);
-	const char* query;
-	char temp[BUFSIZE];
+	CLockGuard<CLock> lock(m_lock);
+	char query[BUFSIZE];
+	TCHAR temp[BUFSIZE];
 	ZeroMemory(temp, BUFSIZE);
-	sprintf(temp, "insert into joinlogtbl values(null, curdate(), curtime(), '%s')", _content);
-	query = temp;
+	ZeroMemory(query, BUFSIZE);
+	
+	_stprintf(temp, L"insert into joinlogtbl values(null, curdate(), curtime(), '%s')", _content);
+	WideCharToMultiByte(CP_ACP, 0, temp, -1, query, BUFSIZE, NULL, NULL);
 	if (mysql_query(&m_mysql, query))
 	{
 		printf("** %s **\n", mysql_error(&m_mysql));

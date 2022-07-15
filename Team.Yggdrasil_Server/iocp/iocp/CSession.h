@@ -3,10 +3,12 @@
 #include "CState.h"
 #include "CLoginState.h"
 #include "CLobbyState.h"
+
 #define IDSIZE 32
 #define PWSIZE 32
 #define NAMESIZE 32
 
+class CLock;
 struct t_UserInfo
 {
 	t_UserInfo()
@@ -80,7 +82,6 @@ public:
 	}
 private:
 	t_UserInfo* m_userinfo;
-
 	// STATE
 	CState* m_curstate;
 	CLoginState* m_loginstate;

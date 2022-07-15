@@ -86,7 +86,7 @@ bool CIocp::GetQueueErrorCheck(int _retval, int _cb_t, OVERLAP_EX* _overlapex)
 		{
 			DWORD temp1, temp2;
 			WSAGetOverlappedResult(session->GetSock(), &_overlapex->overlapped, &temp1, FALSE, &temp2);
-			err_display("WSAGetOverlappedResult()");
+			err_display(L"WSAGetOverlappedResult()");
 		}
 		_overlapex->type = IO_TYPE::DISCONNECT;
 		return true;

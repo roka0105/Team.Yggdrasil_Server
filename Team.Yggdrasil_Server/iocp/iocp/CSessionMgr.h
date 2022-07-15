@@ -1,6 +1,6 @@
 #pragma once
 class CSession;
-
+class CLock;
 class CSessionMgr
 {
 public:
@@ -20,7 +20,6 @@ private:
 public:
 	CSession* AddSession(SOCKET _sock);
 	void RemoveSession(CSession* _ptr);
-
 private:
 	CLock* m_lock;
 	list<CSession*> m_session_list;

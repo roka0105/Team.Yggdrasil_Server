@@ -1,6 +1,6 @@
 #pragma once
-#include "CState.h"
 
+#include "CState.h"
 
 class CLoginState :public CState
 {

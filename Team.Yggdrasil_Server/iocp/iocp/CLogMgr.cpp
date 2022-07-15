@@ -24,8 +24,11 @@ void CLogMgr::Init()
 { 
 	timer = time(NULL);
 	t = localtime(&timer);
-	_stprintf(m_logfilename, L"[%d_%d_%d]  Log.txt", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
+	sprintf(m_logfilename, "[%d_%d_%d]  Log.txt", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
+	writeFile.open(m_logfilename, std::ios::app);
+	writeFile.close();
 	readFile.open(m_logfilename);
+	setlocale(LC_ALL, "korean");
 }
 
 void CLogMgr::End()
@@ -44,7 +47,7 @@ TCHAR* CLogMgr::WriteLog(const TCHAR* fmt, ...)
 	_stprintf(cbuf,L"날짜:%d년%d월%d일 시간: %d시 %d분 ", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min);
 	int size = _tcslen(cbuf);
 	_vstprintf(cbuf+size, fmt, arg);
-	printf("%s", cbuf);
+	_tprintf(L"%s", cbuf);
 
 	va_end(arg);
 	return cbuf;
@@ -61,13 +64,15 @@ TCHAR* CLogMgr::FileWriteLog(const TCHAR* fmt, ...)
 	int size = _tcslen(cbuf);
 	_vstprintf(cbuf + size, fmt, arg);
 	va_end(arg);
-	_stprintf(m_logfilename, L"[%d_%d_%d]  Log.txt", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
+	sprintf(m_logfilename, "[%d_%d_%d]  Log.txt", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
 	
-	CLock_Guard<CLock> lock(m_lock);
-	
+	CLockGuard<CLock> lock(m_lock);
+	char data[BUFSIZE];
+	ZeroMemory(data, BUFSIZE);
 	writeFile.open(m_logfilename,std::ios::app);
 	size = _tcslen(cbuf);
-	writeFile.write(cbuf, size);
+	WideCharToMultiByte(CP_ACP, 0, cbuf, -1, data, BUFSIZE, NULL, NULL);
+	writeFile.write(data, strlen(data));
 	writeFile.close();
 
 	return cbuf;
@@ -75,19 +80,22 @@ TCHAR* CLogMgr::FileWriteLog(const TCHAR* fmt, ...)
 //고치기 안나옴
 TCHAR* CLogMgr::FileReadLogLast()
 {
+	char msg[BUFSIZE];
+	ZeroMemory(msg, BUFSIZE);
 	TCHAR temp[BUFSIZE];
 	ZeroMemory(temp, BUFSIZE);
 	t = localtime(&timer);
-	_stprintf(m_logfilename, L"[%d_%d_%d]  Log.txt", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
+	sprintf(m_logfilename, "[%d_%d_%d]  Log.txt", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
 	
-	CLock_Guard<CLock> lock(m_lock);
+	CLockGuard<CLock> lock(m_lock);
 	
 	if (readFile.is_open())
 	{
 		while (!readFile.eof())
 		{
-			readFile.getline(temp, BUFSIZE);
+			readFile.getline(msg, BUFSIZE);
 		}
+		MultiByteToWideChar(CP_ACP, 0, msg, -1, temp, BUFSIZE);
 		_tprintf(L"%s\n", temp);
 		readFile.clear();
 		readFile.seekg(0, std::ios_base::beg);
@@ -96,15 +104,18 @@ TCHAR* CLogMgr::FileReadLogLast()
 }
 TCHAR* CLogMgr::FileReadLogAll()
 {
-	CLock_Guard<CLock> lock(m_lock);
+	CLockGuard<CLock> lock(m_lock);
 	if (readFile.is_open())
 	{
 		while (!readFile.eof())
 		{
 			TCHAR temp[BUFSIZE];
+			char msg[BUFSIZE];
+			ZeroMemory(msg, BUFSIZE);
 			ZeroMemory(temp, BUFSIZE);
-			readFile.getline(temp, BUFSIZE);
-			_tprintf(:"%s\n", temp);
+			readFile.getline(msg, BUFSIZE);
+			MultiByteToWideChar(CP_ACP, 0, msg, -1, temp, BUFSIZE);
+			_tprintf(L"%s\n", temp);
 		}
 		readFile.clear();
 		readFile.seekg(0, std::ios_base::beg);

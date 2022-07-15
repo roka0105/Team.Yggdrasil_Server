@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "CLobbyState.h"
 #include "CLoginMgr.h"
-
+#include "CState.h"
+#include "CProtocolMgr.h"
 void CLobbyState::Recv()
 {
 	//mainprotocol ºÐ¸®

@@ -1,8 +1,6 @@
 #pragma once
 #include "CState.h"
-#include "CSession.h"
 
-#include "CProtocolMgr.h"
 class CLobbyState : public CState 
 {
 public:

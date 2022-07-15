@@ -1,35 +1,29 @@
 #pragma once
-//#include "CLock.h"
-class CLock;
+
 template<typename T>
-class CLock_Guard
+class CLockGuard
 {
 public:
-	CLock_Guard(T* a);
-	~CLock_Guard();
-	//CLock_Guard(T* a)
-	//	: m_key(a)
-	//{
-	//	printf("생성\n");
-	//	a->lock();
-	//}
-	//~CLock_Guard()
-	//{
-	//	m_key->unlock();
-	//}
-
+	CLockGuard(T* a);
+	~CLockGuard();
+	
 private:
 	T* m_key;
-
 };
-/* 이런식으로 쓰면 됨.
-class Man
+
+template<typename T>
+CLockGuard<T>::CLockGuard(T* a)
+	: m_key(a)
 {
+	a->lock();
+}
 
-	CLock c;
-	함수A
-	{
-	LockGaurd a(c);
-	}
-};
-*/
+template<typename T>
+CLockGuard<T>::~CLockGuard()
+{
+	m_key->unlock();
+}
+
+
+
+

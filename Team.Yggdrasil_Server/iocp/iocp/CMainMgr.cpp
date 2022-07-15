@@ -37,7 +37,7 @@ void CMainMgr::Run()
 		clientsock = listen_sock->Accept();
 		if (clientsock == INVALID_SOCKET)
 		{
-			err_display("accept()");
+			err_display(L"accept()");
 			return;
 		}
 

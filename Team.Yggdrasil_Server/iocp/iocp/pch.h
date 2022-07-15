@@ -15,8 +15,8 @@
 #include <fstream>
 #include <tchar.h>
 
-using std::wofstream;
-using std::wifstream;
+using std::ofstream;
+using std::ifstream;
 using std::list;
 using std::queue;
 using std::vector;
@@ -25,6 +25,11 @@ using std::vector;
 
 #include "func.h"
 #include "define.h"
+
+//#include "CLock.h"
+//#include "CLockGuard.h"
+//#include "CLockGuard_Static.h"
+
 
 #define new new( _NORMAL_BLOCK, __FILE__,__LINE__)
 #define BUFSIZE 4096
