@@ -9,6 +9,7 @@ enum STATE
     NONE,
     LOGIN,
     LOBBY,
+    GAME,
     MAX
 }
 enum MAINPROTOCOL
