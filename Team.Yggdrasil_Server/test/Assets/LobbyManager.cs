@@ -8,30 +8,32 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
     PacketManager M_Packet;
     ProtocolManager M_Protocol;
     private delegate void _ResultProcess(byte[] _recvdata);
-    Dictionary<SUBPROTOCOL, _ResultProcess> m_ResultProcess;
+    Dictionary<DETAILPROCOTOL, _ResultProcess> m_ResultProcess;
     enum SUBPROTOCOL
     {
         NONE,
-        LobbyEnter,
-        LobbyResult,
-        CreateRoom,
-        CreateRoomResult,
-        ChatSend,
-        ChatRecv,
-        RoomlistUpdate,
-        RoomlistResult,
-      
-        Max
+        Multi,
+        Sigle,
+        BackPage,
+        MAX
     }
     enum DETAILPROCOTOL
     {
         NONE=-1,
-        Multi=1,
-        Sigle=2,
-        NoticeMsg=4,//공지 메세지 (운영자가 전송)
-        AllMsg=8,//전체 메세지 (일반 유저들이 사용)
-        AllRoom=16,
-        PageRoom=32,
+        //========상위=========
+        LobbyEnter = 1,
+        LobbyResult = 2,
+        CreateRoom = 4,
+        CreateRoomResult = 8,
+        ChatSend = 16,
+        ChatRecv = 32,
+        RoomlistUpdate = 64,
+        RoomlistResult = 128,
+        //========하위=========
+        NoticeMsg = 256,//공지 메세지 (운영자가 전송)
+        AllMsg = 512,//전체 메세지 (일반 유저들이 사용)
+        AllRoom = 1024,
+        PageRoom = 2048,
         MAX
     }
     public void LobbyEnterProcess(bool _multi)
@@ -39,15 +41,16 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
         Debug.Log("lobbyenter");
         uint protocol = 0;
         M_Protocol.SetMainProtocol(ref protocol, (uint)MAINPROTOCOL.LOBBY);
-        M_Protocol.SetSubProtocol(ref protocol, (uint)SUBPROTOCOL.LobbyEnter);
         if (_multi)
         {
-            M_Protocol.SetDetailProtocol(ref protocol, (uint)DETAILPROCOTOL.Multi);
+            M_Protocol.SetSubProtocol(ref protocol, (uint)SUBPROTOCOL.Multi);
         }
         else
         {
-            M_Protocol.SetDetailProtocol(ref protocol, (uint)DETAILPROCOTOL.Sigle);
+            M_Protocol.SetDetailProtocol(ref protocol, (uint)SUBPROTOCOL.Sigle);
         }
+           
+        M_Protocol.SetDetailProtocol(ref protocol, (uint)DETAILPROCOTOL.LobbyEnter);
 
         byte[] senddata = M_Packet.PackPacking(protocol);
         M_MainTh.SendQueue_Push(senddata);
@@ -55,8 +58,8 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
     }
     private void ResultProcess(uint _protocol, byte[] _recvbuf)
     {
-        uint subprotocol = M_Protocol.GetSubProtocol(_protocol);
-        m_ResultProcess[(SUBPROTOCOL)subprotocol]?.Invoke(_recvbuf);
+        uint detailprotocol = M_Protocol.GetDetailProtocol(_protocol);
+        m_ResultProcess[(DETAILPROCOTOL)detailprotocol]?.Invoke(_recvbuf);
     }
     private void LobbyResult(byte[] _recvdata)
     {
@@ -76,9 +79,9 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
         M_MainTh = MainThread.Instance;
         M_Protocol = ProtocolManager.Instance;
         M_Packet = PacketManager.Instance;
-        m_ResultProcess = new Dictionary<SUBPROTOCOL, _ResultProcess>();
-        m_ResultProcess.Add(SUBPROTOCOL.LobbyResult, LobbyResult);
-        m_ResultProcess.Add(SUBPROTOCOL.RoomlistResult, RoomlistResult);
+        m_ResultProcess = new Dictionary<DETAILPROCOTOL, _ResultProcess>();
+        m_ResultProcess.Add(DETAILPROCOTOL.LobbyResult, LobbyResult);
+        m_ResultProcess.Add(DETAILPROCOTOL.RoomlistResult, RoomlistResult);
         M_MainTh.RecvProcess_Register((int)MAINPROTOCOL.LOBBY, ResultProcess);
     }
     // Start is called before the first frame update
