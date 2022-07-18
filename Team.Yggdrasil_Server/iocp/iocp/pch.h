@@ -35,10 +35,12 @@ using std::vector;
 #define new new( _NORMAL_BLOCK, __FILE__,__LINE__)
 #define BUFSIZE 4096
 
+
 #ifdef UNICODE
 #define CODESIZE 2
 #else
 #define CODESIZE 1
 #endif
+
 
 

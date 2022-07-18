@@ -9,7 +9,7 @@
 #include "CLockGuard.h"
 #include "CLobbyMgr.h"
 
-#define CS CMainMgr::GetInst()->GetCS()
+
 
 CLoginMgr* CLoginMgr::m_instance = nullptr;
 
@@ -119,7 +119,7 @@ void CLoginMgr::LoginFunc(CSession* _ptr)
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, (unsigned long)MAINPROTOCOL::LOGIN);
 	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)SUBPROTOCOL::LoginResult);
 	//4. 로그인 성공 여부를 패킹 sendlist가 보내고 있는 중인 데이터가 없다면 바로 클라에 전송.
-	Packing(sendbuf, protocol, result, msg, _ptr);
+	Packing(protocol, result, msg, _ptr);
 
 }
 void CLoginMgr::JoinFunc(CSession* _ptr)
@@ -182,7 +182,7 @@ void CLoginMgr::JoinFunc(CSession* _ptr)
 
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, (unsigned long)MAINPROTOCOL::LOGIN);
 	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)SUBPROTOCOL::JoinResult);
-	Packing(sendbuf, protocol, result, msg, _ptr);
+	Packing(protocol, result, msg, _ptr);
 }
 
 void CLoginMgr::LogOutFunc(CSession* _ptr)
@@ -199,7 +199,7 @@ void CLoginMgr::LogOutFunc(CSession* _ptr)
 
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, (unsigned long)MAINPROTOCOL::LOGIN);
 	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)SUBPROTOCOL::LogoutResult);
-	Packing(sendbuf, protocol, L"로그아웃에 성공하였습니다!", _ptr);
+	Packing(protocol, L"로그아웃에 성공하였습니다!", _ptr);
 }
 
 void CLoginMgr::EnterLobbyProcess(CSession* _ptr)
@@ -213,8 +213,8 @@ void CLoginMgr::EnterLobbyProcess(CSession* _ptr)
 	_ptr->UnPacking(protocol);
 
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, (unsigned long)MAINPROTOCOL::LOBBY);
-	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)CLobbyMgr::SUBPROTOCOL::LobbyEnter);
-	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROCOTOL::Multi);
+	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)CLobbyMgr::SUBPROTOCOL::Multi);
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROTOCOL::LobbyEnter);
 
 	// 방 리스트 정보 보낸다.
 
@@ -398,6 +398,7 @@ void CLoginMgr::UnPacking(const byte* _buf, TCHAR* _id, TCHAR* _pw, TCHAR* _nick
 
 BOOL CLoginMgr::SearchFile(const TCHAR* filename)
 {
+	CLockGuard<CLock> lock(m_lock);
 	WIN32_FIND_DATA FindFileData;
 	HANDLE hFindFile = FindFirstFile(filename, &FindFileData);
 	if (hFindFile == INVALID_HANDLE_VALUE)
@@ -410,6 +411,7 @@ BOOL CLoginMgr::SearchFile(const TCHAR* filename)
 
 bool CLoginMgr::FileDataLoad()
 {
+	CLockGuard<CLock> lock(m_lock);
 	if (!SearchFile(L"UserInfo.info"))
 	{
 		FILE* fp = fopen("UserInfo.info", "wb");
@@ -444,7 +446,7 @@ bool CLoginMgr::FileDataLoad()
 
 bool CLoginMgr::FileDataAdd(t_UserInfo* _info)
 {
-	EnterCriticalSection(CS);
+	CLockGuard<CLock> lock(m_lock);
 	FILE* fp = fopen("UserInfo.info", "ab");
 	if (fp == NULL)
 	{
@@ -459,7 +461,7 @@ bool CLoginMgr::FileDataAdd(t_UserInfo* _info)
 	}
 
 	fclose(fp);
-	LeaveCriticalSection(CS);
+	
 	return true;
 }
 

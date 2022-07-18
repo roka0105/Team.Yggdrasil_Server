@@ -47,35 +47,42 @@ void CLobbyMgr::LobbyProcess(CSession* _session)
 	unsigned long protocol = 0;
 	_session->UnPacking(protocol);
 	unsigned long subprotocol = CProtocolMgr::GetInst()->GetSubProtocol(protocol);
+	unsigned long detailprotocol = CProtocolMgr::GetInst()->GetDetailProtocol(protocol);
 	//switch subprotocol
 	switch ((SUBPROTOCOL)subprotocol)
 	{
-	case SUBPROTOCOL::LobbyEnter:
+	case SUBPROTOCOL::Multi:
 	{
-		unsigned long detailprotocol = CProtocolMgr::GetInst()->GetDetailProtocol(protocol);
-		const unsigned long multi_pageroom = (unsigned long)DETAILPROTOCOL::Multi | (unsigned long)DETAILPROTOCOL::PageRoom;
-		const unsigned long multi_allroom = (unsigned long)DETAILPROTOCOL::Multi | (unsigned long)DETAILPROTOCOL::AllRoom;
-		const unsigned long single = (unsigned long)DETAILPROTOCOL::Sigle;
+
 		switch (detailprotocol)
 		{
-		case multi_pageroom:
-			MultiPageRoomFunc(_session);
+		case (const unsigned long)DETAILPROTOCOL::LobbyEnter:
+			LobbyEnterFunc(_session);
 			break;
-		case multi_allroom:
-			MultiAllRoomFunc(_session);
+		case (const unsigned long)DETAILPROTOCOL::CreateRoom:
 			break;
-		case single:
+		case (const unsigned long)DETAILPROTOCOL::RoomlistUpdate | (const unsigned long)DETAILPROTOCOL::PageRoom:
+			PageRoomFunc(_session);
+			break;
+		case (const unsigned long)DETAILPROTOCOL::RoomlistUpdate | (const unsigned long)DETAILPROTOCOL::AllRoom:
+			AllRoomFunc(_session);
+			break;
+		case (const unsigned long)DETAILPROTOCOL::ChatSend | (const unsigned long)DETAILPROTOCOL::AllMsg:
+			break;
+		case (const unsigned long)DETAILPROTOCOL::ChatSend | (const unsigned long)DETAILPROTOCOL::NoticeMsg:
+			break;
+		}
+		break;
+	}
+	case SUBPROTOCOL::Sigle:
+		switch (detailprotocol)
+		{
+		case (const unsigned long)DETAILPROTOCOL::LobbyEnter:
 			break;
 		}
 
 		break;
-	}
-	case SUBPROTOCOL::CreateRoom:
-		break;
-	case SUBPROTOCOL::ChatSend:
-		break;
-	case SUBPROTOCOL::RoomlistUpdate:
-		break;
+
 	}
 }
 
@@ -89,15 +96,31 @@ void CLobbyMgr::EnterRoomProcess(CSession* _session)
 void CLobbyMgr::BackPageProcess(CSession* _session)
 {
 	//state ->login º¯°æ 
+	unsigned long protocol = 0;
+	_session->UnPacking(protocol);
+	unsigned long subprotocol = CProtocolMgr::GetInst()->GetSubProtocol(protocol);
+	switch ((SUBPROTOCOL)subprotocol)
+	{
+	case SUBPROTOCOL::BackPage:
+
+		break;
+	}
 }
 
-void CLobbyMgr::MultiAllRoomFunc(CSession* _session)
+void CLobbyMgr::LobbyEnterFunc(CSession* _session)
+{
+	CLockGuard<CLock> lock(m_lock);
+	CRoomMgr::GetInst()->SendRoom(_session);
+
+}
+
+void CLobbyMgr::AllRoomFunc(CSession* _session)
 {
 	CLockGuard<CLock> lock(m_lock);
 	CRoomMgr::GetInst()->SendRoom(_session);
 }
 
-void CLobbyMgr::MultiPageRoomFunc(CSession* _session)
+void CLobbyMgr::PageRoomFunc(CSession* _session)
 {
 	CLockGuard<CLock> lock(m_lock);
 	CRoomMgr::GetInst()->SendRoom(0, _session);

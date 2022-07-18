@@ -3,6 +3,7 @@
 #include "CLoginMgr.h"
 #include "CLock.h"
 #include "CLockGuard.h"
+#include "CLogMgr.h"
 
 CDBMgr* CDBMgr::m_instance = nullptr;
 
@@ -24,71 +25,77 @@ void CDBMgr::Destroy()
 
 CDBMgr::CDBMgr()
 {
+	m_lock = new CLock();
 }
 
 CDBMgr::~CDBMgr()
 {
+	delete m_lock;
 }
 
 void CDBMgr::Init()
 {
-	mysql_init(&m_mysql);
+	m_mysql= mysql_init(NULL);
 
-	if (!mysql_real_connect(&m_mysql, HOST_IP, USER, PASSWORD, DATABASE, 3306, NULL, 0))
+	if (!mysql_real_connect(m_mysql, HOST_IP, USER, PASSWORD, DATABASE, 3306, NULL, 0))
 	{
-		std::cout << "mysql connected error : " << mysql_error(&m_mysql) << std::endl;
+		std::cout << "mysql connected error : " << mysql_error(m_mysql) << std::endl;
 		exit(-1);
 	}
-	mysql_query(&m_mysql, "set names euckr;");
-	m_stmt_set = mysql_stmt_init(&m_mysql);
+	mysql_query(m_mysql, "set names euckr;");
+	m_stmt_set = mysql_stmt_init(m_mysql);
 
 	CLoginMgr::GetInst()->SetJoinlist(GetJoin());
 
-	m_lock = new CLock();
 }
 
 void CDBMgr::End()
 {
+	CLogMgr::GetInst()->FileWriteLog(L"db end start\n");
 	mysql_stmt_close(m_stmt_set);
-	mysql_close(&m_mysql);
-	delete m_lock;
+	CLogMgr::GetInst()->FileWriteLog(L"m_stmt_set: %p\n",m_stmt_set);
+	CLogMgr::GetInst()->FileWriteLog(L"m_mysql: %p\n", m_mysql);
+	mysql_close(m_mysql);
+	CLogMgr::GetInst()->FileWriteLog(L"db end\n");
 }
 
 void CDBMgr::SetJoin(list<t_UserInfo*> _users)
 {
+	CLockGuard<CLock> lock(m_lock);
 	char temp[100];
 	ZeroMemory(temp, 100);
 	//테이블 삭제 및 생성 쿼리문 실행 후
 	sprintf(temp, "truncate table jointbl" /* table이름 */);
-	if (mysql_query(&m_mysql, temp))
+	if (mysql_query(m_mysql, temp))
 	{
-		printf("** %s **\n", mysql_error(&m_mysql));
+		printf("** %s **\n", mysql_error(m_mysql));
 	}
 	ZeroMemory(temp, 100);
 	//db에 넣는다.
 	for (t_UserInfo* user : _users)
 	{
 		sprintf(temp, "insert into jointbl values('%s','%s','%s');", user->id, user->pw, user->nickname);
-		if (mysql_query(&m_mysql, temp))
+		if (mysql_query(m_mysql, temp))
 		{
-			printf("** %s **\n", mysql_error(&m_mysql));
+			printf("** %s **\n", mysql_error(m_mysql));
 		}
 	}
 }
 
 list<t_UserInfo*> CDBMgr::GetJoin()
 {
+	CLockGuard<CLock> lock(m_lock);
 	const char* query;
 	char temp[100];
 	ZeroMemory(temp, 100);
 	sprintf(temp, "select * from jointbl");
 	query = temp;
 
-	if (mysql_query(&m_mysql, query))
+	if (mysql_query(m_mysql, query))
 	{
-		printf("** %s **\n", mysql_error(&m_mysql));
+		printf("** %s **\n", mysql_error(m_mysql));
 	}
-	m_sql_result = mysql_store_result(&m_mysql);
+	m_sql_result = mysql_store_result(m_mysql);
 
 	list<t_UserInfo*>users;
 	TCHAR ID[STRINGSIZE], PW[STRINGSIZE], NICK[STRINGSIZE];
@@ -118,9 +125,9 @@ void CDBMgr::InsertJointbl(t_UserInfo* _user)
 	ZeroMemory(temp, 100);
 	_stprintf(temp, L"insert into jointbl values('%s','%s','%s');", _user->id, _user->pw, _user->nickname);
 	WideCharToMultiByte(CP_ACP, 0, temp, -1, query, 100, NULL, NULL);
-	if (mysql_query(&m_mysql, (char*)query))
+	if (mysql_query(m_mysql, (char*)query))
 	{
-		printf("** %s **\n", mysql_error(&m_mysql));
+		printf("** %s **\n", mysql_error(m_mysql));
 	}
 }
 void CDBMgr::InsertJoinLog(TCHAR* _content)
@@ -133,9 +140,9 @@ void CDBMgr::InsertJoinLog(TCHAR* _content)
 	
 	_stprintf(temp, L"insert into joinlogtbl values(null, curdate(), curtime(), '%s')", _content);
 	WideCharToMultiByte(CP_ACP, 0, temp, -1, query, BUFSIZE, NULL, NULL);
-	if (mysql_query(&m_mysql, query))
+	if (mysql_query(m_mysql, query))
 	{
-		printf("** %s **\n", mysql_error(&m_mysql));
+		printf("** %s **\n", mysql_error(m_mysql));
 	}
 }
 

@@ -8,11 +8,13 @@ int main()
 	CMainMgr::Create();
 	CMainMgr::GetInst()->Loop();
 	CMainMgr::Destroy();
+	
 	return 0;
 }
 /*이번주 할 일
 1. 로비 구현 (방만들기,전체채팅,방목록출력)
-2. */
+2. cast 변경
+3. */
 
 /*2022 07 15 작업 내역 
   방리스트 모두 보내는 프로토콜과 함수 구현
@@ -31,3 +33,8 @@ int main()
 2.유니코드로 바꾸고 다른 데이터들 char[] 문자열 -> tchar,char* -> byte로 바꿔놓기
 3.logwritelast 수정하기.
 */
+
+/* 질문 할 것 
+DBMgr에서 기존에 MYSQL m_mysql , mysql_init(&m_mysql) 이런식으로 
+사용했는데 오류가 터져서 MYSQL* m_mysql , m_mysql = mysql_init(NULL)로
+실행했는데 이건 안터집니다. 같은 동작이 아닌가요? 왜 터졌고 왜 안터지는 걸까요?*/

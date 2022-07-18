@@ -9,26 +9,28 @@ public :
 	enum class SUBPROTOCOL
 	{
 		NONE,
-		LobbyEnter,
-		LobbyResult,
-		CreateRoom,
-		CreateRoomResult,
-		ChatSend,
-		ChatRecv,
-		RoomlistUpdate,
-		RoomlistResult,
+		Multi,
+		Sigle,
 		BackPage,
 		MAX
 	};
 	enum class DETAILPROTOCOL
 	{
 		NONE = -1,
-		Multi = 1,
-		Sigle = 2,
-		NoticeMsg = 4,//공지 메세지 (운영자가 전송)
-		AllMsg = 8,//전체 메세지 (일반 유저들이 사용)
-		AllRoom = 16,
-		PageRoom = 32,
+		//========상위=========
+		LobbyEnter=1,
+		LobbyResult=2,
+		CreateRoom=4,
+		CreateRoomResult=8,
+		ChatSend=16,
+		ChatRecv=32,
+		RoomlistUpdate=64,
+		RoomlistResult=128,
+		//========하위=========post
+		NoticeMsg = 256,//공지 메세지 (운영자가 전송)
+		AllMsg = 512,//전체 메세지 (일반 유저들이 사용)
+		AllRoom = 1024,
+		PageRoom = 2048,
 		MAX
 	};
 	static CLobbyMgr* GetInst();
@@ -40,8 +42,9 @@ public :
 	void EnterRoomProcess(CSession* _session);
 	void BackPageProcess(CSession* _session);
 
-	void MultiAllRoomFunc(CSession* _session);
-	void MultiPageRoomFunc(CSession* _session);
+	void LobbyEnterFunc(CSession* _session);
+	void AllRoomFunc(CSession* _session);
+	void PageRoomFunc(CSession* _session);
 
 private:
 	CLobbyMgr();

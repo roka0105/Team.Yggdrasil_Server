@@ -44,6 +44,13 @@ public:
 		m_curstate = m_loginstate;
 		m_userinfo = new t_UserInfo();
 	}
+	~CSession() 
+	{
+		delete m_loginstate;
+		delete m_lobbystate;
+		delete m_roomstate;
+		delete m_userinfo;
+	}
 	void Init();
 	void End();
 

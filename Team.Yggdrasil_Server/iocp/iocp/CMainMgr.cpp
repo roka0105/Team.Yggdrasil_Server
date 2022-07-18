@@ -42,7 +42,9 @@ void CMainMgr::Run()
 		}
 
 		PostQueueAccept(clientsock);
+	
 	}
+
 }
 void CMainMgr::Init()
 {
@@ -54,8 +56,6 @@ void CMainMgr::Init()
 
 	listen_sock = new CSocket(9000);
 
-	InitializeCriticalSection(&m_cs);
-
 	CIocp::Init();
 	CLoginMgr::GetInst()->Init();
 	CDBMgr::GetInst()->Init();
@@ -66,20 +66,22 @@ void CMainMgr::Init()
 }
 void CMainMgr::End()
 {
-	printf("end!!!!!\n");
+	
 	CLoginMgr::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog(L"itewyhfdrihtoeriyt\n");
-	CSessionMgr::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog(L"itewyhfdrihtoeriyt\n");
-	CDBMgr::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog(L"itewyhfdrihtoeriyt\n");
-	CLogMgr::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog(L"itewyhfdrihtoeriyt\n");
-	C_SetCtrlHandler::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog(L"마지막\n");
+	CLogMgr::GetInst()->FileWriteLog(L"end1\n");
 	CLobbyMgr::GetInst()->End();
-	printf("end!!!!!\n");
-	DeleteCriticalSection(&m_cs);
+	CLogMgr::GetInst()->FileWriteLog(L"end2\n");
+	CSessionMgr::GetInst()->End();
+	CLogMgr::GetInst()->FileWriteLog(L"end3\n");
+	CDBMgr::GetInst()->End();
+	CLogMgr::GetInst()->FileWriteLog(L"end4\n");
+	
+	C_SetCtrlHandler::GetInst()->End();
+	CLogMgr::GetInst()->FileWriteLog(L"end5\n");
+	
+	CLogMgr::GetInst()->End();
+	CLogMgr::GetInst()->FileWriteLog(L"end6\n");
+	
 	WSACleanup();
 }
 CMainMgr* CMainMgr::GetInst()
@@ -104,16 +106,19 @@ void CMainMgr::Destroy()
 {
 	delete m_instance;
 	CLoginMgr::Destroy();
-	CLogMgr::GetInst()->FileWriteLog(L"itewyhfdrihtoeriyt\n");
+	CLogMgr::GetInst()->FileWriteLog(L"destroy1\n");
 	CSessionMgr::Destroy();
-	CLogMgr::GetInst()->FileWriteLog(L"itewyhfdrihtoeriyt\n");
+	CLogMgr::GetInst()->FileWriteLog(L"destroy2\n");
 	CDBMgr::Destroy();
-	CLogMgr::GetInst()->FileWriteLog(L"itewyhfdrihtoeriyt\n");
+	CLogMgr::GetInst()->FileWriteLog(L"destroy3\n");
 	C_SetCtrlHandler::Destroy();
-	CLogMgr::GetInst()->FileWriteLog(L"마지막\n");
+	CLogMgr::GetInst()->FileWriteLog(L"destroy4\n");
 	CLogMgr::Destroy();
+	CLogMgr::GetInst()->FileWriteLog(L"destroy5\n");
 	CProtocolMgr::Destroy();
+	CLogMgr::GetInst()->FileWriteLog(L"destroy6\n");
 	CLobbyMgr::Destroy();
+	CLogMgr::GetInst()->FileWriteLog(L"destroy last\n");
 }
 
 void CMainMgr::SizeCheck_And_Recv(void* _session, int _combytes) // 이름을 하는 기능을 전부 명시적으로 만든다.
@@ -150,6 +155,7 @@ void CMainMgr::SizeCheck_And_Send(void* _session, int _combytes)
 		break;
 	}
 }
+
 
 void CMainMgr::PostQueueAccept(SOCKET _clientsock)
 {
@@ -200,44 +206,4 @@ void* CMainMgr::GetQueueAccept(ULONG_PTR _com_key, OVERLAP_EX* _overlap)
 	CSession* session = CSessionMgr::GetInst()->AddSession(session_sock);
 	// 여기서 session recv를 호출
 	return session;
-}
-
-
-
-void CMainMgr::RecvProcess(CSession* _ptr)
-{
-	/*switch (_ptr->GetState())
-	{
-	case STATE::MENU_SELECT:
-		CLoginMgr::GetInst()->MenuProc(_ptr);
-		break;
-	case STATE::JOIN:
-		CLoginMgr::GetInst()->JoinProc(_ptr);
-		break;
-	case STATE::LOGIN:
-		CLoginMgr::GetInst()->LoginProc(_ptr);
-		break;
-	case STATE::LOGOUT:
-		CLoginMgr::GetInst()->LogOutProc(_ptr);
-		break;
-	}*/
-}
-
-void CMainMgr::SendProcess(CSession* _ptr)
-{
-	// 처음 state가 menu_select일 때 singel에 따라서 state를 변경시키도록 하였다.
-	// 그러나 state::
-
-	//switch (_ptr->GetState())
-	//{
-	//case STATE::LOGIN:
-	//	_ptr->SetState(STATE::MENU_SELECT);
-	//	break;
-	//case STATE::JOIN:
-	//	_ptr->SetState(STATE::MENU_SELECT);
-	//	break;
-	////case STATE::LOGOUT:
-
-	//}
-
 }
