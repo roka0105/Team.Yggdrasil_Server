@@ -22,7 +22,6 @@ public:
 	{
 		if (top == nullptr)
 		{
-			printf("데이터 없음");
 			return NULL;
 		}
 		T data = top->data;
@@ -42,7 +41,6 @@ public:
 	{
 		if (top == nullptr)
 		{
-			printf("데이터 없음");
 			return NULL;
 		}
 		T data = top->data;
