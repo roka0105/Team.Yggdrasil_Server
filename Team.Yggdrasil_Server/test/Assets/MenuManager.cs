@@ -43,7 +43,7 @@ public class MenuManager : Singleton_Ver2.Singleton<MenuManager>
 
         M_Mouse.MouseEvent_Register(MOUSE_TYPE.LEFTDOWN_BTN, TAG_TYPE.MenuStart, MenuStart);
     }
-    public void OptionProcess()
+    public void OptionBtn()
     {
         Debug.Log("option");
     }

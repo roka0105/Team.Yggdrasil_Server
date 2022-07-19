@@ -1,12 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
+using TMPro;
+enum LobbyUseWindow
+{
+    None = -1,
+    Menu,
+    CreateRoom,
+    Max
+}
 public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
 {
+    [SerializeField]
+    List<LobbyUseWindow> m_window_type;
+    [SerializeField]
+    List<GameObject> m_window_objs;
+    [SerializeField]
+    List<TMP_InputField> m_create_inputfields;
+
+    Dictionary<LobbyUseWindow, GameObject> m_Windows;
     MainThread M_MainTh;
     PacketManager M_Packet;
     ProtocolManager M_Protocol;
+ 
     private delegate void _ResultProcess(byte[] _recvdata);
     Dictionary<DETAILPROCOTOL, _ResultProcess> m_ResultProcess;
     enum SUBPROTOCOL
@@ -19,7 +36,7 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
     }
     enum DETAILPROCOTOL
     {
-        NONE=-1,
+        NONE = -1,
         //========상위=========
         LobbyEnter = 1,
         LobbyResult = 2,
@@ -36,7 +53,7 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
         PageRoom = 2048,
         MAX
     }
-    public void LobbyEnterProcess(bool _multi)
+    public void LobbyEnterSendProcess(bool _multi)
     {
         Debug.Log("lobbyenter");
         uint protocol = 0;
@@ -49,13 +66,47 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
         {
             M_Protocol.SetDetailProtocol(ref protocol, (uint)SUBPROTOCOL.Sigle);
         }
-           
-        M_Protocol.SetDetailProtocol(ref protocol, (uint)DETAILPROCOTOL.LobbyEnter);
 
-        byte[] senddata = M_Packet.PackPacking(protocol);
-        M_MainTh.SendQueue_Push(senddata);
+        M_Protocol.SetDetailProtocol(ref protocol, (uint)DETAILPROCOTOL.LobbyEnter);
+        M_MainTh.SendQueue_Push(M_Packet.PackPacking(protocol));
         MainThread.m_WaitforSendThread.Set();
     }
+    public void CreateRoomSendProcess(string _name,string _pw)
+    {
+        uint protocol = 0;
+
+        M_Protocol.SetMainProtocol(ref protocol, (uint)MAINPROTOCOL.ROOM);
+        M_Protocol.SetSubProtocol(ref protocol, (uint)SUBPROTOCOL.Multi);
+        M_Protocol.SetDetailProtocol(ref protocol, (uint)DETAILPROCOTOL.CreateRoom);
+
+        M_MainTh.SendQueue_Push(M_Packet.PackPacking(protocol, _name, _pw));
+        MainThread.m_WaitforSendThread.Set();
+    }
+    public void CreateRoomBtn()
+    {
+        ActiveChangeWindow(LobbyUseWindow.CreateRoom, LobbyUseWindow.None);
+    }
+    public void CreateRoomOkBtn()
+    {
+        // 입력값 전송
+        string NAME = m_create_inputfields[0].text;
+        string PW = m_create_inputfields[1].text;
+        CreateRoomSendProcess(NAME, PW);
+    }
+    public void CreateRoomCancelBtn()
+    {
+        ActiveChangeWindow(LobbyUseWindow.None, LobbyUseWindow.CreateRoom);
+    }
+    //메뉴로 돌아가기.
+    public void BackMenuBtn()
+    {
+        Debug.Log("backmenu");
+    }
+    public void ChagePageBtn(bool _next)
+    {
+
+    }
+    
     private void ResultProcess(uint _protocol, byte[] _recvbuf)
     {
         uint detailprotocol = M_Protocol.GetDetailProtocol(_protocol);
@@ -83,6 +134,20 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
         m_ResultProcess.Add(DETAILPROCOTOL.LobbyResult, LobbyResult);
         m_ResultProcess.Add(DETAILPROCOTOL.RoomlistResult, RoomlistResult);
         M_MainTh.RecvProcess_Register((int)MAINPROTOCOL.LOBBY, ResultProcess);
+
+        foreach(LobbyUseWindow type in m_window_type)
+        {
+            m_Windows.Add(type, m_window_objs[(int)type]);
+        }
+        ActiveChangeWindow(LobbyUseWindow.None, LobbyUseWindow.CreateRoom);
+    }
+
+    private void ActiveChangeWindow(LobbyUseWindow _truewindow, LobbyUseWindow _falsewindow)
+    {
+        if (_truewindow != LobbyUseWindow.None)
+            m_Windows[_truewindow].SetActive(true);
+        if (_falsewindow != LobbyUseWindow.None)
+            m_Windows[_falsewindow].SetActive(false);
     }
     // Start is called before the first frame update
     void Start()

@@ -17,6 +17,8 @@ enum MAINPROTOCOL
     NONE,
     LOGIN,
     LOBBY,
+    ROOM,
+    GAME,
     MAX
 }
 public class MainThread : Singleton_Ver2.Singleton<MainThread>
@@ -32,6 +34,8 @@ public class MainThread : Singleton_Ver2.Singleton<MainThread>
     PacketManager M_Packet;
     MenuManager M_Menu;
     LoginManager M_Login;
+    LobbyManager M_Lobby;
+    RoomManager M_Room;
     ProtocolManager M_Protocol;
 
 	public static EventWaitHandle m_WaitforSendThread;
@@ -82,6 +86,8 @@ public class MainThread : Singleton_Ver2.Singleton<MainThread>
         M_Protocol = ProtocolManager.Instance;
         M_Menu = MenuManager.Instance;
         M_Login = LoginManager.Instance;
+        M_Lobby = LobbyManager.Instance;
+        M_Room = RoomManager.Instance;
     }
     private void Init()
     {
@@ -99,6 +105,8 @@ public class MainThread : Singleton_Ver2.Singleton<MainThread>
         M_Mouse.Init();
         M_Menu.Init();
         M_Login.Init();
+        M_Lobby.Init();
+        M_Room.Init();
     }
 	private void End()
 	{

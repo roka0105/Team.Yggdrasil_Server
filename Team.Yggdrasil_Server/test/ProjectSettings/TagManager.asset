@@ -6,6 +6,7 @@ TagManager:
   tags:
   - MainCanvas
   - MenuStart
+  - ChatWindow
   layers:
   - Default
   - TransparentFX

@@ -42,31 +42,24 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
     LoginUseWindow m_cur_usewindow;
     Dictionary<LoginUseWindow, List<InputField>> m_input_fields;
     Dictionary<SUBPROTOCOL, Result_Process> m_ResultProcess;
-    public void LoginWindowProcess()
+    public void LoginWindowBtn()
     {
         m_cur_usewindow = LoginUseWindow.Login;
         ActiveChangeWindow(LoginUseWindow.Login, LoginUseWindow.Menu);
 
         Debug.Log("login");
     }
-    public void JoinWindowProcess()
+    public void JoinWindowBtn()
     {
         m_cur_usewindow = LoginUseWindow.Join;
         ActiveChangeWindow(LoginUseWindow.Join, LoginUseWindow.Menu);
         Debug.Log("join");
     }
-    public void LogoutProcess()
+    public void LogoutBtn()
     {
         Debug.Log("logout");
 
-        //sendqueue에 넣기
-        uint protocol = 0;
-        M_Protocol.SetMainProtocol(ref protocol, (uint)MAINPROTOCOL.LOGIN);
-        M_Protocol.SetSubProtocol(ref protocol, (uint)SUBPROTOCOL.LogoutInfo);
-
-        byte[] senddata = M_Packet.PackPacking(protocol);
-        M_MainTh.SendQueue_Push(senddata);
-        MainThread.m_WaitforSendThread.Set();
+        LogoutSendProcess();
     }
    
    
@@ -123,6 +116,17 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
         M_Protocol.SetSubProtocol(ref protocol, (uint)SUBPROTOCOL.JoinInfo);
 
         byte[] senddata = M_Packet.PackPacking(protocol, ID, PW,NICK);
+        M_MainTh.SendQueue_Push(senddata);
+        MainThread.m_WaitforSendThread.Set();
+    }
+    private void LogoutSendProcess()
+    {
+        //sendqueue에 넣기
+        uint protocol = 0;
+        M_Protocol.SetMainProtocol(ref protocol, (uint)MAINPROTOCOL.LOGIN);
+        M_Protocol.SetSubProtocol(ref protocol, (uint)SUBPROTOCOL.LogoutInfo);
+
+        byte[] senddata = M_Packet.PackPacking(protocol);
         M_MainTh.SendQueue_Push(senddata);
         MainThread.m_WaitforSendThread.Set();
     }
