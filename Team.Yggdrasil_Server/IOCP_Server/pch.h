@@ -12,14 +12,17 @@
 #include <list>
 #include <vector>
 #include <queue>
+#include <map>
 #include <fstream>
 #include <tchar.h>
+
 
 using std::ofstream;
 using std::ifstream;
 using std::list;
 using std::queue;
 using std::vector;
+using std::map;
 
 #include <mysql.h>
 

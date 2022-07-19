@@ -25,7 +25,6 @@ void CLoginState::Recv()
 
 void CLoginState::Send()
 {
-	//로그인중인지 체크
 	if (is_lobby)
 		m_session->SetState(m_session->GetLobbyState());
 }

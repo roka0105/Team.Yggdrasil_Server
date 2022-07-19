@@ -8,6 +8,7 @@
 #include "CLock.h"
 #include "CLockGuard.h"
 #include "CLobbyMgr.h"
+#include "CRoomMgr.h"
 
 
 
@@ -80,7 +81,7 @@ void CLoginMgr::LoginProcess(CSession* _ptr)
 void CLoginMgr::LoginFunc(CSession* _ptr)
 {
 	CLockGuard<CLock> lock(m_lock);
-	TCHAR ID[BUFSIZE], PW[BUFSIZE], NICK[BUFSIZE], temp[BUFSIZE],msg[BUFSIZE];
+	TCHAR ID[BUFSIZE], PW[BUFSIZE], NICK[BUFSIZE], temp[BUFSIZE], msg[BUFSIZE];
 	byte buf[BUFSIZE], sendbuf[BUFSIZE];
 	ZeroMemory(buf, BUFSIZE);
 	ZeroMemory(ID, BUFSIZE);
@@ -128,7 +129,7 @@ void CLoginMgr::JoinFunc(CSession* _ptr)
 	//1. 클라가 보낸 회원가입 정보를 받으면, 
 	//2. 등록된 정보인지 확인하여 결과에 따라 packet을 조립하여 Send한다.
 
-	TCHAR ID[BUFSIZE], PW[BUFSIZE], NICK[BUFSIZE],msg[BUFSIZE];
+	TCHAR ID[BUFSIZE], PW[BUFSIZE], NICK[BUFSIZE], msg[BUFSIZE];
 	byte buf[BUFSIZE], sendbuf[BUFSIZE];
 	ZeroMemory(buf, BUFSIZE);
 	ZeroMemory(ID, BUFSIZE);
@@ -137,7 +138,7 @@ void CLoginMgr::JoinFunc(CSession* _ptr)
 	ZeroMemory(sendbuf, BUFSIZE);
 	int size = 0;
 	int p;
-	
+
 	TCHAR temp[BUFSIZE];
 	bool result = false;
 	unsigned long protocol = 0;
@@ -151,7 +152,7 @@ void CLoginMgr::JoinFunc(CSession* _ptr)
 	if (joinCheck(msg, ID, NICK)) // 회원가입 성공
 	{
 		t_UserInfo* user = new t_UserInfo(ID, PW, NICK);
-		m_joinlist.push_back(user); 
+		m_joinlist.push_back(user);
 		CDBMgr::GetInst()->InsertJointbl(user);
 		_stprintf(msg, _T("%s님 회원가입에 성공하였습니다!"), NICK);
 		ZeroMemory(temp, BUFSIZE);
@@ -211,16 +212,23 @@ void CLoginMgr::EnterLobbyProcess(CSession* _ptr)
 
 
 	_ptr->UnPacking(protocol);
-
+	subprotocol = CProtocolMgr::GetInst()->GetSubProtocol(protocol);
+	switch (static_cast<CLobbyMgr::SUBPROTOCOL>(subprotocol))
+	{
+	case CLobbyMgr::SUBPROTOCOL::Multi:
+		CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(CLobbyMgr::SUBPROTOCOL::Multi));
+		// 방 리스트 정보 보낸다.
+		CRoomMgr::GetInst()->SendRoom(0, _ptr);
+		break;
+	case CLobbyMgr::SUBPROTOCOL::Single:
+		CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(CLobbyMgr::SUBPROTOCOL::Single));
+		break;
+	}
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::LOBBY));
-	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(CLobbyMgr::SUBPROTOCOL::Multi));
-	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(CLobbyMgr::DETAILPROTOCOL::LobbyEnter));
 
-	// 방 리스트 정보 보낸다.
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(CLobbyMgr::DETAILPROTOCOL::LobbyResult));
 
 	_ptr->Packing(protocol, nullptr, 0);
-
-	
 }
 
 BOOL CLoginMgr::LoginCheck(TCHAR* _id, TCHAR* _pw, TCHAR* _nick)
@@ -290,7 +298,7 @@ void CLoginMgr::Packing(unsigned long _protocol, const TCHAR* _id, const TCHAR* 
 	ZeroMemory(_buf, BUFSIZE);
 	byte* ptr = _buf;
 	int size = 0;
-	int strsize = _tcslen(_id)*CODESIZE;
+	int strsize = _tcslen(_id) * CODESIZE;
 	unsigned long protocol = _protocol;
 
 	memcpy(ptr, &strsize, sizeof(int));
@@ -301,7 +309,7 @@ void CLoginMgr::Packing(unsigned long _protocol, const TCHAR* _id, const TCHAR* 
 	size += strsize;
 	ptr += strsize;
 
-	strsize = _tcslen(_pw)*CODESIZE;
+	strsize = _tcslen(_pw) * CODESIZE;
 	memcpy(ptr, &strsize, sizeof(int));
 	size += sizeof(int);
 	ptr += sizeof(int);
@@ -318,7 +326,7 @@ void CLoginMgr::Packing(unsigned long _protocol, const TCHAR* _str, CSession* _p
 	ZeroMemory(_buf, BUFSIZE);
 	byte* ptr = _buf;
 	int size = 0;
-	int strsize = _tcslen(_str)*CODESIZE;
+	int strsize = _tcslen(_str) * CODESIZE;
 	unsigned long protocol = _protocol;
 
 	memcpy(ptr, &strsize, sizeof(int));
@@ -337,7 +345,7 @@ void CLoginMgr::Packing(unsigned long _protocol, bool _flag, const TCHAR* _str, 
 	ZeroMemory(_buf, BUFSIZE);
 	byte* ptr = _buf;
 	int size = 0;
-	int strsize = _tcslen(_str)*CODESIZE;
+	int strsize = _tcslen(_str) * CODESIZE;
 	unsigned long protocol = _protocol;
 
 	memcpy(ptr, &_flag, sizeof(bool));
@@ -358,11 +366,11 @@ void CLoginMgr::UnPacking(const byte* _buf, TCHAR* _id, TCHAR* _pw)
 {
 	const byte* ptr = _buf;
 	int strsize = 0;
-	
+
 	memcpy(&strsize, ptr, sizeof(int));
 	ptr += sizeof(int);
-	
-	memcpy(_id, ptr, strsize*CODESIZE);
+
+	memcpy(_id, ptr, strsize * CODESIZE);
 	ptr += strsize * CODESIZE;
 
 	memcpy(&strsize, ptr, sizeof(int));
@@ -461,7 +469,7 @@ bool CLoginMgr::FileDataAdd(t_UserInfo* _info)
 	}
 
 	fclose(fp);
-	
+
 	return true;
 }
 

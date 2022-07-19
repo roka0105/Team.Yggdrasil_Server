@@ -9,6 +9,7 @@
 #include "C_SetCtrlHandler.h"
 #include "CProtocolMgr.h"
 #include "CLobbyMgr.h"
+#include "CRoomMgr.h"
 
 CMainMgr* CMainMgr::m_instance = nullptr;
 
@@ -62,6 +63,8 @@ void CMainMgr::Init()
 	CLogMgr::GetInst()->Init();
 	C_SetCtrlHandler::GetInst()->Init();
 	CLobbyMgr::GetInst()->Init();
+	CRoomMgr::GetInst()->Init();
+	
 	// ++
 }
 void CMainMgr::End()
@@ -71,6 +74,7 @@ void CMainMgr::End()
 	CLogMgr::GetInst()->FileWriteLog(_T("end1\n"));
 	CLobbyMgr::GetInst()->End();
 	CLogMgr::GetInst()->FileWriteLog(_T("end2\n"));
+	CRoomMgr::GetInst()->End();
 	CSessionMgr::GetInst()->End();
 	CLogMgr::GetInst()->FileWriteLog(_T("end3\n"));
 	CDBMgr::GetInst()->End();
@@ -100,6 +104,7 @@ void CMainMgr::Create()
 	C_SetCtrlHandler::Create();
 	CProtocolMgr::Create();
 	CLobbyMgr::Create();
+	CRoomMgr::Create();
 }
 
 void CMainMgr::Destroy()
@@ -112,6 +117,7 @@ void CMainMgr::Destroy()
 	CLogMgr::Destroy();
 	CProtocolMgr::Destroy();
 	CLobbyMgr::Destroy();
+	CRoomMgr::Destroy();
 }
 
 void CMainMgr::SizeCheck_And_Recv(void* _session, int _combytes) // 이름을 하는 기능을 전부 명시적으로 만든다.

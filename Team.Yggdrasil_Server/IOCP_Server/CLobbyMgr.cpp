@@ -24,18 +24,15 @@ void CLobbyMgr::Create()
 {
 	if (instance == nullptr)
 		instance = new CLobbyMgr();
-	CRoomMgr::Create();
 }
 
 void CLobbyMgr::Destroy()
 {
 	delete instance;
-	CRoomMgr::Destroy();
 }
 
 void CLobbyMgr::Init()
 {
-
 }
 
 void CLobbyMgr::End()
@@ -56,16 +53,14 @@ void CLobbyMgr::LobbyProcess(CSession* _session)
 
 		switch (detailprotocol)
 		{
-		case static_cast<const unsigned long>(DETAILPROTOCOL::LobbyEnter):
-			LobbyEnterFunc(_session);
-			break;
 		case static_cast<const unsigned long>(DETAILPROTOCOL::CreateRoom):
+			CreateRoomFunc(_session);
 			break;
 		case static_cast<const unsigned long>(DETAILPROTOCOL::RoomlistUpdate) | static_cast<const unsigned long>(DETAILPROTOCOL::PageRoom):
 			PageRoomFunc(_session);
 			break;
 		case static_cast<const unsigned long>(DETAILPROTOCOL::RoomlistUpdate) | static_cast<const unsigned long>(DETAILPROTOCOL::AllRoom):
-			AllRoomFunc(_session);
+			//AllRoomFunc(_session);
 			break;
 		case static_cast<const unsigned long>(DETAILPROTOCOL::ChatSend) | static_cast<const unsigned long>(DETAILPROTOCOL::AllMsg):
 			break;
@@ -74,13 +69,11 @@ void CLobbyMgr::LobbyProcess(CSession* _session)
 		}
 		break;
 	}
-	case SUBPROTOCOL::Sigle:
+	case SUBPROTOCOL::Single:
 		switch (detailprotocol)
 		{
-		case static_cast<const unsigned long>(DETAILPROTOCOL::LobbyEnter):
-			break;
+		
 		}
-
 		break;
 
 	}
@@ -107,23 +100,30 @@ void CLobbyMgr::BackPageProcess(CSession* _session)
 	}
 }
 
-void CLobbyMgr::LobbyEnterFunc(CSession* _session)
+//void CLobbyMgr::AllRoomFunc(CSession* _session)
+//{
+//	CLockGuard<CLock> lock(m_lock);
+//	CRoomMgr::GetInst()->SendRoom(_session);
+//}
+
+void CLobbyMgr::CreateRoomFunc(CSession* _session)
 {
 	CLockGuard<CLock> lock(m_lock);
-	CRoomMgr::GetInst()->SendRoom(_session);
+	TCHAR room_name[STRINGSIZE], room_pw[STRINGSIZE];
+	ZeroMemory(room_name, STRINGSIZE);
+	ZeroMemory(room_pw, STRINGSIZE);
+	//room 닉네임,패스워드 unpack 
 
-}
-
-void CLobbyMgr::AllRoomFunc(CSession* _session)
-{
-	CLockGuard<CLock> lock(m_lock);
-	CRoomMgr::GetInst()->SendRoom(_session);
+	//방 생성
+	CRoomMgr::GetInst()->AddRoom(room_name, room_pw, _session);
 }
 
 void CLobbyMgr::PageRoomFunc(CSession* _session)
 {
 	CLockGuard<CLock> lock(m_lock);
-	CRoomMgr::GetInst()->SendRoom(0, _session);
+	unsigned int page=0;
+	//page unpack
+	CRoomMgr::GetInst()->SendRoom(page, _session);
 }
 
 

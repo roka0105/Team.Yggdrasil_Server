@@ -22,24 +22,45 @@ void CRoomMgr::Destroy()
 	delete instance;
 }
 
-void CRoomMgr::AddRoom(TCHAR* _name, CSession* _host, unsigned int _mode)
+void CRoomMgr::Init()
+{
+	
+}
+
+void CRoomMgr::End()
+{
+	
+}
+
+
+void CRoomMgr::AddRoom(TCHAR* _name,TCHAR* _password, CSession* _host)
 {
 	CLockGuard<CLock> lock(m_lock);
-	t_RoomInfo* room = new t_RoomInfo(m_rooms.size(), _name, _host, _mode);
-	m_rooms.push_back(room);
-	m_max_page = m_rooms.size() / m_page_room_count;
+	
+	if (m_rooms[m_max_page].size() >= m_page_room_count)
+	{
+		m_max_page++;	
+		m_rooms.insert({m_max_page,list<t_RoomInfo*>()});	
+	}
+	
+	t_RoomInfo* room = new t_RoomInfo(m_rooms_count++, _name,_password, _host);
+	m_rooms[m_max_page].push_back(room);
 }
 
 void CRoomMgr::RemoveRoom(unsigned int _id)
 {
 	CLockGuard<CLock> lock(m_lock);
-	for (t_RoomInfo* room : m_rooms)
+	for (int i = 0; i < m_max_page; i++)
 	{
-		if (room->id == _id)
+		for (t_RoomInfo* room : m_rooms[i])
 		{
-			m_rooms.remove(room);
+			if (room->id == _id)
+			{
+				m_rooms[i].remove(room);
+			}
 		}
 	}
+	
 }
 
 //void CRoomMgr::SendRoom(CSession* _session, unsigned int _id)
@@ -47,100 +68,93 @@ void CRoomMgr::RemoveRoom(unsigned int _id)
 //
 //}
 
-void CRoomMgr::SendRoom(CSession* _session)
-{
-	CLockGuard<CLock> lock(m_lock);
-	unsigned long protocol = 0;
-	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, (unsigned long)MAINPROTOCOL::ROOM);
-	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)CLobbyMgr::SUBPROTOCOL::Multi);
-	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROTOCOL::RoomlistUpdate);
-	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROTOCOL::AllRoom);
-
-	// 방 리스트(방번호 = ID, 방 이름, 모드정보, 방 참여 인원수, 방인원제한)
-	// structsize = uint + uint + str + uint + uint + uint = 20+32 = 52byte
-	// datasize = uint + structsize*n; = 4+ 52*n 
-	// packetsize= uint + uint + ulong + datasize ; = 12+datasize;
-	// 고정값 = 16
-	// 가변값 = 52*n
-	// 버퍼크기 = 4096
-	// 한번에 보낼 수 있는 방 정보 갯수는 78.4615.... 인데 안전하게 77 정도로 잡기.
-
-	int forcount = 0;
-	int remainder = 0;
-	int startindex = 0;
-	int endindex = m_rooms.size();
-	int count = 0;
-	if (m_rooms.size() > m_packet_room_count)
-	{
-		forcount = m_rooms.size() / m_packet_room_count;
-		remainder = m_rooms.size() % m_packet_room_count;
-		endindex = m_packet_room_count;
-	}
-	list<t_RoomInfo*> templist(m_rooms);
-	for (int i = 0; i < forcount + 1; i++)
-	{
-		list<t_RoomInfo*> roomlist;
-		
-
-		for (int j = startindex; j < endindex; j++)
-		{
-			if (count == endindex)
-			{
-				break;
-			}
-			roomlist.push_back(templist.front());
-			templist.pop_front();
-			count++;
-		}
-
-		if (i + 1 == forcount)
-		{
-			startindex = endindex;
-			endindex = endindex + remainder;
-		}
-		else
-		{
-			startindex = endindex;
-			endindex = endindex + endindex;
-		}
-		Packing(protocol,roomlist,_session);
-	}
-}
+//void CRoomMgr::SendRoom(CSession* _session)
+//{
+//	CLockGuard<CLock> lock(m_lock);
+//	unsigned long protocol = 0;
+//	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, (unsigned long)MAINPROTOCOL::ROOM);
+//	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)CLobbyMgr::SUBPROTOCOL::Multi);
+//	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROTOCOL::RoomlistUpdate);
+//	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROTOCOL::AllRoom);
+//
+//	// 방 리스트(방번호 = ID, 방 이름, 모드정보, 방 참여 인원수, 방인원제한)
+//	// structsize = uint + uint + str + uint + uint + uint = 20+32 = 52byte
+//	// datasize = uint + structsize*n; = 4+ 52*n 
+//	// packetsize= uint + uint + ulong + datasize ; = 12+datasize;
+//	// 고정값 = 16
+//	// 가변값 = 52*n
+//	// 버퍼크기 = 4096
+//	// 한번에 보낼 수 있는 방 정보 갯수는 78.4615.... 인데 안전하게 77 정도로 잡기.
+//
+//	int forcount = 0;
+//	int remainder = 0;
+//	int startindex = 0;
+//	int endindex = m_rooms.size();
+//	int count = 0;
+//	if (m_rooms.size() > m_packet_room_count)
+//	{
+//		forcount = m_rooms.size() / m_packet_room_count;
+//		remainder = m_rooms.size() % m_packet_room_count;
+//		endindex = m_packet_room_count;
+//	}
+//	list<t_RoomInfo*> templist(m_rooms);
+//	for (int i = 0; i < forcount + 1; i++)
+//	{
+//		list<t_RoomInfo*> roomlist;
+//		
+//
+//		for (int j = startindex; j < endindex; j++)
+//		{
+//			if (count == endindex)
+//			{
+//				break;
+//			}
+//			roomlist.push_back(templist.front());
+//			templist.pop_front();
+//			count++;
+//		}
+//
+//		if (i + 1 == forcount)
+//		{
+//			startindex = endindex;
+//			endindex = endindex + remainder;
+//		}
+//		else
+//		{
+//			startindex = endindex;
+//			endindex = endindex + endindex;
+//		}
+//		Packing(protocol,roomlist,_session);
+//	}
+//}
 
 void CRoomMgr::SendRoom(unsigned int page, CSession* _session)
 {
 	CLockGuard<CLock> lock(m_lock);
 	unsigned long protocol = 0;
-	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, (unsigned long)MAINPROTOCOL::ROOM);
-	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)CLobbyMgr::SUBPROTOCOL::Multi);
-	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROTOCOL::RoomlistUpdate);
-	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)CLobbyMgr::DETAILPROTOCOL::PageRoom);
+	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::ROOM));
+	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::SetRoomInfo));
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::PageInfo));
+
 
 	int count = 0;
-	int room_count = m_rooms.size();
-	vector<t_RoomInfo*>tempvector;
-	for (t_RoomInfo* room : m_rooms)
+	
+	list<t_RoomInfo*>temp;
+	for (t_RoomInfo* room : m_rooms[page])
 	{
-		tempvector.push_back(room);
+		temp.push_back(room);
 	}
-	list<t_RoomInfo*> roomlist;
-	for (int i = page; i < (page+1) * m_page_room_count; i++)
-	{
-		if (i > room_count)
-		{
-			break;
-		}
-		roomlist.push_back(tempvector[i]);
-	}
-	Packing(protocol, roomlist, _session);
+	
+	Packing(protocol,page,temp, _session);
 }
 
 CRoomMgr::CRoomMgr()
 {
-
+	m_lock = new CLock();
 }
 CRoomMgr::~CRoomMgr()
 {
+	delete m_lock;
 }
 
 void CRoomMgr::Packing(unsigned long _protocol, t_RoomInfo* _room, CSession* _session)
@@ -154,13 +168,16 @@ void CRoomMgr::Packing(unsigned long _protocol, t_RoomInfo* _room, CSession* _se
 	_session->Packing(_protocol, _buf, size);
 }
 
-void CRoomMgr::Packing(unsigned long _protocol, list<t_RoomInfo*> _rooms, CSession* _session)
+void CRoomMgr::Packing(unsigned long _protocol,int page, list<t_RoomInfo*> _rooms, CSession* _session)
 {
 	byte _buf[BUFSIZE];
 	ZeroMemory(_buf, BUFSIZE);
 	byte* ptr = _buf + sizeof(int);
 	int size = 0;
 	int strsize = 0;
+	memcpy(ptr, &page, sizeof(int));
+	ptr += sizeof(int);
+	size += sizeof(int);
 	for (t_RoomInfo* room : _rooms)
 	{
 		//방번호

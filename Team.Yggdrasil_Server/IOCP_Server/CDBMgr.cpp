@@ -96,11 +96,12 @@ list<t_UserInfo*> CDBMgr::GetJoin()
 
 	list<t_UserInfo*>users;
 	TCHAR ID[STRINGSIZE], PW[STRINGSIZE], NICK[STRINGSIZE];
-	ZeroMemory(ID, STRINGSIZE);
-	ZeroMemory(PW, STRINGSIZE);
-	ZeroMemory(NICK, STRINGSIZE);
+	
 	while ((m_sql_row = mysql_fetch_row(m_sql_result)) != NULL)
 	{
+		ZeroMemory(ID, STRINGSIZE);
+		ZeroMemory(PW, STRINGSIZE);
+		ZeroMemory(NICK, STRINGSIZE);
 		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[0], strlen(m_sql_row[0]), ID, STRINGSIZE);
 		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[1], strlen(m_sql_row[1]), PW, STRINGSIZE);
 		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[2], strlen(m_sql_row[2]), NICK, STRINGSIZE);
