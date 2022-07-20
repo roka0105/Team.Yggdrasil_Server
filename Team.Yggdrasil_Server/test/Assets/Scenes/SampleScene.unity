@@ -3589,7 +3589,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 262281779}
         m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
-        m_MethodName: LobbyEnterSendProcess
+        m_MethodName: LobbyEnterBtn
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11782,7 +11782,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 262281779}
         m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
-        m_MethodName: LobbyEnterSendProcess
+        m_MethodName: LobbyEnterBtn
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
