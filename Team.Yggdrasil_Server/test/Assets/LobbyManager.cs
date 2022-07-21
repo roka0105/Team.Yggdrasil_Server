@@ -89,12 +89,7 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
     #endregion
 
     #region server recv process
-    //서버에서 받아온 recv packet 을 처리해서 패킷에 대한 결과를 처리한다.
-    private void ResultProcess(uint _protocol, byte[] _recvbuf)
-    {
-        uint detailprotocol = M_Protocol.GetDetailProtocol(_protocol);
-        m_ResultProcess[(DETAILPROCOTOL)detailprotocol]?.Invoke(_recvbuf);
-    }
+   
     private void LobbyRecvResult(byte[] _recvdata)
     {
         Debug.Log("LobbyResult");
@@ -147,19 +142,14 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
         M_MainTh = MainThread.Instance;
         M_Protocol = ProtocolManager.Instance;
         M_Packet = PacketManager.Instance;
-
-        M_MainTh.RecvProcess_Register((int)MAINPROTOCOL.LOBBY, ResultProcess);
-
-        m_ResultProcess = new Dictionary<DETAILPROCOTOL, _ResultProcess>();
-        m_ResultProcess.Add(DETAILPROCOTOL.LobbyResult, LobbyRecvResult);
-        m_ResultProcess.Add(DETAILPROCOTOL.RoomlistResult, RoomlistRecvResult);
-      
-
+        m_Windows = new Dictionary<LobbyUseWindow, GameObject>();
         foreach (LobbyUseWindow type in m_window_type)
         {
             m_Windows.Add(type, m_window_objs[(int)type]);
         }
         ActiveChangeWindow(LobbyUseWindow.None, LobbyUseWindow.CreateRoom);
+
+        ServerInit();
     }
     //윈도우 창 활성화 비활성화 근데 이거 그냥 windowmanager에 빼놓기.
     private void ActiveChangeWindow(LobbyUseWindow _truewindow, LobbyUseWindow _falsewindow)
@@ -171,6 +161,21 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
     }
     #endregion
 
+    #region server func
+    private void ServerInit()
+    {
+        M_MainTh.RecvProcess_Register((int)MAINPROTOCOL.LOBBY, ResultProcess);
+        m_ResultProcess = new Dictionary<DETAILPROCOTOL, _ResultProcess>();
+        m_ResultProcess.Add(DETAILPROCOTOL.LobbyResult, LobbyRecvResult);
+        m_ResultProcess.Add(DETAILPROCOTOL.RoomlistResult, RoomlistRecvResult);
+    }
+    //서버에서 받아온 recv packet 을 처리해서 패킷에 대한 결과를 처리한다.
+    private void ResultProcess(uint _protocol, byte[] _recvbuf)
+    {
+        uint detailprotocol = M_Protocol.GetDetailProtocol(_protocol);
+        m_ResultProcess[(DETAILPROCOTOL)detailprotocol]?.Invoke(_recvbuf);
+    }
+    #endregion
 
     // Start is called before the first frame update
     void Start()

@@ -2,6 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+struct RoomOutInfo
+{
+    uint id;
+    string name;
+    uint mode;
+    uint enter_limit;
+    uint enter_count;
+}
 public class RoomManager : Singleton_Ver2.Singleton<RoomManager>
 {
     enum SUBPROTOCOL
@@ -21,9 +29,10 @@ public class RoomManager : Singleton_Ver2.Singleton<RoomManager>
     private MainThread M_MainTh;
     private ProtocolManager M_Protocol;
     //n 페이지에 해당하는 room 정보들.
-    private Dictionary<int,List<Room>> m_rooms;
+    private Dictionary<int,List<RoomOutInfo>> m_rooms;
     //한 페이지당 가지고 있을 room 제한 수.
     private const uint m_pagelimit_room = 10;
+    private Room m_InroomInfo;
 
     private delegate void Result_Process(uint _protocol , byte[] _recvdata);
     private Dictionary<SUBPROTOCOL, Result_Process> m_ResultProcess;
@@ -51,7 +60,7 @@ public class RoomManager : Singleton_Ver2.Singleton<RoomManager>
         M_Protocol = ProtocolManager.Instance;
 
         m_ResultProcess = new Dictionary<SUBPROTOCOL, Result_Process>();
-        m_rooms = new Dictionary<int, List<Room>>();
+        m_rooms = new Dictionary<int, List<RoomOutInfo>>();
 
         M_MainTh.RecvProcess_Register((int)MAINPROTOCOL.ROOM,ResultProcess);
         

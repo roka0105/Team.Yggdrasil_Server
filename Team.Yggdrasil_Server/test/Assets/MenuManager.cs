@@ -31,9 +31,16 @@ public class MenuManager : Singleton_Ver2.Singleton<MenuManager>
     MainThread M_MainTh;
     LoginManager M_Login;
     MouseManager M_Mouse;
-  
 
-    
+    #region client Input func
+    public void OptionBtn()
+    {
+        Debug.Log("option");
+    }
+
+    #endregion
+
+    #region client func
     public void Init()
     {
         M_Login = LoginManager.Instance;
@@ -42,10 +49,6 @@ public class MenuManager : Singleton_Ver2.Singleton<MenuManager>
         ActiveChangeObject(MENUSTATE.MAIN, MENUSTATE.MENU);
 
         M_Mouse.MouseEvent_Register(MOUSE_TYPE.LEFTDOWN_BTN, TAG_TYPE.MenuStart, MenuStart);
-    }
-    public void OptionBtn()
-    {
-        Debug.Log("option");
     }
     public void ActivePage()
     {
@@ -77,12 +80,5 @@ public class MenuManager : Singleton_Ver2.Singleton<MenuManager>
         ActivePage();
     }
 
-    void Start()
-    {
-
-    }
-    void Update()
-    {
-
-    }
+    #endregion
 }

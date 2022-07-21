@@ -32,60 +32,20 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
     List<GameObject> m_Windows;
     [SerializeField]
     List<LoginUseWindow> m_window_type;
-
-    private delegate void Process();
-    private delegate void Result_Process(byte[] _recvdata);
-    private MainThread M_MainTh;
+    #region Manager
+    MainThread M_MainTh;
     MenuManager M_Menu;
     ProtocolManager M_Protocol;
     PacketManager M_Packet;
+    #endregion
+
+    private delegate void Process();
+    private delegate void Result_Process(byte[] _recvdata);
     LoginUseWindow m_cur_usewindow;
     Dictionary<LoginUseWindow, List<InputField>> m_input_fields;
     Dictionary<SUBPROTOCOL, Result_Process> m_ResultProcess;
-    public void LoginWindowBtn()
-    {
-        m_cur_usewindow = LoginUseWindow.Login;
-        ActiveChangeWindow(LoginUseWindow.Login, LoginUseWindow.Menu);
 
-        Debug.Log("login");
-    }
-    public void JoinWindowBtn()
-    {
-        m_cur_usewindow = LoginUseWindow.Join;
-        ActiveChangeWindow(LoginUseWindow.Join, LoginUseWindow.Menu);
-        Debug.Log("join");
-    }
-    public void LogoutBtn()
-    {
-        Debug.Log("logout");
-
-        LogoutSendProcess();
-    }
-   
-   
-
-    public void OnClick_ExitBtn()
-    {
-        ActiveChangeWindow(LoginUseWindow.Menu, m_cur_usewindow);
-        m_cur_usewindow = LoginUseWindow.None;
-    }
-    private void ExcuteProcess(Process _process)
-    {
-        _process?.Invoke();
-    }
-    public void OnClick_OkBtn()
-    {
-        //로그인 or 회원가입시 처리.
-        switch (m_cur_usewindow)
-        {
-            case LoginUseWindow.Login:
-                ExcuteProcess(LoginSendProcess);
-                break;
-            case LoginUseWindow.Join:
-                ExcuteProcess(JoinSendProcess);
-                break;
-        }
-    }
+    #region server send process
     private void LoginSendProcess()
     {
         Debug.Log("LProcess");
@@ -115,7 +75,7 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
         M_Protocol.SetMainProtocol(ref protocol, (uint)MAINPROTOCOL.LOGIN);
         M_Protocol.SetSubProtocol(ref protocol, (uint)SUBPROTOCOL.JoinInfo);
 
-        byte[] senddata = M_Packet.PackPacking(protocol, ID, PW,NICK);
+        byte[] senddata = M_Packet.PackPacking(protocol, ID, PW, NICK);
         M_MainTh.SendQueue_Push(senddata);
         MainThread.m_WaitforSendThread.Set();
     }
@@ -130,11 +90,9 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
         M_MainTh.SendQueue_Push(senddata);
         MainThread.m_WaitforSendThread.Set();
     }
-    private void ResultProcess(uint _protocol, byte[] _recvbuf)
-    {
-        uint subprotocol = M_Protocol.GetSubProtocol(_protocol);
-        m_ResultProcess[(SUBPROTOCOL)subprotocol]?.Invoke(_recvbuf);
-    }
+    #endregion
+
+    #region server recv process
     private void LoginResult(byte[] _recvdata)
     {
         Debug.Log("LoginResult");
@@ -179,23 +137,68 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
         M_Menu.ActivePage();
     }
 
-    private void UnPackPacket(byte[] _recvbuf, ref bool _result, ref string _msg)
+    #endregion
+
+    #region client Input Func
+    public void LoginWindowBtn()
     {
-        int index = sizeof(uint) + sizeof(int);
-        int strsize = 0;
-        _result = BitConverter.ToBoolean(_recvbuf, index);
-        index += sizeof(bool);
-        strsize = BitConverter.ToInt32(_recvbuf, index);
-        index += sizeof(int);
-        _msg = Encoding.Unicode.GetString(_recvbuf, index, strsize);
+        m_cur_usewindow = LoginUseWindow.Login;
+        ActiveChangeWindow(LoginUseWindow.Login, LoginUseWindow.Menu);
+
+        Debug.Log("login");
     }
-    private void UnPackPacket(byte[] _recvbuf, ref string _msg)
+    public void JoinWindowBtn()
     {
-        int index = sizeof(uint) + sizeof(int);
-        int strsize = 0;
-        strsize = BitConverter.ToInt32(_recvbuf, index);
-        index += sizeof(int);
-        _msg = Encoding.Unicode.GetString(_recvbuf, index, strsize);
+        m_cur_usewindow = LoginUseWindow.Join;
+        ActiveChangeWindow(LoginUseWindow.Join, LoginUseWindow.Menu);
+        Debug.Log("join");
+    }
+    public void LogoutBtn()
+    {
+        Debug.Log("logout");
+
+        LogoutSendProcess();
+    }
+
+    //login _ join 나가기 버튼
+    public void OnClick_ExitBtn()
+    {
+        ActiveChangeWindow(LoginUseWindow.Menu, m_cur_usewindow);
+        m_cur_usewindow = LoginUseWindow.None;
+    }
+    //login _ join 확인 버튼
+    public void OnClick_OkBtn()
+    {
+        //로그인 or 회원가입시 처리.
+        switch (m_cur_usewindow)
+        {
+            case LoginUseWindow.Login:
+                ExcuteProcess(LoginSendProcess);
+                break;
+            case LoginUseWindow.Join:
+                ExcuteProcess(JoinSendProcess);
+                break;
+        }
+    }
+    #endregion
+
+    #region client func
+    public void Init()
+    {
+        M_Menu = MenuManager.Instance;
+        M_MainTh = MainThread.Instance;
+        M_Protocol = ProtocolManager.Instance;
+        M_Packet = PacketManager.Instance;
+        m_cur_usewindow = LoginUseWindow.None;
+        m_input_fields = new Dictionary<LoginUseWindow, List<InputField>>();
+        m_input_fields.Add(LoginUseWindow.Menu, new List<InputField>());
+        m_input_fields.Add(LoginUseWindow.Login, new List<InputField>());
+        m_input_fields.Add(LoginUseWindow.Join, new List<InputField>());
+
+        SetInputField(LoginUseWindow.Login);
+        SetInputField(LoginUseWindow.Join);
+
+        ServerInit();
     }
     private void ActiveChangeWindow(LoginUseWindow _truewindow, LoginUseWindow _falsewindow)
     {
@@ -217,27 +220,56 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
             input_item.text = "";
         }
     }
-    public void Init()
+    #endregion
+
+    #region server func
+    private void ServerInit()
     {
-        M_Menu = MenuManager.Instance;
-        M_MainTh = MainThread.Instance;
-        M_Protocol = ProtocolManager.Instance;
-        M_Packet = PacketManager.Instance;
-        m_cur_usewindow = LoginUseWindow.None;
-        m_input_fields = new Dictionary<LoginUseWindow, List<InputField>>();
-        m_input_fields.Add(LoginUseWindow.Menu, new List<InputField>());
-        m_input_fields.Add(LoginUseWindow.Login, new List<InputField>());
-        m_input_fields.Add(LoginUseWindow.Join, new List<InputField>());
         m_ResultProcess = new Dictionary<SUBPROTOCOL, Result_Process>();
         m_ResultProcess.Add(SUBPROTOCOL.LoginResult, LoginResult);
         m_ResultProcess.Add(SUBPROTOCOL.JoinResult, JoinResult);
         m_ResultProcess.Add(SUBPROTOCOL.LogoutResult, LogoutResult);
 
-
-
-        SetInputField(LoginUseWindow.Login);
-        SetInputField(LoginUseWindow.Join);
         M_MainTh.RecvProcess_Register((int)MAINPROTOCOL.LOGIN, ResultProcess);
     }
+    //login _ join ok 버튼 처리시 실행할 함수포인터
+    private void ExcuteProcess(Process _process)
+    {
+        _process?.Invoke();
+    }
+
+    private void ResultProcess(uint _protocol, byte[] _recvbuf)
+    {
+        uint subprotocol = M_Protocol.GetSubProtocol(_protocol);
+        m_ResultProcess[(SUBPROTOCOL)subprotocol]?.Invoke(_recvbuf);
+    }
+
+    #endregion
+
+
+
+
+
+
+    private void UnPackPacket(byte[] _recvbuf, ref bool _result, ref string _msg)
+    {
+        int index = sizeof(uint) + sizeof(int);
+        int strsize = 0;
+        _result = BitConverter.ToBoolean(_recvbuf, index);
+        index += sizeof(bool);
+        strsize = BitConverter.ToInt32(_recvbuf, index);
+        index += sizeof(int);
+        _msg = Encoding.Unicode.GetString(_recvbuf, index, strsize);
+    }
+    private void UnPackPacket(byte[] _recvbuf, ref string _msg)
+    {
+        int index = sizeof(uint) + sizeof(int);
+        int strsize = 0;
+        strsize = BitConverter.ToInt32(_recvbuf, index);
+        index += sizeof(int);
+        _msg = Encoding.Unicode.GetString(_recvbuf, index, strsize);
+    }
+    
+    
 
 }
