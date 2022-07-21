@@ -63,7 +63,7 @@ namespace Singleton_Ver2
         private static readonly Lazy<T> _instance =
         new Lazy<T>(() =>
         {
-            GameObject obj=null;
+            GameObject obj = null;
             Singleton_Ver2.Singleton<T>[] objs = FindObjectsOfType<Singleton_Ver2.Singleton<T>>(true);
             if (objs.Length > 0)
             {
@@ -74,21 +74,42 @@ namespace Singleton_Ver2
             {
                 obj = new GameObject(typeof(T).Name);
                 Transform parent = GameObject.Find("Managers").transform;
-                if(parent == null)
+                if (parent == null)
                 {
                     parent = new GameObject("Managers").transform;
                 }
                 obj.transform.SetParent(parent);
                 obj.AddComponent<T>();
             }
-            return obj.GetComponent<T>(); 
-           
+            return obj.GetComponent<T>();
+
         });
         public static T Instance
         {
             get
             {
                 return _instance.Value;
+            }
+        }
+    }
+}
+namespace Singleton_Ver3
+{
+    public class SingletonBase
+    {
+    
+    }
+    public class Singleton<T> :SingletonBase where T : new()
+    {
+        private static T _instance;
+      
+        public static T Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new T();
+                return _instance;
             }
         }
     }
