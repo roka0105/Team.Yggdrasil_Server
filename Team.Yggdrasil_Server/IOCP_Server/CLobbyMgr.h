@@ -38,6 +38,7 @@ public :
 	static void Destroy();
 	void Init();
 	void End();
+
 	void LobbyProcess(CSession* _session);
 	void EnterRoomProcess(CSession* _session);
 	void BackPageProcess(CSession* _session);
@@ -46,15 +47,19 @@ public :
 	//void AllRoomFunc(CSession* _session);
 	void CreateRoomFunc(CSession* _session);
 	void PageRoomFunc(CSession* _session);
-	
+	void ChattingFunc(CSession* _session);
 
+	void AddLobbySession(CSession* _session);
 private:
 	CLobbyMgr();
 	~CLobbyMgr();
+
+	void UnPacking(byte* _recvdata, TCHAR* msg);
+	void Packing(unsigned long _protocol, TCHAR* msg,CSession* _session);
 private :
 	CLock* m_lock;
 	static CLobbyMgr* instance;
-	list<CSession*> lobby_session_list; //로비에 들어와 있는 유저 정보.
+	list<CSession*> m_lobby_session_list; //로비에 들어와 있는 유저 정보.
 };
 
 //multi 들어갈때 전송되어야 할 정보 

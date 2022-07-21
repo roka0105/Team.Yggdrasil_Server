@@ -41,6 +41,7 @@ public:
 	{
 		m_loginstate = new CLoginState(this);
 		m_lobbystate = new CLobbyState(this);
+		m_roomstate = new CRoomState(this);
 		m_curstate = m_loginstate;
 		m_userinfo = new t_UserInfo();
 	}
@@ -48,7 +49,7 @@ public:
 	{
 		delete m_loginstate;
 		delete m_lobbystate;
-		//delete m_roomstate;
+		delete m_roomstate;
 		delete m_userinfo;
 	}
 	void Init();
@@ -81,7 +82,7 @@ public:
 	CState* GetState() { return m_curstate; }
 	CState* GetLoginState() { return m_loginstate; }
 	CState* GetLobbyState() { return m_lobbystate; }
-	//CState* GetRoomState() { return m_roomstate; }
+	CState* GetRoomState() { return m_roomstate; }
 	void SetState(CState* _state)
 	{
 		m_curstate = _state;
@@ -92,7 +93,8 @@ private:
 	CState* m_curstate;
 	CLoginState* m_loginstate;
 	CLobbyState* m_lobbystate;
-	//CRoomState* m_roomstate;
+	CRoomState* m_roomstate;
+
 	friend class CState;
 	//int substate;
 };

@@ -15,6 +15,31 @@ CLobbyMgr::~CLobbyMgr()
 	delete m_lock;
 }
 
+void CLobbyMgr::UnPacking(byte* _recvdata, TCHAR* msg)
+{
+	byte* ptr = _recvdata;
+	int strsize = 0;
+	memcpy(&strsize, ptr, sizeof(int));
+	ptr += sizeof(int);
+	memcpy(msg, ptr, strsize * CODESIZE);
+}
+
+void CLobbyMgr::Packing(unsigned long _protocol, TCHAR* msg, CSession* _session)
+{
+	byte senddata[BUFSIZE];
+	ZeroMemory(senddata, BUFSIZE);
+	byte* ptr = senddata;
+	int size = 0;
+	int strsize = _tcslen(msg) * CODESIZE;
+	memcpy(ptr, &strsize, sizeof(int));
+	size += sizeof(int);
+	ptr += sizeof(int);
+	memcpy(ptr, msg, strsize);
+	size += strsize;
+
+	_session->Packing(_protocol, senddata, size);
+}
+
 CLobbyMgr* CLobbyMgr::GetInst()
 {
 	return instance;
@@ -56,15 +81,16 @@ void CLobbyMgr::LobbyProcess(CSession* _session)
 		case static_cast<const unsigned long>(DETAILPROTOCOL::CreateRoom):
 			CreateRoomFunc(_session);
 			break;
-		case static_cast<const unsigned long>(DETAILPROTOCOL::RoomlistUpdate) | static_cast<const unsigned long>(DETAILPROTOCOL::PageRoom):
+		case (static_cast<const unsigned long>(DETAILPROTOCOL::RoomlistUpdate) | static_cast<const unsigned long>(DETAILPROTOCOL::PageRoom)):
 			PageRoomFunc(_session);
 			break;
-		case static_cast<const unsigned long>(DETAILPROTOCOL::RoomlistUpdate) | static_cast<const unsigned long>(DETAILPROTOCOL::AllRoom):
+		case (static_cast<const unsigned long>(DETAILPROTOCOL::RoomlistUpdate) | static_cast<const unsigned long>(DETAILPROTOCOL::AllRoom)):
 			//AllRoomFunc(_session);
 			break;
-		case static_cast<const unsigned long>(DETAILPROTOCOL::ChatSend) | static_cast<const unsigned long>(DETAILPROTOCOL::AllMsg):
+		case (static_cast<const unsigned long>(DETAILPROTOCOL::ChatSend) | static_cast<const unsigned long>(DETAILPROTOCOL::AllMsg)):
+			ChattingFunc(_session);
 			break;
-		case static_cast<const unsigned long>(DETAILPROTOCOL::ChatSend) | static_cast<const unsigned long>(DETAILPROTOCOL::NoticeMsg):
+		case (static_cast<const unsigned long>(DETAILPROTOCOL::ChatSend) | static_cast<const unsigned long>(DETAILPROTOCOL::NoticeMsg)):
 			break;
 		}
 		break;
@@ -72,7 +98,7 @@ void CLobbyMgr::LobbyProcess(CSession* _session)
 	case SUBPROTOCOL::Single:
 		switch (detailprotocol)
 		{
-		
+
 		}
 		break;
 
@@ -109,21 +135,49 @@ void CLobbyMgr::BackPageProcess(CSession* _session)
 void CLobbyMgr::CreateRoomFunc(CSession* _session)
 {
 	CLockGuard<CLock> lock(m_lock);
-	TCHAR room_name[STRINGSIZE], room_pw[STRINGSIZE];
-	ZeroMemory(room_name, STRINGSIZE);
-	ZeroMemory(room_pw, STRINGSIZE);
-	//room 닉네임,패스워드 unpack 
 
-	//방 생성
-	CRoomMgr::GetInst()->AddRoom(room_name, room_pw, _session);
+	CRoomMgr::GetInst()->AddRoom(_session);
+
+	_session->SetState(_session->GetRoomState());
 }
 
 void CLobbyMgr::PageRoomFunc(CSession* _session)
 {
 	CLockGuard<CLock> lock(m_lock);
-	unsigned int page=0;
+	unsigned int page = 0;
+
 	//page unpack
 	CRoomMgr::GetInst()->SendRoom(page, _session);
 }
+
+void CLobbyMgr::ChattingFunc(CSession* _session)
+{
+	CLockGuard<CLock> lock(m_lock);
+	TCHAR msg[BUFSIZE];
+	ZeroMemory(msg, BUFSIZE);
+	byte data[BUFSIZE];
+	ZeroMemory(data, BUFSIZE);
+	_session->UnPacking(data);
+	UnPacking(data, msg);
+	unsigned long protocol = 0;
+	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, (unsigned long)MAINPROTOCOL::LOBBY);
+	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)SUBPROTOCOL::Multi);
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)DETAILPROTOCOL::ChatRecv);
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)DETAILPROTOCOL::AllMsg);
+
+	for (CSession* client : m_lobby_session_list)
+	{
+		Packing(protocol, msg, client);
+	}
+	_tprintf(_T("%s"), msg);
+
+}
+
+void CLobbyMgr::AddLobbySession(CSession* _session)
+{
+	CLockGuard<CLock> lock(m_lock);
+	m_lobby_session_list.push_back(_session);
+}
+
 
 

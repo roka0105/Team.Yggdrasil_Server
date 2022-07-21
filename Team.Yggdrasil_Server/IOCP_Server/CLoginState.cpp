@@ -3,6 +3,7 @@
 #include "CSession.h"
 #include "CLoginMgr.h"
 #include "CProtocolMgr.h"
+#include "CLobbyMgr.h"
 void CLoginState::Recv()
 {
 	unsigned long protocol;
@@ -18,6 +19,7 @@ void CLoginState::Recv()
 		break;
 	case MAINPROTOCOL::LOBBY:
 		CLoginMgr::GetInst()->EnterLobbyProcess(m_session);
+		CLobbyMgr::GetInst()->AddLobbySession(m_session);
 		is_lobby = true;
 		break;
 	}
@@ -26,5 +28,7 @@ void CLoginState::Recv()
 void CLoginState::Send()
 {
 	if (is_lobby)
+	{
 		m_session->SetState(m_session->GetLobbyState());
+	}
 }

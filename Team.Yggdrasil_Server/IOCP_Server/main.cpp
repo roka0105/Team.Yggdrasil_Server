@@ -33,8 +33,3 @@ int main()
 2.유니코드로 바꾸고 다른 데이터들 char[] 문자열 -> tchar,char* -> byte로 바꿔놓기
 3.logwritelast 수정하기.
 */
-
-/* 질문 할 것 
-DBMgr에서 기존에 MYSQL m_mysql , mysql_init(&m_mysql) 이런식으로 
-사용했는데 오류가 터져서 MYSQL* m_mysql , m_mysql = mysql_init(NULL)로
-실행했는데 이건 안터집니다. 같은 동작이 아닌가요? 왜 터졌고 왜 안터지는 걸까요?*/

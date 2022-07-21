@@ -33,17 +33,26 @@ void CRoomMgr::End()
 }
 
 
-void CRoomMgr::AddRoom(TCHAR* _name,TCHAR* _password, CSession* _host)
+void CRoomMgr::AddRoom(CSession* _host)
 {
 	CLockGuard<CLock> lock(m_lock);
-	
+
+	TCHAR room_name[STRINGSIZE], room_pw[STRINGSIZE];
+	ZeroMemory(room_name, STRINGSIZE);
+	ZeroMemory(room_pw, STRINGSIZE);
+	byte data[BUFSIZE];
+	ZeroMemory(data, BUFSIZE);
+	_host->UnPacking(data);
+	//room 닉네임,패스워드 unpack 
+	UnPacking(data, room_name, room_pw);
+
 	if (m_rooms[m_max_page].size() >= m_page_room_count)
 	{
 		m_max_page++;	
 		m_rooms.insert({m_max_page,list<t_RoomInfo*>()});	
 	}
 	
-	t_RoomInfo* room = new t_RoomInfo(m_rooms_count++, _name,_password, _host);
+	t_RoomInfo* room = new t_RoomInfo(m_rooms_count++, room_name,room_pw, _host);
 	m_rooms[m_max_page].push_back(room);
 }
 
@@ -212,6 +221,15 @@ void CRoomMgr::Packing(unsigned long _protocol,int page, list<t_RoomInfo*> _room
 	size += sizeof(int);
 	_session->Packing(_protocol, _buf, size);
 }
-void CRoomMgr::UnPacking(TCHAR* _name, unsigned int _mode)
+void CRoomMgr::UnPacking(byte* _recvdata, TCHAR* _name,TCHAR* _pw)
 {
+	byte* ptr = _recvdata;
+	int strsize = 0;
+	memcpy(&strsize, ptr, sizeof(int));
+	ptr += sizeof(int);
+	memcpy(_name, ptr, strsize * CODESIZE);
+	ptr += strsize * CODESIZE;
+	memcpy(&strsize, ptr, sizeof(int));
+	ptr += sizeof(int);
+	memcpy(_pw, ptr, strsize*CODESIZE);
 }

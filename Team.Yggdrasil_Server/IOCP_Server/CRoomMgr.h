@@ -53,7 +53,7 @@ public:
 	void End();
 
 	//방 추가
-	void AddRoom(TCHAR* _name,TCHAR* _password,CSession* _host);
+	void AddRoom(CSession* _host);
 	//방 삭제
 	void RemoveRoom(unsigned int _id);
 	//get 해당 아이디 값을 가진 방 정보 전송 이거는 아직 어떤식으로 쓸지 생각이 안나서 주석.
@@ -70,7 +70,7 @@ private:
 	//방 묶음 정보 packing
 	void Packing(unsigned long _protocol,int page,list<t_RoomInfo*> _rooms, CSession* _session);
 	//생성할 방 정보 unpacking
-	void UnPacking(TCHAR* _name,unsigned int _mode);
+	void UnPacking(byte* _recvdata,TCHAR* _name,TCHAR* _pw);
 private:
 	static CRoomMgr* instance;
 	const unsigned int m_enter_limit = 3;
