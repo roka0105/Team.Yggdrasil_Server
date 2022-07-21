@@ -14,7 +14,6 @@ public enum LoginUseWindow
 }
 public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
 {
-
     enum SUBPROTOCOL
     {
         NONE,
@@ -156,7 +155,6 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
     public void LogoutBtn()
     {
         Debug.Log("logout");
-
         LogoutSendProcess();
     }
 

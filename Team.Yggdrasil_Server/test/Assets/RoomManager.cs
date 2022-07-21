@@ -10,6 +10,13 @@ struct RoomOutInfo
     uint enter_limit;
     uint enter_count;
 }
+struct RoomInInfo
+{
+    //입장한 유저들 렌더링,아이디 정보
+    //stage 정보 
+    //유저들의 레디 상태
+    //방장 정보
+}
 public class RoomManager : Singleton_Ver2.Singleton<RoomManager>
 {
     enum SUBPROTOCOL
@@ -32,7 +39,7 @@ public class RoomManager : Singleton_Ver2.Singleton<RoomManager>
     private Dictionary<int,List<RoomOutInfo>> m_rooms;
     //한 페이지당 가지고 있을 room 제한 수.
     private const uint m_pagelimit_room = 10;
-    private Room m_InroomInfo;
+    private RoomInInfo m_InroomInfo;
 
     private delegate void Result_Process(uint _protocol , byte[] _recvdata);
     private Dictionary<SUBPROTOCOL, Result_Process> m_ResultProcess;

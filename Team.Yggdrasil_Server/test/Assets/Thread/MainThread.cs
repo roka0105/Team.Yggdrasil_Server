@@ -185,11 +185,12 @@ public class MainThread : Singleton_Ver2.Singleton<MainThread>
         M_Lobby = LobbyManager.Instance;
         M_Room = RoomManager.Instance;
     }
+   
     private void Init()
     {
         
         is_loging = false;
-      
+
 
         ServerInit();
 
@@ -213,11 +214,11 @@ public class MainThread : Singleton_Ver2.Singleton<MainThread>
         Create();
         Init();
     }
-   
     // Update is called once per frame
     void Update()
     {
         Recv();
+        
     }
     private void OnApplicationQuit()
     {

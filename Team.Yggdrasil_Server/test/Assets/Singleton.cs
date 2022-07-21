@@ -21,17 +21,13 @@ namespace Singleton_Ver1
             {
                 Singleton_Ver1.Singleton<T>[] objs = FindObjectsOfType<Singleton_Ver1.Singleton<T>>(true);
                 GameObject obj;
-                if (objs.Length < 0)
+                if (objs.Length > 0)
                 {
                     obj = objs.Where(item => item.flag == true).FirstOrDefault().gameObject;
                 }
                 else obj = null;
                 if (obj == null)
                 {
-                    if (objs.Length > 0)
-                    {
-                        return objs[0].GetComponent<T>();
-                    }
                     obj = new GameObject(typeof(T).Name);
                     obj.AddComponent<T>();
                 }
@@ -67,18 +63,26 @@ namespace Singleton_Ver2
         private static readonly Lazy<T> _instance =
         new Lazy<T>(() =>
         {
+            GameObject obj=null;
             Singleton_Ver2.Singleton<T>[] objs = FindObjectsOfType<Singleton_Ver2.Singleton<T>>(true);
-            GameObject obj = objs.Where(item => item.flag == true).FirstOrDefault().gameObject;
+            if (objs.Length > 0)
+            {
+                obj = objs.Where(item => item.flag == true).FirstOrDefault().gameObject;
+                return objs[0].GetComponent<T>();
+            }
             if (obj == null)
             {
-                if (objs.Length > 0)
-                {
-                    return objs[0].GetComponent<T>();
-                }
                 obj = new GameObject(typeof(T).Name);
+                Transform parent = GameObject.Find("Managers").transform;
+                if(parent == null)
+                {
+                    parent = new GameObject("Managers").transform;
+                }
+                obj.transform.SetParent(parent);
                 obj.AddComponent<T>();
             }
-            return obj.GetComponent<T>();
+            return obj.GetComponent<T>(); 
+           
         });
         public static T Instance
         {
