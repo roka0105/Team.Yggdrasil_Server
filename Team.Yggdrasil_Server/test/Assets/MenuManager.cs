@@ -25,9 +25,7 @@ public class MenuManager : Singleton_Ver2.Singleton<MenuManager>
     List<MENUSTATE> States = new List<MENUSTATE>();
     [SerializeField]
     List<GameObject> m_menu_objects = new List<GameObject>();
-    [SerializeField]
-    Button OKBtn;
-
+ 
     MainThread M_MainTh;
     LoginManager M_Login;
     MouseManager M_Mouse;

@@ -59,6 +59,22 @@ public class PacketManager : Singleton_Ver2.Singleton<PacketManager>
         BitConverter.GetBytes(_protocol).CopyTo(senddata, 0);
         return senddata;
     }
+    public Byte[] PackPacking(uint _protocol,string str1)
+    {
+        int BUFSIZE = sizeof(uint) * 3 + str1.Length * CODESIZE;
+        int DATASIZE = sizeof(int) * 1 + str1.Length * CODESIZE;
+        Byte[] senddata = new byte[BUFSIZE];
+        int index = 0;
+        BitConverter.GetBytes(_protocol).CopyTo(senddata, index);
+        index += sizeof(uint);
+        BitConverter.GetBytes(DATASIZE).CopyTo(senddata, index);
+        index += sizeof(int);
+        BitConverter.GetBytes(str1.Length).CopyTo(senddata, index);
+        index += sizeof(int);
+        Buffer.BlockCopy(Encoding.Unicode.GetBytes(str1), 0, senddata, index, str1.Length * CODESIZE);
+        
+        return senddata;
+    }
     public Byte[] PackPacking(uint _protocol, string str1, string str2)
     {
         int BUFSIZE = sizeof(uint) * 4 + str1.Length*CODESIZE + str2.Length*CODESIZE;

@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
+using System.Text;
 enum LobbyUseWindow
 {
     None = -1,
     Menu,
+    Lobby,
     CreateRoom,
+    Room,
     Max
 }
 public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
@@ -18,6 +22,8 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
     List<GameObject> m_window_objs;
     [SerializeField]
     List<TMP_InputField> m_create_inputfields;
+    [SerializeField]
+    TMP_InputField m_chat_inputfield;
 
     Dictionary<LobbyUseWindow, GameObject> m_Windows;
     MainThread M_MainTh;
@@ -26,6 +32,8 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
  
     private delegate void _ResultProcess(byte[] _recvdata);
     Dictionary<DETAILPROCOTOL, _ResultProcess> m_ResultProcess;
+
+    private int m_cur_page = 0;
     enum SUBPROTOCOL
     {
         NONE,
@@ -79,11 +87,22 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
     {
         uint protocol = 0;
 
-        M_Protocol.SetMainProtocol(ref protocol, (uint)MAINPROTOCOL.ROOM);
+        M_Protocol.SetMainProtocol(ref protocol, (uint)MAINPROTOCOL.LOBBY);
         M_Protocol.SetSubProtocol(ref protocol, (uint)SUBPROTOCOL.Multi);
         M_Protocol.SetDetailProtocol(ref protocol, (uint)DETAILPROCOTOL.CreateRoom);
 
         M_MainTh.SendQueue_Push(M_Packet.PackPacking(protocol, _name, _pw));
+        MainThread.m_WaitforSendThread.Set();
+    }
+    public void ChatMsgSendProcess(string _msg)
+    {
+        uint _protocol = 0;
+        M_Protocol.SetMainProtocol(ref _protocol,(uint)MAINPROTOCOL.LOBBY);
+        M_Protocol.SetSubProtocol(ref _protocol, (uint)SUBPROTOCOL.Multi);
+        M_Protocol.SetDetailProtocol(ref _protocol, (uint)DETAILPROCOTOL.ChatSend);
+        M_Protocol.SetDetailProtocol(ref _protocol, (uint)DETAILPROCOTOL.AllMsg);
+
+        M_MainTh.SendQueue_Push(M_Packet.PackPacking(_protocol, _msg));
         MainThread.m_WaitforSendThread.Set();
     }
     #endregion
@@ -103,12 +122,19 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
         Debug.Log("RoomlistResult");
         //roommanager 호출해서 받아온 방 정보 넘기기.
     }
+    private void ChatRecvResult(byte[] _recvdata)
+    {
+        string msg="null";
+        UnPacking(_recvdata, ref msg);
+        Debug.Log(msg);
+    }
     #endregion
 
     #region client Input Func
     public void LobbyEnterBtn(bool _multi)
     {
         LobbyEnterSendProcess(_multi);
+        ActiveChangeWindow(LobbyUseWindow.Lobby, LobbyUseWindow.Menu);
     }
     public void CreateRoomBtn()
     {
@@ -120,6 +146,9 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
         string NAME = m_create_inputfields[0].text;
         string PW = m_create_inputfields[1].text;
         CreateRoomSendProcess(NAME, PW);
+        ActiveChangeWindow(LobbyUseWindow.Room,LobbyUseWindow.CreateRoom);
+        ActiveChangeWindow(LobbyUseWindow.None, LobbyUseWindow.Lobby);
+
     }
     public void CreateRoomCancelBtn()
     {
@@ -132,7 +161,13 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
     }
     public void ChagePageBtn(bool _next)
     {
+       
 
+    }
+    public void ChatSendBtn()
+    {
+        string msg = m_chat_inputfield.text;
+        ChatMsgSendProcess(msg);
     }
     #endregion
 
@@ -168,24 +203,21 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
         m_ResultProcess = new Dictionary<DETAILPROCOTOL, _ResultProcess>();
         m_ResultProcess.Add(DETAILPROCOTOL.LobbyResult, LobbyRecvResult);
         m_ResultProcess.Add(DETAILPROCOTOL.RoomlistResult, RoomlistRecvResult);
+        m_ResultProcess.Add(DETAILPROCOTOL.ChatRecv, ChatRecvResult);
     }
     //서버에서 받아온 recv packet 을 처리해서 패킷에 대한 결과를 처리한다.
     private void ResultProcess(uint _protocol, byte[] _recvbuf)
     {
-        uint detailprotocol = M_Protocol.GetDetailProtocol(_protocol);
+        uint detailprotocol = M_Protocol.GetPreDetailProtocol(_protocol);
         m_ResultProcess[(DETAILPROCOTOL)detailprotocol]?.Invoke(_recvbuf);
     }
     #endregion
-
-    // Start is called before the first frame update
-    void Start()
+    void UnPacking(byte[] _recvdata,ref string _msg)
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        int index = sizeof(uint) + sizeof(int);
+        int strsize = 0;
+        strsize = BitConverter.ToInt32(_recvdata, index);
+        index += sizeof(int);
+        _msg = Encoding.Unicode.GetString(_recvdata, index, strsize);
     }
 }

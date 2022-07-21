@@ -26,7 +26,11 @@ public class ProtocolManager : Singleton_Ver2.Singleton<ProtocolManager>
     }
     public uint GetPreDetailProtocol(uint _protocol)
     {
-        return (_protocol & m_detail);
+        return (_protocol & m_predetail);
+    }
+    public uint GetRearDetailProtocol(uint _protocol)
+    {
+        return (_protocol & m_reardetail);
     }
     public void SetMainProtocol(ref uint _out_protocol,uint _protocol_type)
     {
