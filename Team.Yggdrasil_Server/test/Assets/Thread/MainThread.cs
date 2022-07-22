@@ -164,6 +164,7 @@ public class MainThread : Singleton_Ver2.Singleton<MainThread>
         {
             m_recvThread.Abort();
         }
+        M_Client.Dispose();
         M_Client.End();
     }
 

@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO;
 using System.Text;
-public class ClientManager : Singleton_Ver2.Singleton<ClientManager>
+public class ClientManager : Singleton_Ver2.Singleton<ClientManager>,IDisposable
 {
     struct t_Client
     {
@@ -83,19 +83,19 @@ public class ClientManager : Singleton_Ver2.Singleton<ClientManager>
                 return false;
             
             Debug.Log("packno:"+ BitConverter.ToInt32(packetno));
-            if (m_rpacketNo != BitConverter.ToInt32(packetno))
-            {
-                delete_packet = new Byte[int.Parse(sizebuffer.ToString())];
-                size = Recvn(_recvbuf, int.Parse(sizebuffer.ToString()));
-                return false;
-            }
-            else
-            { 
+            //if (m_rpacketNo != BitConverter.ToInt32(packetno))
+            //{
+            //    delete_packet = new Byte[int.Parse(sizebuffer.ToString())];
+            //    size = Recvn(_recvbuf, int.Parse(sizebuffer.ToString()));
+            //    return false;
+            //}
+            //else
+            //{ 
                 //packno는 읽어왔기때문에 sizeof(int)를 빼준다
                 size = Recvn(_recvbuf, BitConverter.ToInt32(sizebuffer)-sizeof(int));
                 if (size == 0)
                     return false;
-            }
+            //}
             //비워주는거 있어야함 stream. 
 
             m_rpacketNo++;
@@ -121,7 +121,7 @@ public class ClientManager : Singleton_Ver2.Singleton<ClientManager>
     }
     public void End()
     {
-        CloseSocket();
+      
     }
     private void CloseSocket()
     {
@@ -129,6 +129,8 @@ public class ClientManager : Singleton_Ver2.Singleton<ClientManager>
             return;
         m_stream.Close();
         m_socket.Close();
+        m_stream.Dispose();
+        m_socket.Dispose();
         is_connected = false;
     }
     private int Recvn(Byte[] _recvbuf, int size)
@@ -153,4 +155,8 @@ public class ClientManager : Singleton_Ver2.Singleton<ClientManager>
         return (size - left);
     }
 
+    public void Dispose()
+    {
+        CloseSocket();
+    }
 }

@@ -34,6 +34,7 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
     Dictionary<DETAILPROCOTOL, _ResultProcess> m_ResultProcess;
 
     private int m_cur_page = 0;
+   
     enum SUBPROTOCOL
     {
         NONE,
@@ -60,6 +61,12 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
         AllRoom = 1024,
         PageRoom = 2048,
         MAX
+    }
+
+    public int Page
+    {
+        get => m_cur_page;
+        set => m_cur_page=value;
     }
 
     #region server send process

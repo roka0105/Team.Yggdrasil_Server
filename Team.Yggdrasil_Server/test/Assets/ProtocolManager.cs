@@ -7,8 +7,8 @@ public class ProtocolManager : Singleton_Ver2.Singleton<ProtocolManager>
     private uint m_mainbit = 0xff000000;
     private uint m_subbit = 0x00ff0000;
     private uint m_detail = 0x0000ffff;
-    private uint m_predetail = 0x0000ff00;
-    private uint m_reardetail = 0x000000ff;
+    private uint m_predetail = 0x000000ff;
+    private uint m_reardetail = 0x0000ff00;
     private int m_mainshift = 24;
     private int m_subshift = 16;
     //나중에 c++에서 csv 로더로 스크립트 만들어서 여기다 로드하게 (좀어렵네 나중에)
