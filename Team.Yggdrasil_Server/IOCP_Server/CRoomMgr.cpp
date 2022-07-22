@@ -24,6 +24,15 @@ void CRoomMgr::Destroy()
 
 void CRoomMgr::Init()
 {
+	for (int i = 0; i < 5; i++)
+	{
+		TCHAR roomname[BUFSIZE];
+		ZeroMemory(roomname, BUFSIZE);
+		_stprintf(roomname, _T("room %d"), i);
+		t_RoomInfo* room = new t_RoomInfo(i, roomname, const_cast<TCHAR*>(_T("1234")), nullptr);
+		m_rooms[m_max_page].push_back(room);
+	}
+
 	
 }
 
@@ -181,10 +190,15 @@ void CRoomMgr::Packing(unsigned long _protocol,int page, list<t_RoomInfo*> _room
 {
 	byte _buf[BUFSIZE];
 	ZeroMemory(_buf, BUFSIZE);
-	byte* ptr = _buf + sizeof(int);
+	byte* ptr = _buf;
 	int size = 0;
 	int strsize = 0;
+	int forsize = _rooms.size();
+	
 	memcpy(ptr, &page, sizeof(int));
+	ptr += sizeof(int);
+	size += sizeof(int);
+	memcpy(ptr, &forsize, sizeof(int));
 	ptr += sizeof(int);
 	size += sizeof(int);
 	for (t_RoomInfo* room : _rooms)
@@ -198,9 +212,17 @@ void CRoomMgr::Packing(unsigned long _protocol,int page, list<t_RoomInfo*> _room
 		memcpy(ptr, &strsize, sizeof(int));
 		ptr += sizeof(int);
 		size += sizeof(int);
-		memcpy(ptr, room->name, strsize * CODESIZE);
-		ptr += strsize * CODESIZE;
-		size += strsize * CODESIZE;
+		memcpy(ptr, room->name, strsize);
+		ptr += strsize;
+		size += strsize;
+		//방 비번
+		strsize = _tcslen(room->password) * CODESIZE;
+		memcpy(ptr, &strsize, sizeof(int));
+		ptr += sizeof(int);
+		size += sizeof(int);
+		memcpy(ptr, room->password, strsize);
+		ptr += strsize;
+		size += strsize;
 		//방모드
 		memcpy(ptr, &room->mode, sizeof(int));
 		ptr += sizeof(int);
@@ -216,9 +238,7 @@ void CRoomMgr::Packing(unsigned long _protocol,int page, list<t_RoomInfo*> _room
 		size += sizeof(int);
 
 	}
-	ptr = _buf;
-	memcpy(ptr, &size, sizeof(int));
-	size += sizeof(int);
+	
 	_session->Packing(_protocol, _buf, size);
 }
 void CRoomMgr::UnPacking(byte* _recvdata, TCHAR* _name,TCHAR* _pw)

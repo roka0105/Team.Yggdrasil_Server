@@ -72,22 +72,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\pc\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\pc\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\include</IncludePath>
     <LibraryPath>C:\Program Files\MySQL\MySQL Server 8.0\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\pc\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\pc\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\include</IncludePath>
     <LibraryPath>C:\Program Files\MySQL\MySQL Server 8.0\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\user\Desktop\Team.Yggdrasil_SerVer\Team.Yggdrasil_Server\IOCP_Server\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\pc\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\include</IncludePath>
     <LibraryPath>C:\Program Files\MySQL\MySQL Server 8.0\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\pc\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\pc\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\include</IncludePath>
     <LibraryPath>C:\Program Files\MySQL\MySQL Server 8.0\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

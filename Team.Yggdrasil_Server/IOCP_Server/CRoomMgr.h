@@ -21,7 +21,7 @@ struct t_RoomInfo
 		_tcscpy(name, _name);
 		_tcscpy(password, _password);
 		host = _host;
-		
+		mode = -1;
 	}
 	unsigned int id;
 	TCHAR name[STRINGSIZE];
