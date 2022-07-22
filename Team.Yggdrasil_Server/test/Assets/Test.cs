@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Test : Singleton_Ver3.Singleton<Test>
+public class Test : Singleton_Ver2.Singleton<Test>
 {
     public void Printf()
     {

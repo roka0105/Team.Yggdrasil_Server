@@ -10,12 +10,8 @@ public class Test2 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        MainManager.Instance.GetMgr2<PacketManager>();
-        MainManager.Instance.GetMgr1<Test>().Printf();
-        Test t = Test.Instance;
-        Test t2 = Test.Instance;
-        Test t3 = new Test();
-
+        MainManager.Instance.GetMgr<PacketManager>();
+       
     }
 
     // Update is called once per frame
