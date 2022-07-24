@@ -1,62 +1,13 @@
+#include "pch.h"
 #include <iostream>
 #include <stdarg.h>
+#include "Queue.h"
+#include <list>
+#include <vector>
 
+using std::list;
+using std::vector;
 #define BUFSIZE 256
-
-template <typename T>
-class Stack
-{
-private:
-	class Node
-	{
-	public:
-		Node(T _data)
-		{
-			data = _data;
-		}
-
-		T data;
-		Node* next;
-	};
-
-	Node* top = nullptr;
-public:
-	T pop()
-	{
-		if (top == nullptr)
-		{
-			return '\0';
-		}
-		T data = top->data;
-		top = top->next;
-		return data;
-	}
-	void push(T _data)
-	{
-		Node* item = new Node(_data);
-		if (top == nullptr)
-			item->next = nullptr;
-		else
-			item->next = top;
-		top = item;
-	}
-	T peek()
-	{
-		if (top == nullptr)
-		{
-			return '\0';
-		}
-		T data = top->data;
-		return data;
-	}
-	bool IsEmpty()
-	{
-		if (top == nullptr)
-			return true;
-		else
-			return false;
-	}
-};
 void printfint(int _num)
 {
 	int count = 0;
@@ -127,55 +78,82 @@ void  my_printf(const char* _Format, ...)
 	va_end(ap);
 }
 
+class Person
+{
+public :
+	Person(int _id, int _time)
+	{
+		id = _id;
+		time = _time;
+	}
+	Person(int _id, int _time, int _runtime)
+	{
+		id = _id;
+		time = _time;
+		runtime = _runtime;
+	}
+	int id;
+	int time;
+	int runtime;
+};
 int main()
 {
-	char str[BUFSIZE];
-	for (int i = 0; i < BUFSIZE; i++)
+	Queue<Person*> wait_person;
+	int open_befor_wait, max_time, end_time;
+	_tscanf(_T("%d %d %d"), &open_befor_wait, &max_time, end_time);
+	for (int i = 0; i < open_befor_wait; i++)
 	{
-		str[i] = '\0';
+		int id = 0;
+		int time = 0;
+		_tscanf(_T("%d %d"), &id, &time);
+		Person* person = new Person(id, time);
+		wait_person.Push(person);
 	}
-	scanf("%s", str);
-
-	Stack<char> op;
-	char* ptr = str;
-	while (*ptr)
+	int open_after_wait = 0;
+	_tscanf(_T("%d"), &open_after_wait);
+	vector<Person*> personvec;
+	for (int i = 0; i < open_after_wait; i++)
 	{
-		switch (*ptr)
+		int id, time, intime;
+		_tscanf(_T("%d %d %d"), &id, &time, &intime);
+		Person* person = new Person(id, time, intime);
+		personvec.push_back(person);
+	}
+	
+	for (int i = 0; i < personvec.size()-1; i++)
+	{
+		Person* min = personvec[i];
+		for (int j = i + 1; j < personvec.size(); j++)
 		{
-		case '+':
-		case '-':
-			while (!op.IsEmpty()&&op.peek()!='(')
+			if (min->time > personvec[j]->time)
 			{
-					my_printf("%c", op.pop());
+				Person* temp = min;
+				min = personvec[i];
+				personvec[i] = temp;
 			}
-			op.push(*ptr);
-			break;
-		case '*':
-		case '/':
-			if (!op.IsEmpty() && op.peek() == '*' || op.peek() == '/')
-			{
-				my_printf("%c", op.pop());
-			}
-			op.push(*ptr);
-			break;
-		case '(':
-			op.push(*ptr);
-			break;
-		case ')':
-			while (op.peek() != '(')
-			{
-				my_printf("%c", op.pop());
-			}
-			op.pop();
-			break;
-		default:
-			my_printf("%c", *ptr);
 		}
-		ptr++;
 	}
-	while (!op.IsEmpty())
+
+	Queue<int> idlog;
+
+	for (int i = 0; i < wait_person.Size(); i++)
 	{
-		my_printf("%c", op.pop());
+		Person* person = wait_person.Front();
+		wait_person.Pop();
+		for (int j = 0; j < max_time; j++)
+		{
+			idlog.Push(person->id);
+			person->time--;
+		}
+		if (person->time != 0)
+		{
+			wait_person.Push(person);
+		}
 	}
-	return 0;
+
+	for (int i = 0; i < end_time; i++)
+	{
+		_tprintf("%d\n",idlog.Front());
+		idlog.Pop();
+	}
 }
