@@ -13,31 +13,34 @@ class Queue
 		Node* right;
 		T data;
 	};
-	void push_node(Node* root,T data,int _tree,bool& find)
+	void push_node(Node* _root,T _data,int _tree,bool& _find)
 	{
-		if (_tree == tree)
-		{
-			return;
-		}
-		else if (root->left == nullptr)
-		{
-			root->left = new Node(data);
-			return;
-		}
-		else if(root->right ==nullptr)
-		{
-			root->right = new Node(data);
-			return;
-		}
 		
-		push_node(root->left,data,_tree++,find);
-		if (!find)
+		if (_root->left == nullptr)
 		{
-			push_node(root->right, data, _tree++, find);
-			if (!find)
+			_root->left = new Node(_data);
+			_find = true;
+			return;
+		}
+		else if(_root->right == nullptr)
+		{
+			_root->right = new Node(_data);
+			_find = true;
+			return;
+		}
+		else if (_tree == tree)
+		{
+			return;
+		}
+
+		push_node(_root->left,data,_tree+1,_find);
+		if (!_find)
+		{
+			push_node(_root->right,_data, _tree+1, _find);
+			if (!_find)
 			{
 				tree++;
-				push_node(root, data, 0, false);
+				push_node(_root, _data, 0, false);
 			}
 		}
 		
@@ -45,9 +48,14 @@ class Queue
 public:
 	Node* root;
 	int tree;
+	int leaf;
+	int find;
 	Queue()
 	{
 		root = nullptr;
+		tree = 0;
+		leaf = 0;
+		find
 	}
 	
 	void push(T data)
@@ -55,13 +63,11 @@ public:
 		if (root == nullptr)
 		{
 			root = new Node(data);
+			tree = 1;
 		}
 		else
 		{
-			if (root->left == nullptr)
-				root->left = new Node(data);
-			else if (root->right == nullptr)
-				root->right = new Node(data);
+			push_node(root, data, 0, false);
 		}
 	}
 	void pop()
