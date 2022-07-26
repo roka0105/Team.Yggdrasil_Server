@@ -8,6 +8,7 @@
 #include <time.h>
 #include <stdio.h>
 
+using std::greater;
 using std::queue;
 using std::list;
 using std::vector;
@@ -81,148 +82,7 @@ void  my_printf(const char* _Format, ...)
 	}
 	va_end(ap);
 }
-template<typename T>
-class Queue
-{
-private:
-	class Node
-	{
-	public:
-		Node(T _data)
-		{
-			/*	const char* type = typeid(T).name();
-				bool check = false;
-				char* ptr = _tcstok(const_cast<char*>(type), " ");
-				while (ptr != NULL)
-				{
-					if (!strcmp(ptr, "char")||!strcmp(ptr,"const"))
-					{
-						ptr = _tcstok(NULL, " ");
-					}
-					else if(*ptr='[')
-					{
-						check = true;
-					}
-					else
-					{
-						break;
-					}
-				}
-				if (check)
-				{
-					_tcscpy(static_cast<char*>(data), _data);
-				}
-				else
-				{*/
-			data = _data;
-			//}
-			next = nullptr;
-			befor = nullptr;
-		}
-		Node* Next()
-		{
-			return next;
-		}
-		void Next(Node* _node)
-		{
-			next = _node;
-		}
-		Node* Befor()
-		{
-			return befor;
-		}
-		void Befor(Node* _node)
-		{
-			befor = _node;
-		}
-		const T const GetData()
-		{
-			return data;
-		}
-	private:
-		T data;
-		Node* next;
-		Node* befor;
-	};
 
-	Node* start;
-	Node* end;
-	int size;
-public:
-	Queue()
-	{
-		start = nullptr;
-		end = nullptr;
-		size = 0;
-	}
-	void Push(T _data)
-	{
-		Node* node = new Node(_data);
-		if (start == nullptr)
-		{
-			end = node;
-			start = end;
-		}
-		else
-		{
-			end->Next(node);
-			node->Befor(end);
-			end = node;
-		}
-		size++;
-	}
-	void Pop()
-	{
-		if (start == nullptr)
-		{
-			_tprintf("%s", "큐가 비었습니다!");
-			return;
-		}
-
-		Node* node = start;
-		start = node->Next();
-		delete node;
-		size--;
-	}
-	T Front()
-	{
-		if (start == nullptr)
-		{
-			_tprintf("%s", "큐가 비었습니다!");
-			return NULL;
-		}
-		return start->GetData();
-	}
-	T Back()
-	{
-		if (end == nullptr)
-		{
-			_tprintf("%s", "큐가 비었습니다!");
-			return NULL;
-		}
-		return end->GetData();
-	}
-	size_t Size()
-	{
-		return size;
-	}
-	bool Empty()
-	{
-		if (size == 0)
-		{
-			return true;
-		}
-		else
-			return false;
-	}
-	void Swap(Queue<T> _queue)
-	{
-		Queue<T>* temp;
-		temp = this;
-		this = &_queue;
-		_queue = temp;
-	}
-};
 class Person
 {
 public:
@@ -237,64 +97,293 @@ public:
 		time = _time;
 		runtime = _runtime;
 	}
+	bool operator>(const Person& _person)
+	{
+		return this->runtime > _person.runtime;
+	}
 	int id;
 	int time;
 	int runtime;
 };
 vector<Person*> tempvec;
+struct PersonSort
+{
+	bool operator()(const Person& _person1, const Person& _person2) const
+	{
+		return _person1.runtime > _person2.runtime;
+	}
+	bool operator()(const Person* _person1, const Person* _person2) const
+	{
+		return _person1->runtime > _person2->runtime;
+	}
+};
+template<typename T, typename Container = vector<T>, typename _Pr = greater <typename Container::value_type>>
+class Queue
+{
+private:
+	class Heap
+	{
+		class Node
+		{
+		public:
+			Node(T _data)
+			{
+				left = nullptr;
+				right = nullptr;
+				data = _data;
+			}
+			Node* left;
+			Node* right;
+			T data;
+		};
+		int tree;
+		int leaf;
+		bool find;
+		Node* root;
+		Node* lastleaf;
+		_Pr sort;
+		void push_node(Node* _root, T _data, int _tree, bool& _find)
+		{
+			if (_root->left == nullptr)
+			{
+				_root->left = new Node(_data);
+				_find = true;
+				heapify(_root);
+				return;
+			}
+			else if (_root->right == nullptr)
+			{
+				_root->right = new Node(_data);
+				_find = true;
+				heapify(_root);
+				return;
+			}
+			if (_tree == tree)
+			{
+				return;
+			}
 
+			push_node(_root->left, _data, _tree + 1, _find);
+			if (!_find)
+			{
+				push_node(_root->right, _data, _tree + 1, _find);
+			}
+
+		}
+		T front_data()
+		{
+			return root->data;
+		}
+		void pop_node(Node** _root)
+		{
+			Node* ptr = (*_root);
+			if (ptr->left != nullptr && ptr->right != nullptr)
+			{
+				if (ptr->left->data < ptr->right->data)
+				{
+					ptr->data = ptr->left->data;
+					pop_node(&ptr->left);
+				}
+				else
+				{
+					ptr->data = ptr->right->data;
+					pop_node(&ptr->right);
+				}
+			}
+			else if (ptr->left == nullptr && ptr->right == nullptr)
+			{
+				Node* temp = ptr;
+				*_root = nullptr;
+				delete temp;
+			}
+			else if (ptr->left != nullptr)
+			{
+				ptr->data = ptr->left->data;
+				pop_node(&ptr->left);
+			}
+			else if (ptr->right != nullptr)
+			{
+				ptr->data = ptr->right->data;
+				pop_node(&ptr->right);
+			}
+
+		}
+		void swap(T& _data, T& _data2)
+		{
+			T temp = _data;
+			_data = _data2;
+			_data2 = temp;
+		}
+
+		void heapify(Node* _root)
+		{
+			//부모노드값이 왼쪽 자식노드보다 큰데 
+			//왼쪽 자식 노드가 오른쪽 자식노드보다 작을때
+			if (_root->left != nullptr && _root->right != nullptr)
+			{
+				if (sort(_root->data, _root->left->data) &&
+					sort(_root->right->data, _root->left->data))
+				{
+					swap(_root->data, _root->left->data);
+					heapify(_root->left);
+				}
+				//부모노드값이 오른쪽 자식노드보다 큰데
+				//오른쪽 자식 노드가 왼쪽 자식노드보다 작을때
+				else if (sort(_root->data, _root->right->data) &&
+					sort(_root->left->data, _root->right->data))
+				{
+					swap(_root->data, _root->right->data);
+					heapify(_root->right);
+				}
+			}
+			else if (_root->left != nullptr)
+			{
+				if (sort(_root->data, _root->left->data))
+				{
+					swap(_root->data, _root->left->data);
+					heapify(_root->left);
+				}
+			}
+			else if (_root->right != nullptr)
+			{
+				if (sort(_root->data, _root->right->data))
+				{
+					swap(_root->data, _root->right->data);
+					heapify(_root->right);
+				}
+			}
+
+		}
+		void node_sort(Node* _root, int _tree)
+		{
+			if (_tree = tree)
+				return;
+			if (_root = nullptr)
+				return;
+		}
+	public:
+		Heap()
+		{
+			root = nullptr;
+			tree = 0;
+			find = false;
+		}
+		void push(T data)
+		{
+			if (root == nullptr)
+			{
+				root = new Node(data);
+				tree = 1;
+			}
+			else
+			{
+				find = false;
+				push_node(root, data, 0, find);
+				if (!find)
+				{
+					tree++;
+					push_node(root, data, 0, find);
+				}
+			}
+		}
+		T pop()
+		{
+			T data = front_data();
+			pop_node(&root);
+			return data;
+		}
+		bool empty()
+		{
+			return root == nullptr;
+		}
+	};
+	Heap heap;
+	Container contain;
+
+public:
+	Queue()
+	{
+
+	}
+	void Push(T _data)
+	{
+		contain.push_back(_data);
+	}
+	void Pop()
+	{
+		T data = contain.front();
+		typename Container::iterator point;
+		for (typename Container::iterator itr = contain.begin(); itr != contain.end(); itr++)
+		{
+			if (data == *itr)
+			{
+				point = itr;
+				break;
+			}
+		}
+		contain.erase(point);
+	}
+	void Sort()
+	{
+		for (T data : contain)
+		{
+			heap.push(data);
+		}
+		contain.clear();
+		while (!heap.empty())
+		{
+			contain.push_back(heap.pop());
+		}
+	}
+	T Front()
+	{
+		T data = contain.front();
+		return data;
+	}
+	size_t Size()
+	{
+		return contain.size();
+	}
+	bool Empty()
+	{
+		return contain.size() == 0;
+	}
+};
 int main()
 {
 	clock_t start, end;
+	Queue<Person*, vector<Person*>, PersonSort> person_queue;
 	
-	list<Person*> wait_person;
 	int open_befor_wait, max_time, end_time;
-	_tscanf(_T("%d %d %d"), &open_befor_wait, &max_time, &end_time);
+	scanf("%d %d %d", &open_befor_wait, &max_time, &end_time);
 	for (int i = 0; i < open_befor_wait; i++)
 	{
 		int id = 0;
 		int time = 0;
-		_tscanf(_T("%d %d"), &id, &time);
-		Person* person = new Person(id, time);
-		wait_person.push_back(person);
+		scanf("%d %d", &id, &time);
+		Person* person = new Person(id, time,0);
+		person_queue.Push(person);
 	}
 	int open_after_wait = 0;
-	_tscanf(_T("%d"), &open_after_wait);
+	scanf("%d", &open_after_wait);
 	vector<Person*> personvec;
 	for (int i = 0; i < open_after_wait; i++)
 	{
 		int id, time, intime;
-		_tscanf(_T("%d %d %d"), &id, &time, &intime);
+		scanf("%d %d %d", &id, &time, &intime);
 		Person* person = new Person(id, time, intime);
-		personvec.push_back(person);
+		person_queue.Push(person);
 	}
 	start = clock();
-	for (int i = 0; i < personvec.size() - 1; i++)
-	{
-		Person* min = personvec[i];
-		for (int j = i + 1; j < personvec.size(); j++)
-		{
-			if (min->runtime > personvec[j]->runtime)
-			{
-				Person* temp = min;
-				personvec[i] = personvec[j];
-				personvec[j] = temp;
-			}
-		}
-	}
-
-	for (int i = 0; i < personvec.size(); i++)
-		wait_person.push_back(personvec[i]);
-	personvec.clear();
-
+	
+	person_queue.Sort();
 	Queue<int> idlog;
-
 	int curtime = 0;
-	while (wait_person.size() != 0)
+	while (person_queue.Size() != 0)
 	{
 
-		Person* person = wait_person.front();
-		wait_person.pop_front();
+		Person* person = person_queue.Front();
+		person_queue.Pop();
 		int count = person->time > max_time ? max_time : person->time;
 		for (int i = 0; i < count; i++)
 		{
@@ -305,15 +394,8 @@ int main()
 		if (person->time != 0)
 		{
 			person->runtime = curtime;
-			for (std::list<Person*>::iterator itr = wait_person.begin(); itr != wait_person.end(); itr++)
-			{
-				if (person->runtime < (*itr)->runtime)
-				{
-					wait_person.insert(itr, person);
-					break;
-				}
-			}
-			wait_person.push_back(person);
+			person_queue.Push(person);
+			person_queue.Sort();
 		}
 
 	}

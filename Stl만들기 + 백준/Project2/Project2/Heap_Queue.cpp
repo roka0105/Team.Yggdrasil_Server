@@ -1,346 +1,285 @@
 #include <iostream>
+#include <vector>
+#include <set>
+#include <stack>
 using namespace std;
-template <typename T>
-class Heap
+
+template<typename T, typename Container = vector<T>, typename _Pr = greater <typename Container::value_type>>
+class Queue
 {
-	class Node
+private:
+	class Heap
 	{
-	public:
-		Node(T _data)
+		class Node
 		{
-			left = nullptr;
-			right = nullptr;
-			data = _data;
-		}
-		Node* left;
-		Node* right;
-		T data;
-	};
-	int tree;
-	int leaf;
-	bool find;
-	Node* root;
-	Node* lastleaf;
-	void push_node(Node* _root, T _data, int _tree, bool& _find)
-	{
-		if (_root->left == nullptr)
+		public:
+			Node(T _data)
+			{
+				left = nullptr;
+				right = nullptr;
+				data = _data;
+			}
+			Node* left;
+			Node* right;
+			T data;
+		};
+		int tree;
+		int leaf;
+		bool find;
+		Node* root;
+		Node* lastleaf;
+		_Pr sort;
+		void push_node(Node* _root, T _data, int _tree, bool& _find)
 		{
-			_root->left = new Node(_data);
-			_find = true;
-			heapify(_root);
-			return;
-		}
-		else if (_root->right == nullptr)
-		{
-			_root->right = new Node(_data);
-			_find = true;
-			heapify(_root);
-			return;
-		}
-		if (_tree == tree)
-		{
-			return;
-		}
+			if (_root->left == nullptr)
+			{
+				_root->left = new Node(_data);
+				_find = true;
+				heapify(_root);
+				return;
+			}
+			else if (_root->right == nullptr)
+			{
+				_root->right = new Node(_data);
+				_find = true;
+				heapify(_root);
+				return;
+			}
+			if (_tree == tree)
+			{
+				return;
+			}
 
-		push_node(_root->left, _data, _tree + 1, _find);
-		if (!_find)
-		{
-			push_node(_root->right, _data, _tree + 1, _find);
-		}
+			push_node(_root->left, _data, _tree + 1, _find);
+			if (!_find)
+			{
+				push_node(_root->right, _data, _tree + 1, _find);
+			}
 
-	}
-	T front_data()
-	{
-		return root->data;
-	}
-	void pop_node(Node** _root)
-	{
-		Node* ptr = (*_root);
-		if (ptr->left != nullptr && ptr->right != nullptr)
+		}
+		T front_data()
 		{
-			if (ptr->left->data < ptr->right->data)
+			return root->data;
+		}
+		void pop_node(Node** _root)
+		{
+			Node* ptr = (*_root);
+			if (ptr->left != nullptr && ptr->right != nullptr)
+			{
+				if (ptr->left->data < ptr->right->data)
+				{
+					ptr->data = ptr->left->data;
+					pop_node(&ptr->left);
+				}
+				else
+				{
+					ptr->data = ptr->right->data;
+					pop_node(&ptr->right);
+				}
+			}
+			else if (ptr->left == nullptr && ptr->right == nullptr)
+			{
+				Node* temp = ptr;
+				*_root = nullptr;
+				delete temp;
+			}
+			else if (ptr->left != nullptr)
 			{
 				ptr->data = ptr->left->data;
 				pop_node(&ptr->left);
 			}
-			else
+			else if (ptr->right != nullptr)
 			{
 				ptr->data = ptr->right->data;
 				pop_node(&ptr->right);
 			}
+
 		}
-		else if (ptr->left == nullptr && ptr->right == nullptr)
+		void swap(T& _data, T& _data2)
 		{
-			ptr->data = 0;
-			Node* temp = ptr;
-			*_root = nullptr;
-			delete temp;
-		}
-		else if (ptr->left != nullptr)
-		{
-			ptr->data = ptr->left->data;
-			pop_node(&ptr->left);
-		}
-		else if (ptr->right != nullptr)
-		{
-			ptr->data = ptr->right->data;
-			pop_node(&ptr->right);
+			T temp = _data;
+			_data = _data2;
+			_data2 = temp;
 		}
 
-	}
-	void swap(T& _data, T& _data2)
-	{
-		T temp = _data;
-		_data = _data2;
-		_data2 = temp;
-	}
-	void heapify(Node* _root)
-	{
-		//부모노드값이 왼쪽 자식노드보다 큰데 
-		//왼쪽 자식 노드가 오른쪽 자식노드보다 작을때
-		if (_root->left != nullptr && _root->right != nullptr)
+		void heapify(Node* _root)
 		{
-			if (_root->data > _root->left->data &&
-				_root->left->data < _root->right->data)
+			//부모노드값이 왼쪽 자식노드보다 큰데 
+			//왼쪽 자식 노드가 오른쪽 자식노드보다 작을때
+			if (_root->left != nullptr && _root->right != nullptr)
 			{
-				swap(_root->data, _root->left->data);
-				heapify(_root->left);
+				if (sort(_root->data, _root->left->data) &&
+					sort(_root->right->data, _root->left->data))
+				{
+					swap(_root->data, _root->left->data);
+						heapify(_root->left);
+				}
+				//부모노드값이 오른쪽 자식노드보다 큰데
+				//오른쪽 자식 노드가 왼쪽 자식노드보다 작을때
+				else if (sort(_root->data, _root->right->data) &&
+					sort(_root->left->data, _root->right->data))
+				{
+					swap(_root->data, _root->right->data);
+						heapify(_root->right);
+				}
 			}
-			//부모노드값이 오른쪽 자식노드보다 큰데
-			//오른쪽 자식 노드가 왼쪽 자식노드보다 작을때
-			else if (_root->data > _root->right->data &&
-				_root->right->data < _root->left->data)
+			else if (_root->left != nullptr)
 			{
-				swap(_root->data, _root->right->data);
-				heapify(_root->right);
+				if (sort(_root->data, _root->left->data))
+				{
+					swap(_root->data, _root->left->data);
+					heapify(_root->left);
+				}
 			}
-		}
-		else if (_root->left != nullptr)
-		{
-			if (_root->data > _root->left->data)
+			else if (_root->right != nullptr)
 			{
-				swap(_root->data, _root->left->data);
-				heapify(_root->left);
+				if (sort(_root->data , _root->right->data))
+				{
+					swap(_root->data, _root->right->data);
+					heapify(_root->right);
+				}
 			}
-		}
-		else if (_root->right != nullptr)
-		{
-			if (_root->data > _root->right->data)
-			{
-				swap(_root->data, _root->right->data);
-				heapify(_root->right);
-			}
-		}
 
-	}
-
-	void node_sort(Node* _root, int _tree)
-	{
-		if (_tree = tree)
-			return;
-		if (_root = nullptr)
-			return;
-
-	}
-public:
-	Heap()
-	{
-		root = nullptr;
-		tree = 0;
-		find = false;
-	}
-	void push(T data)
-	{
-		if (root == nullptr)
-		{
-			root = new Node(data);
-			tree = 1;
 		}
-		else
+		void node_sort(Node* _root, int _tree)
 		{
-			find = false;
-			push_node(root, data, 0, find);
-			if (!find)
-			{
-				tree++;
-				push_node(root, data, 0, find);
-			}
+			if (_tree = tree)
+				return;
+			if (_root = nullptr)
+				return;
 		}
-	}
-	T pop()
-	{
-		T data = front_data();
-		pop_node(&root);
-		return data;
-	}
-};
-template<typename T>
-class Queue
-{
-private:
-	class Node
-	{
 	public:
-		Node(T _data)
+		Heap()
 		{
-			/*	const char* type = typeid(T).name();
-				bool check = false;
-				char* ptr = _tcstok(const_cast<char*>(type), " ");
-				while (ptr != NULL)
+			root = nullptr;
+			tree = 0;
+			find = false;
+		}
+		void push(T data)
+		{
+			if (root == nullptr)
+			{
+				root = new Node(data);
+				tree = 1;
+			}
+			else
+			{
+				find = false;
+				push_node(root, data, 0, find);
+				if (!find)
 				{
-					if (!strcmp(ptr, "char")||!strcmp(ptr,"const"))
-					{
-						ptr = _tcstok(NULL, " ");
-					}
-					else if(*ptr='[')
-					{
-						check = true;
-					}
-					else
-					{
-						break;
-					}
+					tree++;
+					push_node(root, data, 0, find);
 				}
-				if (check)
-				{
-					_tcscpy(static_cast<char*>(data), _data);
-				}
-				else
-				{*/
-			data = _data;
-			//}
-			next = nullptr;
-			befor = nullptr;
+			}
 		}
-		Node* Next()
+		T pop()
 		{
-			return next;
-		}
-		void Next(Node* _node)
-		{
-			next = _node;
-		}
-		Node* Befor()
-		{
-			return befor;
-		}
-		void Befor(Node* _node)
-		{
-			befor = _node;
-		}
-		const T const GetData()
-		{
+			T data = front_data();
+			pop_node(&root);
 			return data;
 		}
-	private:
-		T data;
-		Node* next;
-		Node* befor;
+		bool empty()
+		{
+			return root == nullptr;
+		}
 	};
-
-	Node* start;
-	Node* end;
-	int size;
-
+	Heap heap;
+	Container contain;
+	
 public:
 	Queue()
 	{
-		start = nullptr;
-		end = nullptr;
-		size = 0;
+		
 	}
 	void Push(T _data)
 	{
-		Node* node = new Node(_data);
-		if (start == nullptr)
-		{
-			end = node;
-			start = end;
-		}
-		else
-		{
-			end->Next(node);
-			node->Befor(end);
-			end = node;
-		}
-		size++;
+		contain.push_back(_data);
 	}
 	void Pop()
 	{
-		if (start == nullptr)
+		T data = contain.front();
+		typename Container::iterator point;
+		for (typename Container::iterator itr = contain.begin(); itr != contain.end(); itr++)
 		{
-			printf("%s", "큐가 비었습니다!");
-			return;
+			if (data == *itr)
+				point = itr;
 		}
-
-		Node* node = start;
-		start = node->Next();
-		delete node;
-		size--;
+		contain.erase(point);
+	}
+	void Sort()
+	{
+		for (T data : contain)
+		{
+			heap.push(data);
+		}
+		contain.clear();
+		while (!heap.empty())
+		{
+			contain.push_back(heap.pop());
+		}
 	}
 	T Front()
 	{
-		if (start == nullptr)
+		T data = contain.front();
+		typename Container::iterator point;
+		for (typename Container::iterator itr = contain.begin(); itr != contain.end(); itr++)
 		{
-			printf("%s", "큐가 비었습니다!");
-			return NULL;
-		}
-		return start->GetData();
-	}
-	T Back()
-	{
-		if (end == nullptr)
-		{
-			printf("%s", "큐가 비었습니다!");
-			return NULL;
-		}
-		return end->GetData();
-	}
-	void Insert(int _index, T _data)
-	{
-		if (start == nullptr)
-			return;
-		Node* curnode = start;
-		for (int i = 0; i < size; i++)
-		{
-			if (_index == i)
+			if (data == *itr)
 			{
-				Node* node = new Node(_data);
-				node->Befor(curnode->Befor());
-				node->Befor()->Next(node);
-				node->Next(curnode);
-				curnode->Befor(node);
-				size++;
+				point = itr;
 				break;
 			}
-			curnode = curnode->Next();
 		}
+		contain.erase(point);
+		return data;
 	}
 	size_t Size()
 	{
-		return size;
+		return contain.size();
 	}
 	bool Empty()
 	{
-		if (size == 0)
-		{
-			return true;
-		}
-		else
-			return false;
+		return contain.size() == 0;
 	}
-	void Swap(Queue<T> _queue)
+};
+class Person
+{
+
+	int id;
+	int math, eng;
+public:
+	Person() {}
+	Person(int num, int m, int e) :id(num), math(m), eng(e) {}
+	int GetID()
 	{
-		Queue<T>* temp;
-		temp = this;
-		this = &_queue;
-		_queue = temp;
+		return id;
+	}
+	bool operator>(const Person& _p)const
+	{
+		return this->id > _p.id;
+	}
+	bool operator<(const Person& _p)const
+	{
+		return this->id < _p.id;
+	}
+	bool operator==(const Person& _p)const
+	{
+		return (this->id==_p.id&&this->eng==_p.eng&&this->math==_p.math);
+	}
+};
+
+struct PersonSort
+{
+	bool operator()(Person a, Person b)
+	{
+		return a.GetID() > b.GetID();
 	}
 };
 
 int main()
 {
-
+	
 	/*int data[13];
 	Heap<int> heap;
 	heap.push(4);
@@ -359,13 +298,82 @@ int main()
 	for (int i = 0; i < 13; i++)
 		data[i] = heap.pop();*/
 
-	Queue<int> queue;
-	queue.Push(1);
-	queue.Push(3);
-	queue.Push(4);
-	queue.Push(6);
-	queue.Insert(1, 2);
-	queue.Insert(4, 5);
+		/*Queue<int> queue;
+		queue.Push(1);
+		queue.Push(3);
+		queue.Push(4);
+		queue.Push(6);
+		queue.Insert(1, 2);
+		queue.Insert(4, 5);*/
+	
+	//Queue<Person, vector<Person>, PersonSort> queue;
+	/*Queue<int, vector<int>, test> queue;
 
+	Heap<Person> heap;
+	heap.push(Person(4, 100, 100));
+	heap.push(Person(2, 20, 20));
+	heap.push(Person(1, 20, 10));
+	heap.push(Person(5, 2, 2));
+	heap.push(Person(8, 2, 2));
+	heap.push(Person(6, 2, 2));
+	heap.push(Person(7, 2, 2));
+	heap.push(Person(15, 2, 2));
+	heap.push(Person(10, 2, 2));
+	heap.push(Person(11, 2, 2));
+	heap.push(Person(13, 2, 2));
+	heap.push(Person(12, 2, 2));
+	heap.push(Person(14, 2, 2));
 
+	for (int i = 0; i < 13; i++)
+	{
+		heap.pop().Print();
+		cout << '\n';
+	}*/
+
+	/*
+	정렬방식 안넣었을 때
+	default 인 greater가 Person 의 operator > 를 호출해줌.
+	*/
+	/*
+	PersonSort sort;
+	Queue<Person> queue;
+	queue.Push(Person(4, 2, 3));
+	queue.Push(Person(1, 2, 3));
+	queue.Push(Person(5, 2, 3));
+	queue.Push(Person(3, 2, 3));
+	queue.Push(Person(2, 2, 3));
+	*/
+
+	/*사용자 정의 operator 사용*/
+	//Queue<Person, vector<Person>, PersonSort> queue;
+	//queue.Push(Person(4, 2, 3));
+	//queue.Push(Person(1, 2, 3));
+	//queue.Push(Person(5, 2, 3));
+	//queue.Push(Person(3, 2, 3));
+	//queue.Push(Person(2, 2, 3));
+
+	//queue.Sort();
+
+	//while (!queue.Empty())
+	//{
+	//	cout << queue.Front().GetID() << endl;
+	//	//queue.Pop();
+	//}
+
+	/*vector<int> contain;
+	contain.push_back(1);
+	contain.push_back(2);
+	contain.push_back(3);
+	contain.push_back(4);
+	contain.push_back(5);
+	contain.push_back(6);
+	vector<int>::iterator point;
+	for (vector<int>::iterator itr = contain.begin(); itr != contain.end(); itr++)
+	{
+		if (4 == (*itr))
+			point = itr;
+	}
+	contain.erase(point);*/
+
+	
 }

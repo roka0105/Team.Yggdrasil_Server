@@ -21,6 +21,12 @@
     <ClCompile Include="Heap_Queue.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="우선순위 큐 학습.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="teamplate 테스트.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Queue.h">
