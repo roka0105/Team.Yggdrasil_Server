@@ -23,8 +23,8 @@ namespace Net
         private uint m_send_packetNo;
         private uint m_recv_packetNo;
 
-        private Queue<byte[]> m_send_queue;
-        private Queue<byte[]> m_recv_queue;
+        private Queue<SendPacket> m_send_queue;
+        private Queue<RecvPacket> m_recv_queue;
 
         private PacketManager M_Packet;
         
@@ -76,12 +76,12 @@ namespace Net
         {
             if (m_send_queue.Count > 0)
             {
-                byte[] sendbuf = m_send_queue.Dequeue();
+                SendPacket sendbuf = m_send_queue.Dequeue();
                 Send(sendbuf);
             }
         }
         //큐에 보낼 패킷을 넣는다.
-        public void SendReq(byte[] _sendpacket)
+        public void SendReq(SendPacket _sendpacket)
         {
             m_send_queue.Enqueue(_sendpacket);
         }
@@ -93,51 +93,39 @@ namespace Net
         {
            
         }
-        public bool Recv(RecvPacket _recvbuf)
+        public bool Recv()
         {
-            Byte[] sizebuffer = new Byte[sizeof(int)];
-            Byte[] packetno = new Byte[sizeof(int)];
-            Byte[] delete_packet;
-            int packetnumber = -1;
-            int size = 0;
-            _recvbuf = new byte[BUFSIZE];
-
             try
             {
-                size = Recvn(sizebuffer, sizeof(int));
-                if (size == 0)
-                    return false;
-                size = Recvn(packetno, sizeof(int));
-                if (size == 0)
-                    return false;
+                byte[] size_bytes = new byte[sizeof(int)];
+                int packet_size = 0;
+                m_netstream.Read(size_bytes, 0, sizeof(int));
+                packet_size = BitConverter.ToInt32(size_bytes);
 
-                Debug.Log("packno:" + BitConverter.ToInt32(packetno));
-                //if (m_rpacketNo != BitConverter.ToInt32(packetno))
-                //{
-                //    delete_packet = new Byte[int.Parse(sizebuffer.ToString())];
-                //    size = Recvn(_recvbuf, int.Parse(sizebuffer.ToString()));
-                //    return false;
-                //}
-                //else
-                //{ 
-                //packno는 읽어왔기때문에 sizeof(int)를 빼준다
-                size = Recvn(_recvbuf, BitConverter.ToInt32(sizebuffer) - sizeof(int));
-                if (size == 0)
-                    return false;
-                //}
-                //비워주는거 있어야함 stream. 
+                byte[] no_bytes = new byte[sizeof(int)];
+                int packet_no = 0;
+                m_netstream.Read(no_bytes, 0, sizeof(int));
+                packet_no = BitConverter.ToInt32(no_bytes);
 
-                m_rpacketNo++;
-                return true;
+                if (packet_no < m_recv_packetNo)
+                {
+                    return false;
+                }
+
+                RecvPacket recvpacket = new RecvPacket();
+                recvpacket.__Initialize();
+
+                recvpacket.GetDataFromNetworkStream(m_netstream, packet_size);
+                recvpacket.UnPacking();
             }
-            catch (Exception ex)
+            catch(Exception e)
             {
-                Debug.Log(ex.ToString());
+                Debug.Log($"recv error ({e.Message})");
                 return false;
             }
-
+            return true;
         }
-        private int Recvn(Byte[] _recvbuf, int size)
+        private int Recvn(RecvPacket _recvbuf, int size)
         {
             int retval = 0;
             int recvbytes = 0;
@@ -146,7 +134,7 @@ namespace Net
             {
                 try
                 {
-                    retval = m_stream.Read(_recvbuf, recvbytes, left);
+                    retval = m_netstream.Read(_recvbuf, recvbytes, left);
                     left -= retval;
                     recvbytes += retval;
                 }
