@@ -114,9 +114,9 @@ namespace Net
 
                 RecvPacket recvpacket = new RecvPacket();
                 recvpacket.__Initialize();
-
                 recvpacket.GetDataFromNetworkStream(m_netstream, packet_size);
                 recvpacket.UnPacking();
+                RecvComplete(recvpacket);
             }
             catch(Exception e)
             {
@@ -134,7 +134,7 @@ namespace Net
             {
                 try
                 {
-                    retval = m_netstream.Read(_recvbuf, recvbytes, left);
+                    retval = m_netstream.Read(, recvbytes, left);
                     left -= retval;
                     recvbytes += retval;
                 }
@@ -146,7 +146,7 @@ namespace Net
             }
             return (size - left);
         }
-        public void RecvComplete(byte[] _recvpacket)
+        public void RecvComplete(RecvPacket _recvpacket)
         {
             //m_curstate->RecvComplete();
         }

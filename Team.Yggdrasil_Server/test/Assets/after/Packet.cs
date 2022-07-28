@@ -25,6 +25,8 @@ namespace Net
     }
     public class RecvPacket : Packet
     {
+        public delegate int Func(RecvPacket _packet, int _size);
+     
         public void GetDataFromNetworkStream(NetworkStream _netstream,int _copysize)
         {
             m_stream.SetLength(_copysize);
