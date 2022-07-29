@@ -377,7 +377,7 @@ int main()
 	start = clock();
 	
 	person_queue.Sort();
-	Queue<int> idlog;
+	
 	int curtime = 0;
 	while (person_queue.Size() != 0)
 	{
@@ -387,7 +387,7 @@ int main()
 		int count = person->time > max_time ? max_time : person->time;
 		for (int i = 0; i < count; i++)
 		{
-			idlog.Push(person->id);
+			printf("%d\n",person->id);
 			person->time--;
 			curtime++;
 		}
@@ -398,13 +398,6 @@ int main()
 			person_queue.Sort();
 		}
 
-	}
-
-
-	for (int i = 0; i < end_time; i++)
-	{
-		_tprintf("%d\n", idlog.Front());
-		idlog.Pop();
 	}
 	end = clock();
 	printf("%f", (float)(end - start));
