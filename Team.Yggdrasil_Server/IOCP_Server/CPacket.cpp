@@ -57,7 +57,7 @@ void CPacket::Packing(unsigned long _protocol, byte* _data, int _size)
 //protocol size data 
 void CPacket::UnPacking(unsigned long &_protocol, byte* _buf)
 {
-	//클라에서 packetno 붙여서 보내줬어야 했는데 일단 테스트를 위해 packetno가 없다는 가정하에 진행.
+	
 	const byte* ptr = m_trecvbuf.recvbuf + sizeof(int);
 	
 	// 복호화 코드
@@ -74,8 +74,7 @@ void CPacket::UnPacking(unsigned long &_protocol, byte* _buf)
 }
 void CPacket::UnPacking(unsigned long& _protocol)
 {
-	//클라에서 packetno 붙여서 보내줬어야 했는데 일단 테스트를 위해 packetno가 없다는 가정하에 진행.
-	const byte* ptr = m_trecvbuf.recvbuf + sizeof(int);
+	const byte* ptr = m_trecvbuf.recvbuf + sizeof(int)/*packetno*/;
 	
 	int size = 0;
 	memcpy(&_protocol, ptr, sizeof(int));
@@ -83,7 +82,6 @@ void CPacket::UnPacking(unsigned long& _protocol)
 
 void CPacket::UnPacking(byte* _data)
 {
-	//클라에서 packetno 붙여서 보내줬어야 했는데 일단 테스트를 위해 packetno가 없다는 가정하에 진행.
 	const byte* ptr = m_trecvbuf.recvbuf + sizeof(int);
 	
 	int size = 0;
