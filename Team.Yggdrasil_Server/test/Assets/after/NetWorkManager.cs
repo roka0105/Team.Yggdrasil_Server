@@ -14,12 +14,22 @@ namespace Net
         private Thread m_recvthread;
 
         private EventWaitHandle m_sendevent;
-
+      
+        
         public void __Initialize()
         {
             m_thread_end_flag = false;
             m_netthread = new Thread(NetThread);
             m_netthread.Start();
+
+            __Initialize_Mgr();
+        }
+        /*임시로 쓰고 나중에 클라 코드 붙일때 GUI 부분들은 클라에서 하기.*/
+        private void __Initialize_Mgr()
+        {
+            LoginGUIManager.__Initialize();
+            LoginManager.__Initialize();
+            MenuGUIManager.__Initialize();
         }
         public void __Finalize()
         {
@@ -38,7 +48,9 @@ namespace Net
         public void Send(SendPacket _packet)
         {
             m_session.SendReq(_packet);
+            m_sendevent.Set();
         }
+
         private void NetThread()
         {
             m_session = new NetSession();
@@ -63,6 +75,10 @@ namespace Net
             {
                 m_session.Recv();
             }
+        }
+        private void Update()
+        {
+            m_session.RecvQueueProcess();
         }
     }
 

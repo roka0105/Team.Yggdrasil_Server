@@ -84,6 +84,10 @@ namespace Singleton_Ver2
             return obj.GetComponent<T>();
 
         });
+        public static void __Initialize()
+        {
+            T instance = _instance.Value;
+        }
         public static T Instance
         {
             get

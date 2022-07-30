@@ -14,34 +14,63 @@ namespace Net
         public virtual void __Initialize()
         {
             m_stream = new MemoryStream(m_capacity);
-            m_stream.Position = 0;
         }
     }
+    /*packet 구조 
+      packetsize - packetno -protocol- datasize - data
+    */
     public class SendPacket:Packet
     {
+        public override void __Initialize()
+        {
+            base.__Initialize();
+            m_stream.Position = sizeof(int)/*protocol*/+ sizeof(int)/*datasize*/;
+        }
+        public int WriteProtocol(uint _protocol)
+        {
+            m_stream.Position = 0;
+            return Net.StreamReadWriter.WriteToStream(m_stream, _protocol);
+        }
+        public int WriteTotalSize(int size)
+        {
+            m_stream.Position = sizeof(int);
+            return Net.StreamReadWriter.WriteToStream(m_stream,size);
+        }
         public int Write<T>(T _item) where T : IConvertible
         {
+            m_stream.Position = sizeof(int) + sizeof(int);
             return Net.StreamReadWriter.WriteToStream(m_stream,_item);
         }
         public int Write<T>(List<T>_item)where T:IConvertible
         {
+            m_stream.Position = sizeof(int) + sizeof(int);
             return Net.StreamReadWriter.WriteToStream(m_stream, _item);
         }
         public int Write(ISerialize _item)
         {
+            m_stream.Position = sizeof(int) + sizeof(int);
             return Net.StreamReadWriter.WriteToStream(m_stream, _item);
         }
+
+        /*buffer 참고 
+         * https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=vactorman&logNo=80200824190*/
         public int Packing(byte[] _sendstream,int _packetid)
         {
             //암호화
             //데이터와 패킷 id 합치기.
-            int point = 0;
-            int total_size = (int)m_stream.Length + sizeof(int)+sizeof(int);
+            int point=0;
+            int total_size = Convert.ToInt32(m_stream.Length) + sizeof(int)/*packetid size*/;
             //총사이즈 넣고
             byte[] totalsize_bytes=BitConverter.GetBytes(total_size);
-            Buffer.BlockCopy()
-            //데이터 넣고
-          
+            Buffer.BlockCopy(totalsize_bytes, 0, _sendstream,point,totalsize_bytes.Length);
+            point += totalsize_bytes.Length;
+            //packet id 넣고
+            byte[] packetid_bytes = BitConverter.GetBytes(_packetid);
+            Buffer.BlockCopy(packetid_bytes, 0, _sendstream,point, packetid_bytes.Length);
+            point += packetid_bytes.Length;
+            //data 넣고
+            Buffer.BlockCopy(m_stream.GetBuffer(), 0, _sendstream, point, Convert.ToInt32(m_stream.Length));
+            point += Convert.ToInt32(m_stream.Length);
             return point;
         }
     }
@@ -58,7 +87,6 @@ namespace Net
             m_stream.SetLength(_copysize);
             m_stream_size = _copysize;
             Recvn.Invoke(m_stream.GetBuffer(), m_stream_size);
-            _netstream.Read(m_stream.GetBuffer(), 0, m_stream_size);
             m_stream.Position = 0;
         }
         public int Read<T>(out T _item) where T :IConvertible

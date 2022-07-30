@@ -8,6 +8,7 @@ namespace Net
 {
     public class StreamReadWriter : MonoBehaviour
     {
+        const int CODESIZE = 2; 
         #region read
         public static int ReadFromStream<TItem>(MemoryStream _stream, out TItem _item)
             where TItem : IConvertible
@@ -199,7 +200,6 @@ namespace Net
                 //0 대신에 string 을 메모리에 쓰는 함수 호출
                 return WriteToStream(_stream, (string)((object)_item));
             }
-
             #region 설명
             /*
              http://www.java2s.com/Tutorials/CSharp/System/Type/C_Type_GetMethod_String_Type_.htm
@@ -214,6 +214,7 @@ namespace Net
             _stream.Write(bytes, 0, bytes.Length);
             return bytes.Length;
         }
+      
         public static int WriteToStream(MemoryStream _stream, string str)
         {
             int size = 0;
@@ -222,8 +223,8 @@ namespace Net
             size += sizeof(int);
 
             byte[] strbytes = Encoding.Unicode.GetBytes(str);
-            _stream.Write(strbytes, 0, str.Length);
-            size += str.Length;
+            _stream.Write(strbytes, 0, str.Length*CODESIZE);
+            size += str.Length*CODESIZE;
             return size;
         }
         public static int WriteToStream<TItem>(MemoryStream _stream, List<TItem> _list)

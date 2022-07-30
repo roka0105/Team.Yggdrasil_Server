@@ -13,6 +13,11 @@ public class MenuGUIManager:Singleton_Ver2.Singleton<MenuGUIManager>
         Lobby,
         Room,
     }
+    public enum EMenuModeType
+    {
+        Login,
+        Menu,
+    }
     #region window object
     [SerializeField]
     GameObject m_start_window;
@@ -68,12 +73,26 @@ public class MenuGUIManager:Singleton_Ver2.Singleton<MenuGUIManager>
     }
     #endregion
     #region Active object func
-    public void LoginObjectActive(bool _flag)
+    public void MenuChange(EMenuModeType _type)
+    {
+        switch(_type)
+        {
+            case EMenuModeType.Login:
+                LoginObjectActive(true);
+                MenuObjectActive(false);
+                break;
+            case EMenuModeType.Menu:
+                LoginObjectActive(false);
+                MenuObjectActive(true);
+                break;
+        }
+    }
+    private void LoginObjectActive(bool _flag)
     {
         m_loin_btn.gameObject.SetActive(_flag);
         m_join_btn.gameObject.SetActive(_flag);
     }
-    public void MenuObjectActive(bool _flag)
+    private void MenuObjectActive(bool _flag)
     {
         m_multi_btn.gameObject.SetActive(_flag);
         m_single_btn.gameObject.SetActive(_flag);
@@ -115,6 +134,7 @@ public class MenuGUIManager:Singleton_Ver2.Singleton<MenuGUIManager>
     public void OnClick_Logout()
     {
         //로그아웃 서버 전송하기
+        LoginManager.Instance.LogoutProcess();
     }
     #endregion
     

@@ -59,6 +59,9 @@ namespace Net
             m_recvstream = new byte[BUFSIZE];
             m_sendstream = new byte[BUFSIZE];
 
+            m_send_queue = new Queue<SendPacket>();
+            m_recv_queue = new Queue<RecvPacket>();
+
         }
         private void __Initialize_State()
         {
@@ -99,6 +102,14 @@ namespace Net
             m_netstream.Write(m_sendstream, 0, send_size);
             SendComplete();
         }
+        public void RecvQueueProcess()
+        {
+            if (m_recv_queue.Count != 0)
+            {
+                RecvPacket recvpacket = m_recv_queue.Dequeue();
+                RecvComplete(recvpacket);
+            }
+        }
         public bool Recv()
         {
             if(m_netstream.DataAvailable)
@@ -124,9 +135,9 @@ namespace Net
                     RecvPacket recvpacket = new RecvPacket();
                     recvpacket.__Initialize();
                     recvpacket.RecvnFuncRegister(Recvn);
-                    recvpacket.GetDataFromNetworkStream(m_netstream, packet_size);
+                    recvpacket.GetDataFromNetworkStream(m_netstream, packet_size-sizeof(int)/*packetno size*/);
                     recvpacket.UnPacking();
-                    RecvComplete(recvpacket);
+                    m_recv_queue.Enqueue(recvpacket);
                 }
                 catch (Exception e)
                 {
@@ -163,7 +174,7 @@ namespace Net
             //m_curstate->RecvComplete();
             m_curstate.RecvComplete(_recvpacket);
         }
-        
+       
     }
 }
 

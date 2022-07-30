@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using System;
 using EMainProtocol = Net.Protocol.EMainProtocol;
 using EProtocolType = Net.Protocol.EProtocolType;
 public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
@@ -30,11 +32,12 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
         Net.Protocol protocol = new Net.Protocol();
         protocol.SetProtocol((uint)EMainProtocol.LOGIN,EProtocolType.Main);
         protocol.SetProtocol((uint)ESubProtocol.LoginInfo, EProtocolType.Sub);
-       
+        //protocol.LittleEndian();
         Net.SendPacket packet = new Net.SendPacket();
         packet.__Initialize();
-        packet.Write(protocol.GetProtocol());
-        packet.Write(_info);
+        int totalsize=packet.Write(_info);
+        packet.WriteTotalSize(totalsize);
+        packet.WriteProtocol(protocol.GetProtocol());
         Net.NetWorkManager.Instance.Send(packet);
     }
     public void LogoutProcess()
@@ -45,7 +48,7 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
 
         Net.SendPacket packet = new Net.SendPacket();
         packet.__Initialize();
-        packet.Write(protocol.GetProtocol());
+        packet.WriteProtocol(protocol.GetProtocol());
         Net.NetWorkManager.Instance.Send(packet);
     }
     public void JoinProcess(LoginInfo _info)
@@ -54,12 +57,13 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
 
         Net.Protocol protocol = new Net.Protocol();
         protocol.SetProtocol((uint)EMainProtocol.LOGIN, EProtocolType.Main);
-        protocol.SetProtocol((uint)ESubProtocol.LoginInfo, EProtocolType.Sub);
+        protocol.SetProtocol((uint)ESubProtocol.JoinInfo, EProtocolType.Sub);
 
         Net.SendPacket packet = new Net.SendPacket();
         packet.__Initialize();
-        packet.Write(protocol.GetProtocol());
-        packet.Write(_info);
+        int totalsize = packet.Write(_info);
+        packet.WriteTotalSize(totalsize);
+        packet.WriteProtocol(protocol.GetProtocol());
         Net.NetWorkManager.Instance.Send(packet);
     }
     public void RemoveInfoProcess()
@@ -89,12 +93,14 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
     {
         byte result = 0;
         string msg;
+        int datasize = 0;
+        _recvPacket.Read(out datasize); /*여기서는 안씀*/
         _recvPacket.Read(out result);
         _recvPacket.Read(out msg);
 #if UNITY_EDITOR
         Debug.Log(msg);
 #endif
-        switch ((Result)result)
+        switch ((Result)Convert.ToInt32(result))
         {
             case Result.Fail:
                 //로그인 실패시 임시로 저장해둔 로그인 정보 지우기.
@@ -106,11 +112,14 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
                 break;
         }
         LoginGUIManager.Instance.OnClick_Exit(true);
+        MenuGUIManager.Instance.MenuChange(MenuGUIManager.EMenuModeType.Menu);
     }
     private void JoinResult(Net.RecvPacket _recvPacket, Net.Protocol _protocol)
     {
         byte result = 0;
         string msg;
+        int datasize = 0;
+        _recvPacket.Read(out datasize); /*여기서는 안씀*/
         _recvPacket.Read(out result);
         _recvPacket.Read(out msg);
 #if UNITY_EDITOR
@@ -129,12 +138,13 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
     private void LogoutResult(Net.RecvPacket _recvPacket, Net.Protocol _protocol)
     {
         string msg;
+        int datasize = 0;
+        _recvPacket.Read(out datasize); /*여기서는 안씀*/
         _recvPacket.Read(out msg);
 #if UNITY_EDITOR
         Debug.Log(msg);
-#endif 
-        MenuGUIManager.Instance.LoginObjectActive(true);
-        MenuGUIManager.Instance.MenuObjectActive(false);
+#endif
+        MenuGUIManager.Instance.MenuChange(MenuGUIManager.EMenuModeType.Login);
     }
 
     #endregion

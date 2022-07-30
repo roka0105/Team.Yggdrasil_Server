@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System;
 namespace Net
 {
     public class LoginState : IState
@@ -24,9 +24,9 @@ namespace Net
 
         public void RecvComplete(RecvPacket _recvpacket)
         {
-            uint protocol=0;
+            int protocol=0;
             _recvpacket.Read(out protocol);
-            Protocol protocol_manager = new Protocol(protocol);
+            Protocol protocol_manager = new Protocol(Convert.ToUInt32(protocol));
             switch((Protocol.EMainProtocol)protocol_manager.GetProtocol(Protocol.EProtocolType.Main))
             {
                 case Protocol.EMainProtocol.LOGIN:

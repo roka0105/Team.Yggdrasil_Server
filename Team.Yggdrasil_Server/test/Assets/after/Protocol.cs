@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.IO;
 namespace Net
 {
     public class Protocol
@@ -45,6 +46,13 @@ namespace Net
             protocol = _protocol;
         }
         #region get
+        public void LittleEndian()
+        {
+            byte[] bytes = BitConverter.GetBytes(protocol);
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(bytes);
+            protocol = BitConverter.ToUInt32(bytes);
+        }
         public uint GetProtocol()
         {
             return protocol;
