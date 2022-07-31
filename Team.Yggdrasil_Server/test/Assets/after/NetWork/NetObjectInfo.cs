@@ -11,6 +11,7 @@ namespace Net
         public enum ENetObjectType
         {
             None,
+            Room,
             Player,
             Boss,
             Spirit,
@@ -21,7 +22,10 @@ namespace Net
 
         public ulong GetID { get => m_id; }
         public ENetObjectType GetNetObjectType { get => m_type; }
-
+        public NetObjectInfo(ENetObjectType _type)
+        {
+            m_type = _type;
+        }
         virtual public int Deserialize(MemoryStream _stream)
         {
             int size = 0;

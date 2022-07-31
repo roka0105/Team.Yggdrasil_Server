@@ -20,30 +20,30 @@ public class MenuGUIManager:Singleton_Ver2.Singleton<MenuGUIManager>
     }
     #region window object
     [SerializeField]
-    GameObject m_start_window;
+    GameObject m_window_start;
     [SerializeField]
-    GameObject m_menu_window;
+    GameObject m_window_menu;
     [SerializeField]
-    GameObject m_login_window;
+    GameObject m_window_login;
     [SerializeField]
-    GameObject m_join_window;
+    GameObject m_window_join;
     [SerializeField]
-    GameObject m_lobby_window;
+    GameObject m_window_lobby;
     #endregion
 
     #region button object
     [SerializeField] 
-    Button m_loin_btn;
+    Button m_btn_login;
     [SerializeField] 
-    Button m_join_btn;
+    Button m_btn_join;
     [SerializeField] 
-    Button m_multi_btn;
+    Button m_btn_multi;
     [SerializeField] 
-    Button m_single_btn;
+    Button m_btn_single;
     [SerializeField] 
-    Button m_option_btn;
+    Button m_btn_option;
     [SerializeField]
-    Button m_logout_btn;
+    Button m_btn_logout;
     #endregion
 
     #region Active Window
@@ -52,19 +52,19 @@ public class MenuGUIManager:Singleton_Ver2.Singleton<MenuGUIManager>
         switch(_type)
         {
             case EWindowType.Menu:
-                m_menu_window.SetActive(_flag);
+                m_window_menu.SetActive(_flag);
                 break;
             case EWindowType.Start:
-                m_start_window.SetActive(_flag);
+                m_window_start.SetActive(_flag);
                 break;
             case EWindowType.Login:
-                m_login_window.SetActive(_flag);
+                m_window_login.SetActive(_flag);
                 break;
             case EWindowType.Join:
-                m_join_window.SetActive(_flag);
+                m_window_join.SetActive(_flag);
                 break;
             case EWindowType.Lobby:
-                m_lobby_window.SetActive(_flag);
+                m_window_lobby.SetActive(_flag);
                 break;
             case EWindowType.Room:
                 
@@ -89,47 +89,48 @@ public class MenuGUIManager:Singleton_Ver2.Singleton<MenuGUIManager>
     }
     private void LoginObjectActive(bool _flag)
     {
-        m_loin_btn.gameObject.SetActive(_flag);
-        m_join_btn.gameObject.SetActive(_flag);
+        m_btn_login.gameObject.SetActive(_flag);
+        m_btn_join.gameObject.SetActive(_flag);
     }
     private void MenuObjectActive(bool _flag)
     {
-        m_multi_btn.gameObject.SetActive(_flag);
-        m_single_btn.gameObject.SetActive(_flag);
-        m_option_btn.gameObject.SetActive(_flag);
-        m_logout_btn.gameObject.SetActive(_flag);
+        m_btn_multi.gameObject.SetActive(_flag);
+        m_btn_single.gameObject.SetActive(_flag);
+        m_btn_option.gameObject.SetActive(_flag);
+        m_btn_logout.gameObject.SetActive(_flag);
     }
     #endregion
     #region MouseEvent
     private void OnClick_Start(GameObject _selected,MouseArgs _arg)
     {
-        m_start_window.SetActive(false);
-        m_menu_window.SetActive(true);
+        m_window_start.SetActive(false);
+        m_window_menu.SetActive(true);
     }
     #endregion
     #region Button Click Event
     public void OnClick_Login()
     {
-        m_menu_window.SetActive(false);
-        m_login_window.SetActive(true);
+        m_window_menu.SetActive(false);
+        m_window_login.SetActive(true);
     }
     public void OnClick_Join()
     {
-        m_menu_window.SetActive(false);
-        m_join_window.SetActive(true);
+        m_window_menu.SetActive(false);
+        m_window_join.SetActive(true);
     }
     public void OnClick_Multi()
     {
-        m_menu_window.SetActive(false);
-        m_lobby_window.SetActive(true);
+        m_window_menu.SetActive(false);
+        m_window_lobby.SetActive(true);
+        LobbyManager.Instance.LobbyEnterProcess(true);
     }
     public void OnClick_Single()
     {
-        m_menu_window.SetActive(false);
+        m_window_menu.SetActive(false);
     }
     public void OnClick_Option()
     {
-        m_menu_window.SetActive(false);
+        m_window_menu.SetActive(false);
     }
     public void OnClick_Logout()
     {

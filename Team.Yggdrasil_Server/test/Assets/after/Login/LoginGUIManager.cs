@@ -7,11 +7,11 @@ public class LoginGUIManager : Singleton_Ver2.Singleton<LoginGUIManager>
 {
 
     [SerializeField]
-    InputField[] m_id_input;
+    InputField[] m_input_id;
     [SerializeField]
-    InputField[] m_pw_input;
+    InputField[] m_input_pw;
     [SerializeField]
-    InputField m_nick_input;
+    InputField m_input_nick;
 
     #region button click event
     public void OnClick_Exit(bool _flag)
@@ -46,9 +46,9 @@ public class LoginGUIManager : Singleton_Ver2.Singleton<LoginGUIManager>
     private LoginInfo GetInfo(bool _flag)
     {
         if (_flag)
-            return new LoginInfo(m_id_input[0].text, m_pw_input[0].text, string.Empty);
+            return new LoginInfo(m_input_id[0].text, m_input_pw[0].text, string.Empty);
 
-        return new LoginInfo(m_id_input[1].text, m_pw_input[1].text, m_nick_input.text);
+        return new LoginInfo(m_input_id[1].text, m_input_pw[1].text, m_input_nick.text);
     }
     #endregion
 }
