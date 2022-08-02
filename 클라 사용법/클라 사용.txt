@@ -1,0 +1,2 @@
+데이터 전송을 위한 packing 시 
+데이터 먼저 패킹 한 뒤 totalsize,protocol 을 패킹한다.

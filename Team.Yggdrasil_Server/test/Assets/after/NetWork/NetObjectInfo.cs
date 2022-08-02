@@ -17,10 +17,10 @@ namespace Net
             Spirit,
             Monster,
         }
-        [SerializeField] ulong m_id;
+        [SerializeField] uint m_id;
         ENetObjectType m_type;
 
-        public ulong GetID { get => m_id; }
+        public uint GetID { get => m_id; }
         public ENetObjectType GetNetObjectType { get => m_type; }
         public NetObjectInfo(ENetObjectType _type)
         {

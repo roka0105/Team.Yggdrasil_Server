@@ -17,7 +17,8 @@ namespace Net
 
         TcpClient m_client;
         IState m_curstate;
-        LoginState m_Loginstate;
+        internal LoginState m_Loginstate;
+        internal LobbyState m_Lobbystate;
         NetworkStream m_netstream;
 
         private byte[] m_recvstream;
@@ -31,7 +32,28 @@ namespace Net
 
 
         bool is_loging;
-
+        #region set state
+        public void SetState(IState _state)
+        {
+            m_curstate = _state;
+        }
+        //public void SetState(IState.State _state)
+        //{
+        //    switch(_state)
+        //    {
+        //        case IState.State.Login:
+        //            m_curstate = m_Loginstate;
+        //            break;
+        //        case IState.State.Lobby:
+        //            m_curstate = m_Lobbystate;
+        //            break;
+        //        case IState.State.Room:
+        //            break;
+        //        case IState.State.Game:
+        //            break;
+        //    }
+        //}
+        #endregion
         public void __Initialize()
         {
             __Initialize_Vars();
@@ -66,8 +88,9 @@ namespace Net
         private void __Initialize_State()
         {
             m_Loginstate = new LoginState(this);
-
+            m_Lobbystate = new LobbyState(this);
             m_curstate = m_Loginstate;
+
         }
         #endregion
         public void __Finalize()
@@ -77,6 +100,7 @@ namespace Net
             if (m_client != null)
                 m_client.Close();
         }
+        #region send
         //큐에서 데이터를 뽑아서 전송한다.
         public void SendQueueProcess()
         {
@@ -102,6 +126,8 @@ namespace Net
             m_netstream.Write(m_sendstream, 0, send_size);
             SendComplete();
         }
+        #endregion
+        #region recv
         public void RecvQueueProcess()
         {
             if (m_recv_queue.Count != 0)
@@ -174,7 +200,7 @@ namespace Net
             //m_curstate->RecvComplete();
             m_curstate.RecvComplete(_recvpacket);
         }
-       
+        #endregion
     }
 }
 

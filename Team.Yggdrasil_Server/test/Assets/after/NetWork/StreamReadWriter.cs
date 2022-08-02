@@ -64,6 +64,13 @@ namespace Net
                 _item = (TItem)((object)result);
                 return read_size;
             }
+            if(type==typeof(uint))
+            {
+                uint result;
+                read_size = ReadFromStream(_stream, out result);
+                _item = (TItem)((object)result);
+                return read_size;
+            }
 
             throw new NotImplementedException();
         }
@@ -97,9 +104,9 @@ namespace Net
         public static int ReadFromStream(MemoryStream _stream, out int _item)
         {
             int read_size = 0;
-            byte[] size_bytes = new byte[sizeof(int)];
-            _stream.Read(size_bytes, 0, sizeof(int));
-            _item = BitConverter.ToInt32(size_bytes);
+            byte[] int_bytes = new byte[sizeof(int)];
+            _stream.Read(int_bytes, 0, sizeof(int));
+            _item = BitConverter.ToInt32(int_bytes);
             read_size += sizeof(int);
             return read_size;
         }
@@ -145,6 +152,15 @@ namespace Net
             _item = byte_bytes[0];
             read_size += sizeof(byte);
 
+            return read_size;
+        }
+        public static int ReadFromStream(MemoryStream _stream, out uint _item)
+        {
+            int read_size = 0;
+            byte[] size_bytes = new byte[sizeof(int)];
+            _stream.Read(size_bytes, 0, sizeof(int));
+            _item = BitConverter.ToUInt32(size_bytes);
+            read_size += sizeof(int);
             return read_size;
         }
         public static int ReadFromStream(MemoryStream _stream,ISerialize _item)

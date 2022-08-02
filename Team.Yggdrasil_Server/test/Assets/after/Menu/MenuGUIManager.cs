@@ -29,6 +29,8 @@ public class MenuGUIManager:Singleton_Ver2.Singleton<MenuGUIManager>
     GameObject m_window_join;
     [SerializeField]
     GameObject m_window_lobby;
+    [SerializeField]
+    GameObject m_window_room;
     #endregion
 
     #region button object
@@ -67,7 +69,7 @@ public class MenuGUIManager:Singleton_Ver2.Singleton<MenuGUIManager>
                 m_window_lobby.SetActive(_flag);
                 break;
             case EWindowType.Room:
-                
+                m_window_room.SetActive(_flag);
                 break;
         }
     }

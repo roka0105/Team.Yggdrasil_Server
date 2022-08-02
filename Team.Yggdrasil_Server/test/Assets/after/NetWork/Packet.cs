@@ -38,17 +38,14 @@ namespace Net
         }
         public int Write<T>(T _item) where T : IConvertible
         {
-            m_stream.Position = sizeof(int) + sizeof(int);
             return Net.StreamReadWriter.WriteToStream(m_stream,_item);
         }
         public int Write<T>(List<T>_item)where T:IConvertible
         {
-            m_stream.Position = sizeof(int) + sizeof(int);
             return Net.StreamReadWriter.WriteToStream(m_stream, _item);
         }
         public int Write(ISerialize _item)
         {
-            m_stream.Position = sizeof(int) + sizeof(int);
             return Net.StreamReadWriter.WriteToStream(m_stream, _item);
         }
 

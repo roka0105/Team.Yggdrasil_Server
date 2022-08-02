@@ -108,11 +108,11 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
                 break;
             case Result.Suc:
                 //성공했을때 ui가 해야할일 해당 uimanager 호출해서 하기.
-
+                LoginGUIManager.Instance.OnClick_Exit(true);
+                MenuGUIManager.Instance.MenuChange(MenuGUIManager.EMenuModeType.Menu);
                 break;
         }
-        LoginGUIManager.Instance.OnClick_Exit(true);
-        MenuGUIManager.Instance.MenuChange(MenuGUIManager.EMenuModeType.Menu);
+       
     }
     private void JoinResult(Net.RecvPacket _recvPacket, Net.Protocol _protocol)
     {

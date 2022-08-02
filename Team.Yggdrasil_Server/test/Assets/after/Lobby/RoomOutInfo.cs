@@ -41,12 +41,12 @@ public class RoomOutInfo : Net.NetObjectInfo
     override public int Deserialize(MemoryStream _stream)
     {
         int size = 0;
-        size += base.Serialize(_stream);
+        size += base.Deserialize(_stream);
         size += Net.StreamReadWriter.ReadFromStream(_stream, out m_title);
-        size += Net.StreamReadWriter.ReadFromStream(_stream, out m_pw);
+        // size += Net.StreamReadWriter.ReadFromStream(_stream, out m_pw);
+        size += Net.StreamReadWriter.ReadFromStream(_stream, out m_game_mode);
         size += Net.StreamReadWriter.ReadFromStream(_stream, out m_cur_count);
         size += Net.StreamReadWriter.ReadFromStream(_stream, out m_maxenter_count);
-        size += Net.StreamReadWriter.ReadFromStream(_stream, out m_game_mode);
         return size;
     }
 
@@ -55,7 +55,7 @@ public class RoomOutInfo : Net.NetObjectInfo
         int size = 0;
         size += base.Serialize(_stream);
         size += Net.StreamReadWriter.WriteToStream(_stream, m_title);
-        size += Net.StreamReadWriter.WriteToStream(_stream, m_pw);
+        //size += Net.StreamReadWriter.WriteToStream(_stream, m_pw);
         size += Net.StreamReadWriter.WriteToStream(_stream, m_cur_count);
         size += Net.StreamReadWriter.WriteToStream(_stream, m_maxenter_count);
         size += Net.StreamReadWriter.WriteToStream(_stream, m_game_mode);

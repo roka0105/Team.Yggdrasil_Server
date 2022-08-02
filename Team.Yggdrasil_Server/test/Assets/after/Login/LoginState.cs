@@ -24,13 +24,17 @@ namespace Net
 
         public void RecvComplete(RecvPacket _recvpacket)
         {
-            int protocol=0;
+            uint protocol=0;
             _recvpacket.Read(out protocol);
             Protocol protocol_manager = new Protocol(Convert.ToUInt32(protocol));
             switch((Protocol.EMainProtocol)protocol_manager.GetProtocol(Protocol.EProtocolType.Main))
             {
                 case Protocol.EMainProtocol.LOGIN:
                     LoginManager.Instance.RecvProcess(_recvpacket,protocol_manager);
+                    break;
+                case Protocol.EMainProtocol.LOBBY:
+                    m_client.SetState(m_client.m_Lobbystate);
+                    LobbyManager.Instance.RecvProcess(_recvpacket, protocol_manager);
                     break;
             }
         }
