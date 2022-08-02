@@ -40,6 +40,18 @@ void CLobbyMgr::Packing(unsigned long _protocol, TCHAR* msg, CSession* _session)
 	_session->Packing(_protocol, senddata, size);
 }
 
+void CLobbyMgr::Packing(unsigned long _protocol, bool result, CSession* _session)
+{
+	byte senddata[BUFSIZE];
+	ZeroMemory(senddata, BUFSIZE);
+	byte* ptr = senddata;
+	int size = 0;
+	memcpy(ptr, &result,sizeof(bool));
+	size += sizeof(bool);
+
+	_session->Packing(_protocol, senddata, size);
+}
+
 CLobbyMgr* CLobbyMgr::GetInst()
 {
 	return instance;
@@ -135,10 +147,20 @@ void CLobbyMgr::BackPageProcess(CSession* _session)
 void CLobbyMgr::CreateRoomFunc(CSession* _session)
 {
 	CLockGuard<CLock> lock(m_lock);
+	//방생성 가능 여부 체크 (실패의 경우가 생각이 안남)
+	//방 생성 결과 전송
+	bool result = true;
+	if (result)
+	{
+		CRoomMgr::GetInst()->AddRoom(_session);
+		_session->SetState(_session->GetRoomState());
+	}
+	unsigned long protocol = 0;
+	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::LOBBY));
+	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::Multi));
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::CreateRoomResult));
 
-	CRoomMgr::GetInst()->AddRoom(_session);
-
-	_session->SetState(_session->GetRoomState());
+	Packing(protocol, result, _session);
 }
 
 void CLobbyMgr::PageRoomFunc(CSession* _session)

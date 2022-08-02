@@ -216,7 +216,11 @@ void CLoginMgr::EnterLobbyProcess(CSession* _ptr)
 	switch (static_cast<CLobbyMgr::SUBPROTOCOL>(subprotocol))
 	{
 	case CLobbyMgr::SUBPROTOCOL::Multi:
+		//클라의 state를 변경하기 위해 로비 입장 결과부터 전송한다.
 		CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(CLobbyMgr::SUBPROTOCOL::Multi));
+		CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::LOBBY));
+		CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(CLobbyMgr::DETAILPROTOCOL::LobbyResult));
+		_ptr->Packing(protocol, nullptr, 0);
 		// 방 리스트 정보 보낸다.
 		CRoomMgr::GetInst()->SendRoom(0, _ptr);
 		//로비에 들어와있는 유저 리스트에 유저정보 추가한다.
@@ -224,13 +228,11 @@ void CLoginMgr::EnterLobbyProcess(CSession* _ptr)
 		break;
 	case CLobbyMgr::SUBPROTOCOL::Single:
 		CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(CLobbyMgr::SUBPROTOCOL::Single));
+		CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::LOBBY));
+		CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(CLobbyMgr::DETAILPROTOCOL::LobbyResult));
+		_ptr->Packing(protocol, nullptr, 0);
 		break;
 	}
-
-	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::LOBBY));
-	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(CLobbyMgr::DETAILPROTOCOL::LobbyResult));
-
-	_ptr->Packing(protocol, nullptr, 0);
 }
 
 BOOL CLoginMgr::LoginCheck(TCHAR* _id, TCHAR* _pw, TCHAR* _nick)

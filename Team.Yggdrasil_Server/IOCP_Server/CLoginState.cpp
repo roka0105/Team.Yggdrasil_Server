@@ -18,8 +18,8 @@ void CLoginState::Recv()
 		CLoginMgr::GetInst()->LoginProcess(m_session);
 		break;
 	case MAINPROTOCOL::LOBBY:
-		CLoginMgr::GetInst()->EnterLobbyProcess(m_session);
 		is_lobby = true;
+		CLoginMgr::GetInst()->EnterLobbyProcess(m_session);
 		break;
 	}
 }

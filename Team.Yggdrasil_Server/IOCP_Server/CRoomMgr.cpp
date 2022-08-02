@@ -29,16 +29,17 @@ void CRoomMgr::Init()
 		TCHAR roomname[BUFSIZE];
 		ZeroMemory(roomname, BUFSIZE);
 		_stprintf(roomname, _T("room %d"), i);
-		t_RoomInfo* room = new t_RoomInfo(i, roomname, const_cast<TCHAR*>(_T("1234")), nullptr);
+		t_RoomInfo* room = new t_RoomInfo(i, ENetObjectType::Room, roomname, const_cast<TCHAR*>(_T("1234")), nullptr);
 		m_rooms[m_max_page].push_back(room);
+		m_rooms_count++;
 	}
 
-	
+
 }
 
 void CRoomMgr::End()
 {
-	
+
 }
 
 
@@ -57,11 +58,11 @@ void CRoomMgr::AddRoom(CSession* _host)
 
 	if (m_rooms[m_max_page].size() >= m_page_room_count)
 	{
-		m_max_page++;	
-		m_rooms.insert({m_max_page,list<t_RoomInfo*>()});	
+		m_max_page++;
+		m_rooms.insert({ m_max_page,list<t_RoomInfo*>() });
 	}
-	
-	t_RoomInfo* room = new t_RoomInfo(m_rooms_count++, room_name,room_pw, _host);
+
+	t_RoomInfo* room = new t_RoomInfo(m_rooms_count++,ENetObjectType::Room, room_name, room_pw, _host);
 	m_rooms[m_max_page].push_back(room);
 }
 
@@ -78,7 +79,7 @@ void CRoomMgr::RemoveRoom(unsigned int _id)
 			}
 		}
 	}
-	
+
 }
 
 //void CRoomMgr::SendRoom(CSession* _session, unsigned int _id)
@@ -150,20 +151,31 @@ void CRoomMgr::SendRoom(unsigned int page, CSession* _session)
 {
 	CLockGuard<CLock> lock(m_lock);
 	unsigned long protocol = 0;
-	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::ROOM));
-	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::SetRoomInfo));
-	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::PageInfo));
 
-
+	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::LOBBY));
+	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(CLobbyMgr::SUBPROTOCOL::Multi));
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(CLobbyMgr::DETAILPROTOCOL::RoomlistResult));
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(CLobbyMgr::DETAILPROTOCOL::PageRoom));
 	int count = 0;
-	
+	bool result = PageCheck(page);
 	list<t_RoomInfo*>temp;
-	for (t_RoomInfo* room : m_rooms[page])
+	if (result)
 	{
-		temp.push_back(room);
+		for (t_RoomInfo* room : m_rooms[page])
+		{
+			temp.push_back(room);
+		}
 	}
-	
-	Packing(protocol,page,temp, _session);
+	Packing(protocol, result, page, temp, _session);
+}
+
+bool CRoomMgr::PageCheck(unsigned int page)
+{
+	if (m_max_page < page)
+	{
+		return false;
+	}
+	return true;
 }
 
 CRoomMgr::CRoomMgr()
@@ -186,7 +198,7 @@ void CRoomMgr::Packing(unsigned long _protocol, t_RoomInfo* _room, CSession* _se
 	_session->Packing(_protocol, _buf, size);
 }
 
-void CRoomMgr::Packing(unsigned long _protocol,int page, list<t_RoomInfo*> _rooms, CSession* _session)
+void CRoomMgr::Packing(unsigned long _protocol, bool result, int page, list<t_RoomInfo*> _rooms, CSession* _session)
 {
 	byte _buf[BUFSIZE];
 	ZeroMemory(_buf, BUFSIZE);
@@ -194,54 +206,62 @@ void CRoomMgr::Packing(unsigned long _protocol,int page, list<t_RoomInfo*> _room
 	int size = 0;
 	int strsize = 0;
 	int forsize = _rooms.size();
-	
-	memcpy(ptr, &page, sizeof(int));
-	ptr += sizeof(int);
-	size += sizeof(int);
-	memcpy(ptr, &forsize, sizeof(int));
-	ptr += sizeof(int);
-	size += sizeof(int);
-	for (t_RoomInfo* room : _rooms)
+	//c# 은 bool 이 4byte임.
+	memcpy(ptr, &result, sizeof(bool));
+	ptr += sizeof(bool);
+	size += sizeof(bool);
+	if (result)
 	{
-		//방번호
-		memcpy(ptr, &room->id, sizeof(int));
+		memcpy(ptr, &page, sizeof(int));
 		ptr += sizeof(int);
 		size += sizeof(int);
-		//방이름
-		strsize = _tcslen(room->name) * CODESIZE;
-		memcpy(ptr, &strsize, sizeof(int));
+		memcpy(ptr, &forsize, sizeof(int));
 		ptr += sizeof(int);
 		size += sizeof(int);
-		memcpy(ptr, room->name, strsize);
-		ptr += strsize;
-		size += strsize;
-		//방 비번
-		strsize = _tcslen(room->password) * CODESIZE;
-		memcpy(ptr, &strsize, sizeof(int));
-		ptr += sizeof(int);
-		size += sizeof(int);
-		memcpy(ptr, room->password, strsize);
-		ptr += strsize;
-		size += strsize;
-		//방모드
-		memcpy(ptr, &room->mode, sizeof(int));
-		ptr += sizeof(int);
-		size += sizeof(int);
-		int enter_count = room->sessions.size();
-		//방인원
-		memcpy(ptr, &enter_count, sizeof(int));
-		ptr += sizeof(int);
-		size += sizeof(int);
-		//제한인원
-		memcpy(ptr, &m_enter_limit, sizeof(int));
-		ptr += sizeof(int);
-		size += sizeof(int);
+		for (t_RoomInfo* room : _rooms)
+		{
+			//방번호
+			memcpy(ptr, &room->id, sizeof(int));
+			ptr += sizeof(int);
+			size += sizeof(int);
+			memcpy(ptr, &room->type, sizeof(ENetObjectType));
+			ptr += sizeof(ENetObjectType);
+			size += sizeof(ENetObjectType);
+			//방이름
+			strsize = _tcslen(room->name) * CODESIZE;
+			memcpy(ptr, &strsize, sizeof(int));
+			ptr += sizeof(int);
+			size += sizeof(int);
+			memcpy(ptr, room->name, strsize);
+			ptr += strsize;
+			size += strsize;
+			//방 비번
+			/*strsize = _tcslen(room->password) * CODESIZE;
+			memcpy(ptr, &strsize, sizeof(int));
+			ptr += sizeof(int);
+			size += sizeof(int);
+			memcpy(ptr, room->password, strsize);
+			ptr += strsize;
+			size += strsize;*/
+			//방모드
+			memcpy(ptr, &room->mode, sizeof(int));
+			ptr += sizeof(int);
+			size += sizeof(int);
+			int enter_count = room->sessions.size();
+			//방인원
+			memcpy(ptr, &enter_count, sizeof(int));
+			ptr += sizeof(int);
+			size += sizeof(int);
+			//제한인원
+			memcpy(ptr, &m_enter_limit, sizeof(int));
+			ptr += sizeof(int);
+			size += sizeof(int);
 
+		}
 	}
-	
 	_session->Packing(_protocol, _buf, size);
 }
-void CRoomMgr::UnPacking(byte* _recvdata, TCHAR* _name,TCHAR* _pw)
+void CRoomMgr::UnPacking(byte* _recvdata, TCHAR* _name, TCHAR* _pw)
 {
 	byte* ptr = _recvdata;
 	int strsize = 0;
@@ -251,5 +271,5 @@ void CRoomMgr::UnPacking(byte* _recvdata, TCHAR* _name,TCHAR* _pw)
 	ptr += strsize * CODESIZE;
 	memcpy(&strsize, ptr, sizeof(int));
 	ptr += sizeof(int);
-	memcpy(_pw, ptr, strsize*CODESIZE);
+	memcpy(_pw, ptr, strsize * CODESIZE);
 }

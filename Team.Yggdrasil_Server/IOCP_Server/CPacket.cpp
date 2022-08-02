@@ -25,6 +25,9 @@ void CPacket::Packing(unsigned long _protocol, byte* _data, int _size)
 
 	if (_data == nullptr)
 	{
+		ptr = buf;
+		memcpy(ptr, &size, sizeof(int));
+		size += sizeof(int);
 		CSocket::WSASEND(buf, size);
 		return;
 	}

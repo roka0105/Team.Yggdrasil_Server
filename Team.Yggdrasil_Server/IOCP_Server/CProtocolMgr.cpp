@@ -66,3 +66,16 @@ void CProtocolMgr::AddDetailProtocol(unsigned long* _protocolmem, unsigned long 
 {
 	*_protocolmem = *_protocolmem | _protocoltype;
 }
+//
+//void CProtocolMgr::AddPreDetailProtocol(unsigned long* _protocolmem, unsigned long _protocoltype)
+//{
+//	_protocoltype = _protocoltype ;
+//	*_protocolmem = *_protocolmem | _protocoltype;
+//}
+//
+//void CProtocolMgr::AddRearDetailProtocol(unsigned long* _protocolmem, unsigned long _protocoltype)
+//{
+//	_protocoltype = _protocoltype;
+//	*_protocolmem = *_protocolmem | _protocoltype;
+//}
+

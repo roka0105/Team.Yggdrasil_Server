@@ -13,3 +13,13 @@ enum class SOC
 
 
 #define STRINGSIZE 32 
+
+enum class ENetObjectType
+{
+    None,
+    Room,
+    Player,
+    Boss,
+    Spirit,
+    Monster,
+};

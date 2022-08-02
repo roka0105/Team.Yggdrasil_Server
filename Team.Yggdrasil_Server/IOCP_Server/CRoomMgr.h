@@ -13,9 +13,10 @@ struct t_RoomInfo
 		host = nullptr;
 		mode = -1;
 	}
-	t_RoomInfo(unsigned int _id, TCHAR* _name,TCHAR* _password, CSession* _host)
+	t_RoomInfo(unsigned int _id,ENetObjectType _type, TCHAR* _name,TCHAR* _password, CSession* _host)
 	{
 		id = _id;
+		type = _type;
 		ZeroMemory(name, STRINGSIZE);
 		ZeroMemory(password, STRINGSIZE);
 		_tcscpy(name, _name);
@@ -24,6 +25,7 @@ struct t_RoomInfo
 		mode = -1;
 	}
 	unsigned int id;
+	ENetObjectType type;
 	TCHAR name[STRINGSIZE];
 	TCHAR password[STRINGSIZE];
 	list<CSession*> sessions;
@@ -62,13 +64,14 @@ public:
 	//void SendRoom(CSession* _session);
 	//get 현재 페이지 방 정보 전송
 	void SendRoom(unsigned int page,CSession* _session);
+	bool PageCheck(unsigned int page);
 private:
 	CRoomMgr();
 	~CRoomMgr();
 	//방 1개 정보 packing
 	void Packing(unsigned long _protocol,t_RoomInfo* _room, CSession* _session);
 	//방 묶음 정보 packing
-	void Packing(unsigned long _protocol,int page,list<t_RoomInfo*> _rooms, CSession* _session);
+	void Packing(unsigned long _protocol,bool result,int page,list<t_RoomInfo*> _rooms, CSession* _session);
 	//생성할 방 정보 unpacking
 	void UnPacking(byte* _recvdata,TCHAR* _name,TCHAR* _pw);
 private:
@@ -76,7 +79,7 @@ private:
 	const unsigned int m_enter_limit = 3;
 	const unsigned int m_packet_room_count = 77;
 	unsigned int m_max_page = 0;
-	unsigned int m_rooms_count = 0;
+	unsigned int m_rooms_count = 0;               //현재 방 갯수 카운팅.
 	const unsigned int m_page_room_count = 10;
 	CLock* m_lock;
 	map<unsigned int, list<t_RoomInfo*>> m_rooms;

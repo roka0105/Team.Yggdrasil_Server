@@ -61,7 +61,10 @@
     <Filter Include="소스 파일\Manager\SectorMgr">
       <UniqueIdentifier>{a76b5646-6b4b-4153-94ff-8b593fdb5e29}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Sector">
+    <Filter Include="소스 파일\Object">
+      <UniqueIdentifier>{90a91333-bbef-4609-b62f-b3c975591988}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Object\Sector">
       <UniqueIdentifier>{863fea7b-1db7-41af-9bb2-cf21e38497d1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -138,11 +141,11 @@
     <ClCompile Include="..\CLobbyState.cpp">
       <Filter>소스 파일\State</Filter>
     </ClCompile>
-    <ClCompile Include="CSectorMgr.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="..\CSectorMgr.cpp">
+      <Filter>소스 파일\Manager\SectorMgr</Filter>
     </ClCompile>
-    <ClCompile Include="CSector.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="..\CSector.cpp">
+      <Filter>소스 파일\Object\Sector</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -224,11 +227,11 @@
     <ClInclude Include="..\CCrypt.h">
       <Filter>소스 파일\Core\Crypt</Filter>
     </ClInclude>
-    <ClInclude Include="CSectorMgr.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="..\CSectorMgr.h">
+      <Filter>소스 파일\Manager\SectorMgr</Filter>
     </ClInclude>
-    <ClInclude Include="CSector.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="..\CSector.h">
+      <Filter>소스 파일\Object\Sector</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
