@@ -73,17 +73,21 @@ namespace Singleton_Ver2
             if (obj == null)
             {
                 obj = new GameObject(typeof(T).Name);
-                Transform parent = GameObject.Find("Managers").transform;
-                if (parent == null)
-                {
-                    parent = new GameObject("Managers").transform;
-                }
-                obj.transform.SetParent(parent);
+                //Transform parent = GameObject.Find("Managers").transform;
+                //if (parent == null)
+                //{
+                //    parent = new GameObject("Managers").transform;
+                //}
+                //obj.transform.SetParent(parent);
                 obj.AddComponent<T>();
             }
             return obj.GetComponent<T>();
 
         });
+        public static void __Initialize()
+        {
+            T instance = _instance.Value;
+        }
         public static T Instance
         {
             get

@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System;
 using System.Threading;
 using System.Net;
+using System.IO;
 
 namespace Net
 {
@@ -15,19 +16,19 @@ namespace Net
         private const int BUFSIZE = 4096;
 
         TcpClient m_client;
+        IState m_curstate;
+        LoginState m_Loginstate;
         NetworkStream m_netstream;
 
         private byte[] m_recvstream;
         private byte[] m_sendstream;
 
-        private uint m_send_packetNo;
-        private uint m_recv_packetNo;
+        private int m_send_packetNo;
+        private int m_recv_packetNo;
 
         private Queue<SendPacket> m_send_queue;
         private Queue<RecvPacket> m_recv_queue;
 
-        private PacketManager M_Packet;
-        
 
         bool is_loging;
 
@@ -42,7 +43,7 @@ namespace Net
             m_send_packetNo = 1;
             m_recv_packetNo = 1;
 
-            is_loging=false;
+            is_loging = false;
             try
             {
                 m_client = new TcpClient();
@@ -50,18 +51,23 @@ namespace Net
                 m_client.Connect(serverAddr);
                 m_netstream = m_client.GetStream();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.Log($"socket error: {e.Message} ");
             }
-           
+
             m_recvstream = new byte[BUFSIZE];
             m_sendstream = new byte[BUFSIZE];
-           
+
+            m_send_queue = new Queue<SendPacket>();
+            m_recv_queue = new Queue<RecvPacket>();
+
         }
         private void __Initialize_State()
         {
+            m_Loginstate = new LoginState(this);
 
+            m_curstate = m_Loginstate;
         }
         #endregion
         public void __Finalize()
@@ -88,44 +94,61 @@ namespace Net
         public void SendComplete()
         {
             //cur_state -> sendcomplete()
+            m_curstate.SendComplete();
         }
-        public bool Send(SendPacket _sendbuf)
+        public void Send(SendPacket _sendbuf)
         {
-           
+            int send_size = _sendbuf.Packing(m_sendstream, m_send_packetNo++);
+            m_netstream.Write(m_sendstream, 0, send_size);
+            SendComplete();
+        }
+        public void RecvQueueProcess()
+        {
+            if (m_recv_queue.Count != 0)
+            {
+                RecvPacket recvpacket = m_recv_queue.Dequeue();
+                RecvComplete(recvpacket);
+            }
         }
         public bool Recv()
         {
-            try
+            if(m_netstream.DataAvailable)
             {
-                byte[] size_bytes = new byte[sizeof(int)];
-                int packet_size = 0;
-                m_netstream.Read(size_bytes, 0, sizeof(int));
-                packet_size = BitConverter.ToInt32(size_bytes);
-
-                byte[] no_bytes = new byte[sizeof(int)];
-                int packet_no = 0;
-                m_netstream.Read(no_bytes, 0, sizeof(int));
-                packet_no = BitConverter.ToInt32(no_bytes);
-
-                if (packet_no < m_recv_packetNo)
+                try
                 {
+                    byte[] size_bytes = new byte[sizeof(int)];
+                    int packet_size = 0;
+
+                    Recvn(size_bytes, sizeof(int));
+                    packet_size = BitConverter.ToInt32(size_bytes);
+
+                    byte[] no_bytes = new byte[sizeof(int)];
+                    int packet_no = 0;
+                    Recvn(no_bytes, sizeof(int));
+                    packet_no = BitConverter.ToInt32(no_bytes);
+
+                    if (packet_no < m_recv_packetNo)
+                    {
+                        return false;
+                    }
+
+                    RecvPacket recvpacket = new RecvPacket();
+                    recvpacket.__Initialize();
+                    recvpacket.RecvnFuncRegister(Recvn);
+                    recvpacket.GetDataFromNetworkStream(m_netstream, packet_size-sizeof(int)/*packetno size*/);
+                    recvpacket.UnPacking();
+                    m_recv_queue.Enqueue(recvpacket);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log($"recv error ({e.Message})");
                     return false;
                 }
-
-                RecvPacket recvpacket = new RecvPacket();
-                recvpacket.__Initialize();
-                recvpacket.GetDataFromNetworkStream(m_netstream, packet_size);
-                recvpacket.UnPacking();
-                RecvComplete(recvpacket);
             }
-            catch(Exception e)
-            {
-                Debug.Log($"recv error ({e.Message})");
-                return false;
-            }
-            return true;
+            
+            return false;
         }
-        private int Recvn(RecvPacket _recvbuf, int size)
+        private int Recvn(byte[] _recvbuf, int size)
         {
             int retval = 0;
             int recvbytes = 0;
@@ -134,7 +157,7 @@ namespace Net
             {
                 try
                 {
-                    retval = m_netstream.Read(, recvbytes, left);
+                    retval = m_netstream.Read(_recvbuf, recvbytes, left);
                     left -= retval;
                     recvbytes += retval;
                 }
@@ -149,7 +172,9 @@ namespace Net
         public void RecvComplete(RecvPacket _recvpacket)
         {
             //m_curstate->RecvComplete();
+            m_curstate.RecvComplete(_recvpacket);
         }
+       
     }
 }
 

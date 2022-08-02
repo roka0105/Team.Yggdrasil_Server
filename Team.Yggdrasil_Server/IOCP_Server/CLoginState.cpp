@@ -19,7 +19,6 @@ void CLoginState::Recv()
 		break;
 	case MAINPROTOCOL::LOBBY:
 		CLoginMgr::GetInst()->EnterLobbyProcess(m_session);
-		CLobbyMgr::GetInst()->AddLobbySession(m_session);
 		is_lobby = true;
 		break;
 	}
