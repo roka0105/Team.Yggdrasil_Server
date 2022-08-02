@@ -58,6 +58,12 @@
     <Filter Include="소스 파일\Manager\ProtocolMgr">
       <UniqueIdentifier>{0734ba92-2a43-4799-a148-c5076b4df095}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Manager\SectorMgr">
+      <UniqueIdentifier>{a76b5646-6b4b-4153-94ff-8b593fdb5e29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Sector">
+      <UniqueIdentifier>{863fea7b-1db7-41af-9bb2-cf21e38497d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\CSessionMgr.cpp">
@@ -131,6 +137,12 @@
     </ClCompile>
     <ClCompile Include="..\CLobbyState.cpp">
       <Filter>소스 파일\State</Filter>
+    </ClCompile>
+    <ClCompile Include="CSectorMgr.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CSector.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -211,6 +223,12 @@
     </ClInclude>
     <ClInclude Include="..\CCrypt.h">
       <Filter>소스 파일\Core\Crypt</Filter>
+    </ClInclude>
+    <ClInclude Include="CSectorMgr.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CSector.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
