@@ -204,7 +204,7 @@ void CLobbyMgr::ChattingFunc(CSession* _session)
 		{
 			Packing(protocol,result, msg2, client);
 		}
-		_tprintf(_T("%s"), msg2);
+		_tprintf(_T("%s\n"), msg2);
 	}
 	else
 	{
