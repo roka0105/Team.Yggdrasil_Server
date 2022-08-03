@@ -1,14 +1,21 @@
 #pragma once
+class CPlayer;
+class CMonster;
+class CBoss;
+class CSpirit;
+class CObject;
+class CItem;
 class CSector
 {
-
+public:
+    CSector();
 private:
-	//List<CPlayer> m_playerlist
-	//List<CMonster> m_monsterlist
-	//CBoss*         m_boss
-	//List<CSpirit>   m_spiritlist
-	//List<CObject>   m_objectlist
-	//List<CItem>     m_itemlist
-	//List<CSector>   m_view_sectorlist
+    list<CPlayer> m_playerlist;
+    list<CMonster> m_monsterlist;
+    CBoss* m_boss;
+    list<CSpirit>   m_spiritlist;
+    list<CObject>   m_objectlist;
+    list<CItem>     m_itemlist;
+    list<CSector>   m_view_sectorlist;
 };
 

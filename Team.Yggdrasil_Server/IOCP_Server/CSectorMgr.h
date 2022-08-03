@@ -1,15 +1,19 @@
 #pragma once
+class CSession;
+class CSector;
+class CMonster;
+class CPlayer;
 class CSectorMgr
 {
 public:
-	//ÇÃ·¹ÀÌ¾î »÷µåÆĞÅ¶
-	//void PlayerSendPacket(CSession* ,Protocol,moveflag)
-	//void checksector()
-	//¸ó½ºÅÍ »÷µåÆĞÅ¶
-	//void MonsterSendPacket(CSession*,CMonster*, Protocol,moveflag)
-	//¾ÆÀÌÅÛ »÷µåÆĞÅ¶
-	//void ItemSendPacket(CSession*,Protocol,_onoff_flag)
+    //í”Œë ˆì´ì–´ ìƒŒë“œíŒ¨í‚·
+    void PlayerSendPacket(CSession* _session,CPlayer* _player, unsigned long _protocol, bool _moveflag);
+   
+    //ëª¬ìŠ¤í„° ìƒŒë“œíŒ¨í‚·
+    void MonsterSendPacket(CSession* _session, CMonster* _monster, unsigned long _protocol, bool _moveflag);
+    //ì•„ì´í…œ ìƒŒë“œíŒ¨í‚·
+    void ItemSendPacket(CSession* _session, unsigned long _protocol, bool _onoff_flag);
 private:
-	//List<CSector> m_sectorlist;
+    list<CSector> m_sectorlist;
 };
 
