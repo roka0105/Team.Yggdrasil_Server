@@ -55,7 +55,7 @@ private:
 	~CLobbyMgr();
 
 	void UnPacking(byte* _recvdata, TCHAR* msg);
-	void Packing(unsigned long _protocol, TCHAR* msg,CSession* _session);
+	void Packing(unsigned long _protocol,bool result, TCHAR* msg,CSession* _session);
 	void Packing(unsigned long _protocol, bool result, CSession* _session);
 private :
 	CLock* m_lock;

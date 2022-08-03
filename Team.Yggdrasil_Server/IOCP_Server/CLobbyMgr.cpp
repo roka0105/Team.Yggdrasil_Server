@@ -24,13 +24,16 @@ void CLobbyMgr::UnPacking(byte* _recvdata, TCHAR* msg)
 	memcpy(msg, ptr, strsize * CODESIZE);
 }
 
-void CLobbyMgr::Packing(unsigned long _protocol, TCHAR* msg, CSession* _session)
+void CLobbyMgr::Packing(unsigned long _protocol, bool result, TCHAR* msg, CSession* _session)
 {
 	byte senddata[BUFSIZE];
 	ZeroMemory(senddata, BUFSIZE);
 	byte* ptr = senddata;
 	int size = 0;
 	int strsize = _tcslen(msg) * CODESIZE;
+	memcpy(ptr, &result, sizeof(bool));
+	size += sizeof(bool);
+	ptr += sizeof(bool);
 	memcpy(ptr, &strsize, sizeof(int));
 	size += sizeof(int);
 	ptr += sizeof(int);
@@ -177,22 +180,37 @@ void CLobbyMgr::ChattingFunc(CSession* _session)
 	CLockGuard<CLock> lock(m_lock);
 	TCHAR msg[BUFSIZE];
 	ZeroMemory(msg, BUFSIZE);
+	TCHAR msg2[BUFSIZE];
+	ZeroMemory(msg2, BUFSIZE);
 	byte data[BUFSIZE];
 	ZeroMemory(data, BUFSIZE);
+	bool result = false;
+
 	_session->UnPacking(data);
 	UnPacking(data, msg);
+
 	unsigned long protocol = 0;
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, (unsigned long)MAINPROTOCOL::LOBBY);
 	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)SUBPROTOCOL::Multi);
 	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)DETAILPROTOCOL::ChatRecv);
 	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)DETAILPROTOCOL::AllMsg);
 
-	for (CSession* client : m_lobby_session_list)
+	
+	if (_tcslen(msg)!=0)
 	{
-		Packing(protocol, msg, client);
+		result = true;
+		_stprintf(msg2, _T(" %s : %s"), _session->GetUserInfo()->id, msg);
+		for (CSession* client : m_lobby_session_list)
+		{
+			Packing(protocol,result, msg2, client);
+		}
+		_tprintf(_T("%s"), msg2);
 	}
-	_tprintf(_T("%s"), msg);
-
+	else
+	{
+		Packing(protocol, result, _session);
+	}
+	
 }
 
 void CLobbyMgr::AddLobbySession(CSession* _session)
