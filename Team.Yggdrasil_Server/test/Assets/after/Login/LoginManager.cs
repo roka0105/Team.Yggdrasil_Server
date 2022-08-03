@@ -24,6 +24,14 @@ public class LoginManager : Singleton_Ver2.Singleton<LoginManager>
         Suc = 1
     }
     private LoginInfo m_curinfo;
+    public string GetLoginInfo_ID
+    {
+        get => m_curinfo.GetID;
+    }
+    public string GetLoginInfo_NICK
+    {
+        get => m_curinfo.GetNick;
+    }
     #region send func
     public void LoginProcess(LoginInfo _info)
     {

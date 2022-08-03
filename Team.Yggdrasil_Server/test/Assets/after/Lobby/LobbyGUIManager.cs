@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Text;
+
 public class LobbyGUIManager : Singleton_Ver2.Singleton<LobbyGUIManager>
 {
     #region window object
@@ -11,8 +12,7 @@ public class LobbyGUIManager : Singleton_Ver2.Singleton<LobbyGUIManager>
     GameObject m_window_createroom;
     #endregion
     #region input field object
-    [SerializeField]
-    TMP_InputField m_intput_chat;
+   
     #endregion
     #region room button object
     private Button[] m_room_btns;
@@ -23,19 +23,26 @@ public class LobbyGUIManager : Singleton_Ver2.Singleton<LobbyGUIManager>
     Button m_pre_btn;
     #endregion
     #region create room input field object
-    [SerializeField]
     TMP_InputField m_input_createname;
-    [SerializeField]
     TMP_InputField m_input_pw;
     #endregion
     #region create room button object
     Button m_btn_createroom;
-    [SerializeField]
     Button m_btn_ok;
-    [SerializeField]
     Button m_btn_cancle;
     #endregion
+    #region chat object
+    [SerializeField]
+    Transform m_Content;
+    [SerializeField]
+    GameObject m_TextPrefeb;
 
+    TMP_InputField m_input_chat;
+    #endregion
+    [SerializeField]
+    Canvas m_canvas;
+
+   
 
     #region Initialize
     public void __Initialize()
@@ -46,22 +53,24 @@ public class LobbyGUIManager : Singleton_Ver2.Singleton<LobbyGUIManager>
     public void __Initialize_Btn()
     {
         m_room_btns = new Button[m_rooms_count];
-        GameObject lobby = GameObject.Find("Canvas").transform.Find("Panel").transform.Find("Lobby").gameObject;
-        //GameObject lobbybtn = lobby.transform.Find("LobbyBtn").gameObject;
-        m_room_btns = lobby.transform.Find("Room View").GetComponentsInChildren<Button>();
-        //m_btn_createroom = lobbybtn.transform.Find("CreateRoomBtn").GetComponent<Button>();
-        //m_next_btn = lobbybtn.transform.Find("NextPageBtn").GetComponent<Button>();
-        //m_pre_btn = lobbybtn.transform.Find("BeforPageBtn").GetComponent<Button>();
-        //m_btn_ok = lobby.transform.Find("CreateRoom").GetComponentsInChildren<Button>()[0];
-        //m_btn_cancle = lobby.transform.Find("CreateRoom").GetComponentsInChildren<Button>()[1];
+        m_room_btns = m_canvas.transform.GetChild("Room View").GetComponentsInChildren<Button>();
+        #region buttons init
+        //m_btn_createroom = m_canvas.transform.GetChild("CreateRoomBtn").GetComponent<Button>();
+        //m_next_btn = m_canvas.transform.GetChild("NextPageBtn").GetComponent<Button>();
+        //m_pre_btn = m_canvas.transform.GetChild("BeforPageBtn").GetComponent<Button>();
+        //m_btn_ok = m_canvas.transform.GetChild("CreateRoom").GetComponentsInChildren<Button>()[0];
+        //m_btn_cancle = m_canvas.transform.GetChild("CreateRoom").GetComponentsInChildren<Button>()[1];
+        #endregion
     }
     public void __Initialize_Input()
     {
-        GameObject createroom = GameObject.Find("Canvas").transform.Find("Panel").transform.Find("Lobby").transform
-            .Find("CreateRoom").gameObject;
-        TMP_InputField[] inputs = createroom.GetComponentsInChildren<TMP_InputField>();
+        TMP_InputField[] inputs = m_canvas.transform.GetChild("CreateRoom")
+                                                    .GetComponentsInChildren<TMP_InputField>();
         m_input_createname = inputs[0];
         m_input_pw = inputs[1];
+
+        Transform ChatParent = m_canvas.transform.GetChild("Chatting");
+        m_input_chat = ChatParent.GetComponentInChildren<TMP_InputField>();
     }
     #endregion
     #region button click event
@@ -91,9 +100,48 @@ public class LobbyGUIManager : Singleton_Ver2.Singleton<LobbyGUIManager>
     {
         m_window_createroom.SetActive(false);
     }
+    public void OnClick_ChatSend()
+    {
+        LobbyManager.Instance.ChattingProcess(m_input_chat.text);
+    }
     #endregion
+    #region page update func
     public void RoomInfoSetting(int _btn_index, int _id, string _title, int _mode, int _enter_count, int _enter_limit)
     {
         m_room_btns[_btn_index].GetComponent<RoomInfoBtn>().ChageInfo(_id, _title, _mode, _enter_count, _enter_limit);
+    }
+    #endregion
+    #region chat update func
+    public void EnterEventFocuse_Chat()
+    {
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            LobbyManager.Instance.ChattingProcess(m_input_chat.text);
+        }
+    }
+    public void UpdateChat(string _text)
+    {
+        GameObject clone = Instantiate(m_TextPrefeb, m_Content);
+        clone.GetComponent<TextMeshProUGUI>().text =_text;
+        m_input_chat.text = "";
+
+        if(m_input_chat.isFocused==false)
+        {
+            m_input_chat.ActivateInputField();
+        }
+    }
+    private void RearTimeRepit()
+    {
+        if(Input.GetKeyDown(KeyCode.Return)&&m_input_chat.isFocused==false)
+        {
+            m_input_chat.ActivateInputField();
+        }
+    }
+    #endregion
+
+    private void Update()
+    {
+        EnterEventFocuse_Chat();
+        //RearTimeRepit();
     }
 }
