@@ -33,6 +33,13 @@ namespace Net
                     LoginManager.Instance.RecvProcess(_recvpacket,protocol_manager);
                     break;
                 case Protocol.EMainProtocol.LOBBY:
+                    //현재 state가 login 일때 lobby로 들어오는 경우는 
+                    //1. init 초기값 세팅을 위한 전송
+                    //2. multi 로비 입장 버튼 입력시 
+                    //위의 두가지 경우만 존재. multi 요청일 시에만 lobby state로 변하기 때문에
+                    //if으로 구분 함.
+                    if((LobbyManager.ESubProtocol)protocol_manager.GetProtocol(Protocol.EProtocolType.Sub)
+                        ==LobbyManager.ESubProtocol.Multi)
                     m_client.SetState(m_client.m_Lobbystate);
                     LobbyManager.Instance.RecvProcess(_recvpacket, protocol_manager);
                     break;

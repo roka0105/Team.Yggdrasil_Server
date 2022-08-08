@@ -83,7 +83,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\Users\user\Desktop\Team.Yggdrasil_SerVer\Team.Yggdrasil_Server\IOCP_Server\include</IncludePath>
-    <LibraryPath>C:\Program Files\MySQL\MySQL Server 8.0\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\yggdrasil\Server\C++Server_Yeram\IOCP_Server;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -216,6 +216,7 @@
     <ClInclude Include="..\pch.h" />
     <ClInclude Include="..\ProjectString.h" />
     <ClInclude Include="..\resource.h" />
+    <ClInclude Include="Memorypool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

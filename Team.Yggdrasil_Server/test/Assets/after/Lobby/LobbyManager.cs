@@ -9,6 +9,7 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
     public enum ESubProtocol
     {
         None,
+        Init,
         Multi,
         Single,
         BackPage,
@@ -118,6 +119,9 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
         uint sub_protocol = _protocol.GetProtocol(EProtocolType.Sub);
         switch ((ESubProtocol)sub_protocol)
         {
+            case ESubProtocol.Init:
+                InitRecvProcess(_recvpacket,_protocol);
+                break;
             case ESubProtocol.Multi:
                 MultiRecvProcess(_recvpacket, _protocol);
                 break;
@@ -125,6 +129,10 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
                 SingleRecvProcess(_recvpacket, _protocol);
                 break;
         }
+    }
+    public void InitRecvProcess(Net.RecvPacket _recvpacket, Net.Protocol _protocol)
+    {
+        InitResult(_recvpacket);
     }
     public void MultiRecvProcess(Net.RecvPacket _recvpacket, Net.Protocol _protocol)
     {
@@ -148,6 +156,14 @@ public class LobbyManager : Singleton_Ver2.Singleton<LobbyManager>
     public void SingleRecvProcess(Net.RecvPacket _recvpacket, Net.Protocol _protocol)
     {
 
+    }
+    public void InitResult(Net.RecvPacket _recvpacket)
+    {
+        int datasize = 0;
+        int btncount = 0;
+        _recvpacket.Read(out datasize);
+        _recvpacket.Read(out btncount);
+        LobbyGUIManager.Instance.__Initialize(btncount);
     }
     public void LobbyResult(Net.RecvPacket _recvpacket, Net.Protocol _protocol)
     {

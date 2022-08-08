@@ -233,5 +233,8 @@
     <ClInclude Include="..\CSector.h">
       <Filter>소스 파일\Object\Sector</Filter>
     </ClInclude>
+    <ClInclude Include="Memorypool.h">
+      <Filter>소스 파일\Core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

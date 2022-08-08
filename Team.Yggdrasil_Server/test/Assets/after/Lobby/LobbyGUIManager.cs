@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Text;
+using UnityEditor;
 
 public class LobbyGUIManager : Singleton_Ver2.Singleton<LobbyGUIManager>
 {
@@ -12,11 +13,14 @@ public class LobbyGUIManager : Singleton_Ver2.Singleton<LobbyGUIManager>
     GameObject m_window_createroom;
     #endregion
     #region input field object
-   
+
     #endregion
     #region room button object
-    private Button[] m_room_btns;
-    private const int m_rooms_count = 10;
+    [SerializeField]
+    private Button m_room_btn_prefeb;
+    [ReadOnly]
+    private List<Button> m_room_btns;
+    private int m_rooms_count;
     #endregion
     #region page button object
     Button m_next_btn;
@@ -45,15 +49,19 @@ public class LobbyGUIManager : Singleton_Ver2.Singleton<LobbyGUIManager>
    
 
     #region Initialize
-    public void __Initialize()
+    public void __Initialize(int _btncount)
     {
-        __Initialize_Btn();
+        __Initialize_Btn(_btncount);
         __Initialize_Input();
     }
-    public void __Initialize_Btn()
+    public void __Initialize_Btn(int _btncount)
     {
-        m_room_btns = new Button[m_rooms_count];
-        m_room_btns = m_canvas.transform.GetChild("Room View").GetComponentsInChildren<Button>();
+        m_room_btns = new List<Button>();
+        m_rooms_count = _btncount;
+        Transform parent = m_canvas.transform.GetChild("Room View").GetChild("Content");
+        for(int i=0;i<m_rooms_count;i++)
+        m_room_btns.Add(GameObject.Instantiate<Button>(m_room_btn_prefeb,parent));
+        
         #region buttons init
         //m_btn_createroom = m_canvas.transform.GetChild("CreateRoomBtn").GetComponent<Button>();
         //m_next_btn = m_canvas.transform.GetChild("NextPageBtn").GetComponent<Button>();

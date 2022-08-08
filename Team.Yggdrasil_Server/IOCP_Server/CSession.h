@@ -4,7 +4,7 @@
 #include "CLoginState.h"
 #include "CLobbyState.h"
 #include "CRoomState.h"
-
+#include "Memorypool.h"
 
 
 class CLock;
@@ -34,7 +34,7 @@ struct t_UserInfo
 	bool is_login;
 };
 
-class CSession :public CPacket
+class CSession :public CPacket//,public Memorypool<CSession>
 {
 public:
 	CSession(SOCKET _sock) :CPacket(_sock)

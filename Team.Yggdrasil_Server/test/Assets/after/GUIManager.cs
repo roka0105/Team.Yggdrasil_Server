@@ -8,6 +8,6 @@ public class GUIManager : Singleton_Ver2.Singleton<GUIManager>
 {
     private void Start()
     {
-        LobbyGUIManager.Instance.__Initialize();
+        //LobbyGUIManager.Instance.__Initialize();
     }
 }

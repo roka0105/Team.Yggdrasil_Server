@@ -34,7 +34,8 @@ using std::map;
 //#include "CLockGuard_Static.h"
 
 
-#define new new( _NORMAL_BLOCK, __FILE__,__LINE__)
+//밑에꺼 주석 한 이유는 memorypool override 할때 겹쳐서 오류 생겨서 이다.
+//#define new new( _NORMAL_BLOCK, __FILE__,__LINE__)
 #define BUFSIZE 4096
 
 
