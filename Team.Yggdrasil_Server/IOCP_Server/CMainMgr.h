@@ -27,7 +27,6 @@ public:
 	void Run();
 	virtual void Init();
 	virtual void End();
-
 	virtual BOOL Send(void* _session)final;
 	virtual BOOL Recv(void* _session)final;
 	virtual int DisConnect(OVERLAP_EX* _overlap)final;
@@ -39,12 +38,11 @@ public:
 	virtual void SizeCheck_And_Send(void* _session, int _combytes)final;
 
 	
-	// ++ »õ·Ó°Ô Ãß°¡µÈ ³»¿ë
+	// ++ ìƒˆë¡­ê²Œ ì¶”ê°€ëœ ë‚´ìš©
 public:
 	
 
 private:
-
 	CSocket* listen_sock;
 	CLock* m_lock;
 };

@@ -4,7 +4,7 @@
 #include "CLoginState.h"
 #include "CLobbyState.h"
 #include "CRoomState.h"
-#include "Memorypool.h"
+#include "CSector.h"
 
 
 class CLock;
@@ -34,7 +34,7 @@ struct t_UserInfo
 	bool is_login;
 };
 
-class CSession :public CPacket//,public Memorypool<CSession>
+class CSession :public CPacket
 {
 public:
 	CSession(SOCKET _sock) :CPacket(_sock)
@@ -78,9 +78,16 @@ public:
 		_tcscpy(m_userinfo->nickname, _nick);
 		m_userinfo->is_login = _flag;
 	}
-
+    void SetSector(QuadNode* _nodesector)
+    {
+        m_sector = _nodesector;
+    }
 	CState* GetState() { return m_curstate; }
-	CState* GetLoginState() { return m_loginstate; }
+	CState* GetLoginState() 
+    { 
+        m_loginstate->Init();
+        return m_loginstate; 
+    }
 	CState* GetLobbyState() { return m_lobbystate; }
 	CState* GetRoomState() { return m_roomstate; }
 	void SetState(CState* _state)
@@ -94,7 +101,7 @@ private:
 	CLoginState* m_loginstate;
 	CLobbyState* m_lobbystate;
 	CRoomState* m_roomstate;
-
+    QuadNode* m_sector;
 	friend class CState;
 	//int substate;
 };

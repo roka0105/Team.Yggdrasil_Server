@@ -2,8 +2,10 @@
 #include "CLoginState.h"
 #include "CSession.h"
 #include "CLoginMgr.h"
+#include "CRoomMgr.h"
 #include "CProtocolMgr.h"
 #include "CLobbyMgr.h"
+#include "CSectorMgr.h"
 void CLoginState::Recv()
 {
 	unsigned long protocol;
@@ -11,7 +13,7 @@ void CLoginState::Recv()
 	
 	m_session->UnPacking(protocol);
 	mainprotocol = CProtocolMgr::GetInst()->GetMainProtocol(protocol);
-	//ÇöÀç ¹Þ¾Æ¿Â°Ô ¸Þ´ºÁ¤º¸ÀÎÁö ·Î±×ÀÎÁ¤º¸ÀÎÁö È¸¿ø°¡ÀÔÁ¤º¸ÀÎÁö ±¸ºÐ
+	//í˜„ìž¬ ë°›ì•„ì˜¨ê²Œ ë©”ë‰´ì •ë³´ì¸ì§€ ë¡œê·¸ì¸ì •ë³´ì¸ì§€ íšŒì›ê°€ìž…ì •ë³´ì¸ì§€ êµ¬ë¶„
 	switch (static_cast<MAINPROTOCOL>(mainprotocol))
 	{
 	case MAINPROTOCOL::LOGIN:
@@ -21,6 +23,12 @@ void CLoginState::Recv()
 		is_lobby = true;
 		CLoginMgr::GetInst()->EnterLobbyProcess(m_session);
 		break;
+    case MAINPROTOCOL::INIT:
+        CRoomMgr::GetInst()->SendInit(m_session);
+        break;
+    case MAINPROTOCOL::TEST: // ì„¹í„° ì¢Œí‘œê°’ ì „ì†¡ í™•ì¸ ìœ„í•¨.
+        CSectorMgr::GetInst()->SendInit(m_session);
+        break;
 	}
 }
 

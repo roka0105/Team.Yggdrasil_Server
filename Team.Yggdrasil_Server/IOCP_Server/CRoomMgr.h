@@ -54,32 +54,34 @@ public:
 	void Init();
 	void End();
 
-	//¹æ Ãß°¡
+    void SendInit(CSession* _session);
+	//ë°© ì¶”ê°€
 	void AddRoom(CSession* _host);
-	//¹æ »èÁ¦
+	//ë°© ì‚­ì œ
 	void RemoveRoom(unsigned int _id);
-	//get ÇØ´ç ¾ÆÀÌµğ °ªÀ» °¡Áø ¹æ Á¤º¸ Àü¼Û ÀÌ°Å´Â ¾ÆÁ÷ ¾î¶²½ÄÀ¸·Î ¾µÁö »ı°¢ÀÌ ¾È³ª¼­ ÁÖ¼®.
+	//get í•´ë‹¹ ì•„ì´ë”” ê°’ì„ ê°€ì§„ ë°© ì •ë³´ ì „ì†¡ ì´ê±°ëŠ” ì•„ì§ ì–´ë–¤ì‹ìœ¼ë¡œ ì“¸ì§€ ìƒê°ì´ ì•ˆë‚˜ì„œ ì£¼ì„.
 	//void SendRoom(CSession* _session,unsigned int _id);
-	//get ¸ğµç ¹æ Á¤º¸ Àü¼Û ÀÌ°Íµµ Àß ¾È»ç¿ëÇÒµí..
+	//get ëª¨ë“  ë°© ì •ë³´ ì „ì†¡ ì´ê²ƒë„ ì˜ ì•ˆì‚¬ìš©í• ë“¯..
 	//void SendRoom(CSession* _session);
-	//get ÇöÀç ÆäÀÌÁö ¹æ Á¤º¸ Àü¼Û
+	//get í˜„ì¬ í˜ì´ì§€ ë°© ì •ë³´ ì „ì†¡
 	void SendRoom(unsigned int page,CSession* _session);
 	bool PageCheck(unsigned int page);
 private:
 	CRoomMgr();
 	~CRoomMgr();
-	//¹æ 1°³ Á¤º¸ packing
+    void Packing(unsigned long _protocol, int _roomcount, CSession* _session);
+	//ë°© 1ê°œ ì •ë³´ packing
 	void Packing(unsigned long _protocol,t_RoomInfo* _room, CSession* _session);
-	//¹æ ¹­À½ Á¤º¸ packing
+	//ë°© ë¬¶ìŒ ì •ë³´ packing
 	void Packing(unsigned long _protocol,bool result,int page,list<t_RoomInfo*> _rooms, CSession* _session);
-	//»ı¼ºÇÒ ¹æ Á¤º¸ unpacking
+	//ìƒì„±í•  ë°© ì •ë³´ unpacking
 	void UnPacking(byte* _recvdata,TCHAR* _name,TCHAR* _pw);
 private:
 	static CRoomMgr* instance;
 	const unsigned int m_enter_limit = 3;
 	const unsigned int m_packet_room_count = 77;
 	unsigned int m_max_page = 0;
-	unsigned int m_rooms_count = 0;               //ÇöÀç ¹æ °¹¼ö Ä«¿îÆÃ.
+	unsigned int m_rooms_count = 0;               //í˜„ì¬ ë°© ê°¯ìˆ˜ ì¹´ìš´íŒ….
 	const unsigned int m_page_room_count = 10;
 	CLock* m_lock;
 	map<unsigned int, list<t_RoomInfo*>> m_rooms;

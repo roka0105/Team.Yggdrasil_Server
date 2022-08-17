@@ -2,6 +2,7 @@
 #include "CIocp.h"
 #include "CSessionMgr.h"
 #include "CMainMgr.h"
+#include "CRoomMgr.h"
 
 
 DWORD CIocp::WorkThread(LPVOID _iocp)
@@ -19,7 +20,7 @@ DWORD CIocp::WorkThread(LPVOID _iocp)
 		retval = GetQueuedCompletionStatus(ciocp->m_hcp, &cbTransferred, &clientsock, (LPOVERLAPPED*)&overlap_ptr, INFINITE);
 
 		bool check = ciocp->GetQueueErrorCheck(retval, cbTransferred, overlap_ptr);
-		// check¿¡¼­ ¿¡·¯Ã¼Å©ÈÄ ¿À·ş¹ß»ı½Ã typeÀ» disconnected·Î ¹Ù²Ù¾îÁØ´Ù.
+		// checkì—ì„œ ì—ëŸ¬ì²´í¬í›„ ì˜¤ë¥©ë°œìƒì‹œ typeì„ disconnectedë¡œ ë°”ê¾¸ì–´ì¤€ë‹¤.
 		switch (overlap_ptr->type)
 		{
 		case IO_TYPE::ACCEPT:
@@ -28,7 +29,7 @@ DWORD CIocp::WorkThread(LPVOID _iocp)
 			break;
 		case IO_TYPE::RECV:
 			session = overlap_ptr->session;
-			ciocp->SizeCheck_And_Recv(session, cbTransferred); // ¿©±â¼­ ÇÔ¼öÇÏ³ª¿¡ ÀüºÎ Ã³¸®ÇÏµµ·Ï
+			ciocp->SizeCheck_And_Recv(session, cbTransferred); // ì—¬ê¸°ì„œ í•¨ìˆ˜í•˜ë‚˜ì— ì „ë¶€ ì²˜ë¦¬í•˜ë„ë¡
 			break;
 		case IO_TYPE::SEND:
 			session = overlap_ptr->session;
@@ -42,7 +43,6 @@ DWORD CIocp::WorkThread(LPVOID _iocp)
 
 	return 0;
 }
-
 
 void CIocp::Init()
 {
@@ -67,7 +67,7 @@ void CIocp::End()
 
 }
 
-void CIocp::PostDisConnect(void* _ptr) // ÀÏ´Ü »ç¿ëÀº ÇÏÁö¾Ê°í, ¸¸¾à »ç¿ëÇÑ´Ù¸é staticÀ¸·Î ¼±¾ğÈÄ ¿À·ù½Ã WSAsend¿¡¼­ »ç¿ëÇÑ´Ù.
+void CIocp::PostDisConnect(void* _ptr) // ì¼ë‹¨ ì‚¬ìš©ì€ í•˜ì§€ì•Šê³ , ë§Œì•½ ì‚¬ìš©í•œë‹¤ë©´ staticìœ¼ë¡œ ì„ ì–¸í›„ ì˜¤ë¥˜ì‹œ WSAsendì—ì„œ ì‚¬ìš©í•œë‹¤.
 {
 	OVERLAP_EX* tempoverlap = new OVERLAP_EX();
 	tempoverlap->type = IO_TYPE::DISCONNECT;
@@ -80,7 +80,7 @@ bool CIocp::GetQueueErrorCheck(int _retval, int _cb_t, OVERLAP_EX* _overlapex)
 {
 	CSession* session = reinterpret_cast<CSession*>(_overlapex->session);
 
-	if (_retval == 0 || _cb_t == 0) // ÀÌ°É ¹ÛÀ¸·Î »©°í ÀÌ °æ¿ì¿¡¸¸ GEtQueueErrorcheck¸¦ È£ÃâÇÑ´Ù.
+	if (_retval == 0 || _cb_t == 0) // ì´ê±¸ ë°–ìœ¼ë¡œ ë¹¼ê³  ì´ ê²½ìš°ì—ë§Œ GEtQueueErrorcheckë¥¼ í˜¸ì¶œí•œë‹¤.
 	{
 		if (_retval == 0)
 		{

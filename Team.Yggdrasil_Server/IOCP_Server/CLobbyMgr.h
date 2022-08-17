@@ -9,6 +9,7 @@ public :
 	enum class SUBPROTOCOL
 	{
 		NONE,
+        Init,
 		Multi,
 		Single,
 		BackPage,
@@ -17,7 +18,7 @@ public :
 	enum class DETAILPROTOCOL
 	{
 		NONE = -1,
-		//========»óÀ§=========
+		//========ìƒìœ„=========
 		LobbyEnter=1,
 		LobbyResult=2,
 		CreateRoom=4,
@@ -26,9 +27,9 @@ public :
 		ChatRecv=32,
 		RoomlistUpdate=64,
 		RoomlistResult=128,
-		//========ÇÏÀ§=========post
-		NoticeMsg = 256,//°øÁö ¸Ş¼¼Áö (¿î¿µÀÚ°¡ Àü¼Û)
-		AllMsg = 512,//ÀüÃ¼ ¸Ş¼¼Áö (ÀÏ¹İ À¯ÀúµéÀÌ »ç¿ë)
+		//========í•˜ìœ„=========post
+		NoticeMsg = 256,//ê³µì§€ ë©”ì„¸ì§€ (ìš´ì˜ìê°€ ì „ì†¡)
+		AllMsg = 512,//ì „ì²´ ë©”ì„¸ì§€ (ì¼ë°˜ ìœ ì €ë“¤ì´ ì‚¬ìš©)
 		AllRoom = 1024,
 		PageRoom = 2048,
 		MAX
@@ -49,7 +50,8 @@ public :
 	void PageRoomFunc(CSession* _session);
 	void ChattingFunc(CSession* _session);
 
-	void AddLobbySession(CSession* _session);
+	void AddSession(CSession* _session);
+    void RemoveSession(CSession* _session);
 private:
 	CLobbyMgr();
 	~CLobbyMgr();
@@ -60,8 +62,8 @@ private:
 private :
 	CLock* m_lock;
 	static CLobbyMgr* instance;
-	list<CSession*> m_lobby_session_list; //·Îºñ¿¡ µé¾î¿Í ÀÖ´Â À¯Àú Á¤º¸.
+	list<CSession*> m_lobby_session_list; //ë¡œë¹„ì— ë“¤ì–´ì™€ ìˆëŠ” ìœ ì € ì •ë³´.
 };
 
-//multi µé¾î°¥¶§ Àü¼ÛµÇ¾î¾ß ÇÒ Á¤º¸ 
-//1.¹æ ¸®½ºÆ®(¹æ¹øÈ£=ID,¹æ ÀÌ¸§, ¸ğµåÁ¤º¸,¹æ Âü¿© ÀÎ¿ø¼ö,¹æÀÎ¿øÁ¦ÇÑ) ÀÌ¹ÌÁö´Â ±×³É Å¬¶ó¿¡¼­ load
+//multi ë“¤ì–´ê°ˆë•Œ ì „ì†¡ë˜ì–´ì•¼ í•  ì •ë³´ 
+//1.ë°© ë¦¬ìŠ¤íŠ¸(ë°©ë²ˆí˜¸=ID,ë°© ì´ë¦„, ëª¨ë“œì •ë³´,ë°© ì°¸ì—¬ ì¸ì›ìˆ˜,ë°©ì¸ì›ì œí•œ) ì´ë¯¸ì§€ëŠ” ê·¸ëƒ¥ í´ë¼ì—ì„œ load

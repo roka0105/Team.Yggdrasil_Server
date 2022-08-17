@@ -67,6 +67,12 @@
     <Filter Include="소스 파일\Object\Sector">
       <UniqueIdentifier>{863fea7b-1db7-41af-9bb2-cf21e38497d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Core\GameObject">
+      <UniqueIdentifier>{23ee5013-2666-43b3-9fae-3e6fdb01b4ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Object\Player">
+      <UniqueIdentifier>{91c0824b-d0dd-456a-99a6-555dafbd9d55}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\CSessionMgr.cpp">
@@ -80,9 +86,6 @@
     </ClCompile>
     <ClCompile Include="..\CLogMgr.cpp">
       <Filter>소스 파일\Manager\LogMgr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CLoginMgr.cpp">
-      <Filter>소스 파일\Manager\LoginMgr</Filter>
     </ClCompile>
     <ClCompile Include="..\CMainMgr.cpp">
       <Filter>소스 파일\Manager\MainMgr</Filter>
@@ -147,6 +150,15 @@
     <ClCompile Include="..\CSector.cpp">
       <Filter>소스 파일\Object\Sector</Filter>
     </ClCompile>
+    <ClCompile Include="..\CPlayer.cpp">
+      <Filter>소스 파일\Object\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameObject.cpp">
+      <Filter>소스 파일\Core\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CLoginMgr.cpp">
+      <Filter>소스 파일\Manager\LoginMgr</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ProjectString.h">
@@ -180,9 +192,6 @@
       <Filter>소스 파일\default</Filter>
     </ClInclude>
     <ClInclude Include="..\func.h">
-      <Filter>소스 파일\default</Filter>
-    </ClInclude>
-    <ClInclude Include="..\define.h">
       <Filter>소스 파일\default</Filter>
     </ClInclude>
     <ClInclude Include="..\CRoomMgr.h">
@@ -235,6 +244,15 @@
     </ClInclude>
     <ClInclude Include="Memorypool.h">
       <Filter>소스 파일\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CPlayer.h">
+      <Filter>소스 파일\Object\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameObject.h">
+      <Filter>소스 파일\Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\define.h">
+      <Filter>소스 파일\default</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

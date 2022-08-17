@@ -1,7 +1,7 @@
 #pragma once
 #include "CSession.h"
-
-class CLock;
+#include "CLockGuard.h"
+#include "CLock.h"
 
 class CLoginMgr
 {
@@ -61,14 +61,10 @@ public:
 	bool FileDataAdd(t_UserInfo* _info);
 
 
-	void SetJoinlist(list<t_UserInfo*> _list) 
-	{ 
-		for (t_UserInfo* item : _list)
-		{
-			m_joinlist.push_back(item);
-		}
-	}
-
+    void SetJoinlist(list<t_UserInfo*> _list);
+	
+    void RemoveLogingInfo(t_UserInfo* _userinfo);
+   
 private:
 	CLock* m_lock;
 	list<t_UserInfo*> m_loginlist;
