@@ -5,7 +5,7 @@
 #include "CLobbyState.h"
 #include "CRoomState.h"
 #include "CSector.h"
-
+#include "CPlayer.h"
 
 class CLock;
 struct t_UserInfo
@@ -88,12 +88,18 @@ public:
         m_loginstate->Init();
         return m_loginstate; 
     }
-	CState* GetLobbyState() { return m_lobbystate; }
+	CState* GetLobbyState() 
+	{
+		m_lobbystate->Init();
+		return m_lobbystate; 
+	}
 	CState* GetRoomState() { return m_roomstate; }
 	void SetState(CState* _state)
 	{
 		m_curstate = _state;
 	}
+	void SetPlayer() { m_player = new CPlayer(m_userinfo->nickname,E_CharacterType::None,Vector3(0,0,0)); };
+	CPlayer* GetPlayer() { return m_player; };
 private:
 	t_UserInfo* m_userinfo;
 	// STATE
@@ -102,6 +108,7 @@ private:
 	CLobbyState* m_lobbystate;
 	CRoomState* m_roomstate;
     QuadNode* m_sector;
+	CPlayer* m_player;
 	friend class CState;
 	//int substate;
 };

@@ -35,17 +35,25 @@ struct t_RoomInfo
 class CRoomMgr
 {
 public:
+	enum class ERRTYPE
+	{
+		NONE,
+		ERR_MAXENTER,
+		ERR_PW,
+		ERR_ROOMINDEX,
+	};
 	enum class SUBPROTOCOL
 	{
 		NONE = -1,
-		SetRoomInfo,
+		RoomEnter,
+		RoomResult,
 
 		MAX
 	};
 	enum class DETAILPROTOCOL
 	{
 		NONE = -1,
-		PageInfo,
+	
 		MAX
 	};
 	static CRoomMgr* GetInst();
@@ -55,6 +63,7 @@ public:
 	void End();
 
     void SendInit(CSession* _session);
+	bool EnterRoomProcess(CSession* _session);
 	//방 추가
 	void AddRoom(CSession* _host);
 	//방 삭제
@@ -66,6 +75,7 @@ public:
 	//get 현재 페이지 방 정보 전송
 	void SendRoom(unsigned int page,CSession* _session);
 	bool PageCheck(unsigned int page);
+	ERRTYPE EnterCheck(int _roomindex,t_RoomInfo** _roominfo, const TCHAR* _pw);
 private:
 	CRoomMgr();
 	~CRoomMgr();
@@ -74,6 +84,10 @@ private:
 	void Packing(unsigned long _protocol,t_RoomInfo* _room, CSession* _session);
 	//방 묶음 정보 packing
 	void Packing(unsigned long _protocol,bool result,int page,list<t_RoomInfo*> _rooms, CSession* _session);
+	//방 입장 결과 packing
+	void Packing(unsigned long _protocol,int result,t_RoomInfo* _room, CSession* _session);
+	//입장할 방 번호 unpacking
+	void UnPacking(byte* _recvdata, int& _roomindex,TCHAR* _pw);
 	//생성할 방 정보 unpacking
 	void UnPacking(byte* _recvdata,TCHAR* _name,TCHAR* _pw);
 private:

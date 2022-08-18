@@ -41,10 +41,9 @@ public :
 	void End();
 
 	void LobbyProcess(CSession* _session);
-	void EnterRoomProcess(CSession* _session);
 	void BackPageProcess(CSession* _session);
 
-	void LobbyEnterFunc(CSession* _session);
+	//void LobbyEnterFunc(CSession* _session);
 	//void AllRoomFunc(CSession* _session);
 	void CreateRoomFunc(CSession* _session);
 	void PageRoomFunc(CSession* _session);

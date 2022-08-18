@@ -3,6 +3,11 @@
 #include "CLobbyMgr.h"
 #include "CState.h"
 #include "CProtocolMgr.h"
+#include "CRoomMgr.h"
+void CLobbyState::Init()
+{
+	m_sendcom_type = SendCompType::None;
+}
 void CLobbyState::Recv()
 {
 	//mainprotocol 분리
@@ -17,9 +22,14 @@ void CLobbyState::Recv()
 		break;
 	case MAINPROTOCOL::LOGIN:
 		CLobbyMgr::GetInst()->BackPageProcess(m_session);
+		m_sendcom_type = SendCompType::BackPage;
 		break;
 	case MAINPROTOCOL::ROOM:
-		CLobbyMgr::GetInst()->EnterRoomProcess(m_session);
+		bool result = CRoomMgr::GetInst()->EnterRoomProcess(m_session);
+		if (result)
+		{
+			m_sendcom_type = SendCompType::EnterRoom;
+		}
 		break;
 	}
 	//로비(로비에서 해야할 일 : 방만들기,전체채팅,방목록)
@@ -29,4 +39,13 @@ void CLobbyState::Recv()
 
 void CLobbyState::Send()
 {
+	switch (m_sendcom_type)
+	{
+	case SendCompType::BackPage:
+		m_session->SetState(m_session->GetLoginState());
+		break;
+	case SendCompType::EnterRoom:
+		m_session->SetState(m_session->GetRoomState());
+		break;
+	}
 }

@@ -17,6 +17,7 @@ public:
         m_obj_type = E_GameObject::Player;
         m_index = createcount++;
         ZeroMemory(m_playername, STRINGSIZE);
+        is_ready = false;
     }
     CPlayer(TCHAR* _name,E_CharacterType _c_type,Vector3 _pos)
     {
@@ -25,10 +26,17 @@ public:
         _tcscpy(m_playername, _name);
         m_character_type = _c_type;
         m_position = _pos;
+        is_ready = false;
     }
+    TCHAR* Getname();
+    const E_CharacterType* GetType();
+    void SetType(E_CharacterType _type);
+    const bool* GetReady();
+    void SetReady(bool _ready);
 private:
     static int createcount;
     TCHAR m_playername[STRINGSIZE];
     E_CharacterType m_character_type;
+    bool is_ready;
 };
 

@@ -122,13 +122,6 @@ void CLobbyMgr::LobbyProcess(CSession* _session)
     }
 }
 
-void CLobbyMgr::EnterRoomProcess(CSession* _session)
-{
-    //방입장 가능 여부 체크 
-    //방입장 가능시 state room으로 변경.
-    //전송 프로토콜 room , enterroomresult
-}
-
 void CLobbyMgr::BackPageProcess(CSession* _session)
 {
     //state ->login 변경 
@@ -139,7 +132,6 @@ void CLobbyMgr::BackPageProcess(CSession* _session)
     {
     case SUBPROTOCOL::BackPage:
         this->RemoveSession(_session);
-        _session->SetState(_session->GetLoginState());
         unsigned long protocol = 0;
         CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::LOGIN));
         Packing(protocol, true, _session);
@@ -178,6 +170,7 @@ void CLobbyMgr::PageRoomFunc(CSession* _session)
     unsigned int page = 0;
 
     //page unpack
+
     CRoomMgr::GetInst()->SendRoom(page, _session);
 }
 
