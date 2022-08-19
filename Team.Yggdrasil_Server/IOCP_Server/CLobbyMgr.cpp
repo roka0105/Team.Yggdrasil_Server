@@ -24,6 +24,12 @@ void CLobbyMgr::UnPacking(byte* _recvdata, TCHAR* msg)
     memcpy(msg, ptr, strsize * CODESIZE);
 }
 
+void CLobbyMgr::UnPacking(byte* _recvdata, int& _page)
+{
+    byte* ptr = _recvdata;
+    memcpy(&_page, _recvdata, sizeof(int));
+}
+
 void CLobbyMgr::Packing(unsigned long _protocol, bool result, TCHAR* msg, CSession* _session)
 {
     byte senddata[BUFSIZE];
@@ -99,7 +105,6 @@ void CLobbyMgr::LobbyProcess(CSession* _session)
             break;
         case (static_cast<const unsigned long>(DETAILPROTOCOL::RoomlistUpdate) | static_cast<const unsigned long>(DETAILPROTOCOL::PageRoom)):
             PageRoomFunc(_session);
-
             break;
         case (static_cast<const unsigned long>(DETAILPROTOCOL::RoomlistUpdate) | static_cast<const unsigned long>(DETAILPROTOCOL::AllRoom)):
             //AllRoomFunc(_session);
@@ -167,11 +172,30 @@ void CLobbyMgr::CreateRoomFunc(CSession* _session)
 void CLobbyMgr::PageRoomFunc(CSession* _session)
 {
     CLockGuard<CLock> lock(m_lock);
-    unsigned int page = 0;
+    byte data[BUFSIZE];
+    ZeroMemory(data, BUFSIZE);
 
+    _session->UnPacking(data);
+    int page = 0;  
     //page unpack
-
-    CRoomMgr::GetInst()->SendRoom(page, _session);
+    UnPacking(data, page);
+  
+    bool result = CRoomMgr::GetInst()->PageCheck(page);
+    if (result)
+    {
+        //다음 페이지 방 정보 전송
+        CRoomMgr::GetInst()->SendRoom(result,page, _session);
+    }
+    else
+    {
+        //false 전송
+        unsigned long protocol = 0;
+        CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::LOBBY));
+        CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::Multi));
+        CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::RoomlistResult));
+        CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::PageRoom));
+        Packing(protocol, result, _session);
+    }
 }
 
 void CLobbyMgr::ChattingFunc(CSession* _session)

@@ -222,7 +222,7 @@ void CLoginMgr::EnterLobbyProcess(CSession* _ptr)
         CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(CLobbyMgr::DETAILPROTOCOL::LobbyResult));
         _ptr->Packing(protocol, nullptr, 0);
         // 방 리스트 정보 보낸다.
-        CRoomMgr::GetInst()->SendRoom(0, _ptr);
+        CRoomMgr::GetInst()->SendRoom(true,0, _ptr);
         //로비에 들어와있는 유저 리스트에 유저정보 추가한다.
         CLobbyMgr::GetInst()->AddSession(_ptr);
         break;

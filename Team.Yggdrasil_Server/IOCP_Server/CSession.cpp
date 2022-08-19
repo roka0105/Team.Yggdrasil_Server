@@ -11,6 +11,7 @@ void CSession::Init()
 	s_overlap.type = IO_TYPE::SEND;
 	s_overlap.session = this;
 
+	m_player = nullptr;
 	
 }
 

@@ -6,6 +6,12 @@ class CLock;
 class CLobbyMgr
 {
 public :
+	enum class ERRTYPE
+	{
+		NONE,
+		PAGENULL,//없는 페이지 호출시 에러.
+		MAX
+	};
 	enum class SUBPROTOCOL
 	{
 		NONE,
@@ -18,7 +24,7 @@ public :
 	enum class DETAILPROTOCOL
 	{
 		NONE = -1,
-		//========상위=========
+		//========하위========= 1byte
 		LobbyEnter=1,
 		LobbyResult=2,
 		CreateRoom=4,
@@ -27,7 +33,7 @@ public :
 		ChatRecv=32,
 		RoomlistUpdate=64,
 		RoomlistResult=128,
-		//========하위=========post
+		//========상위========= 1byte
 		NoticeMsg = 256,//공지 메세지 (운영자가 전송)
 		AllMsg = 512,//전체 메세지 (일반 유저들이 사용)
 		AllRoom = 1024,
@@ -51,11 +57,13 @@ public :
 
 	void AddSession(CSession* _session);
     void RemoveSession(CSession* _session);
+
 private:
 	CLobbyMgr();
 	~CLobbyMgr();
 
 	void UnPacking(byte* _recvdata, TCHAR* msg);
+	void UnPacking(byte* _recvdata, int& _page);
 	void Packing(unsigned long _protocol,bool result, TCHAR* msg,CSession* _session);
 	void Packing(unsigned long _protocol, bool result, CSession* _session);
 private :

@@ -93,12 +93,22 @@ public:
 		m_lobbystate->Init();
 		return m_lobbystate; 
 	}
-	CState* GetRoomState() { return m_roomstate; }
+	CState* GetRoomState() 
+	{ 
+		m_roomstate->Init();
+		return m_roomstate; 
+	}
 	void SetState(CState* _state)
 	{
 		m_curstate = _state;
 	}
-	void SetPlayer() { m_player = new CPlayer(m_userinfo->nickname,E_CharacterType::None,Vector3(0,0,0)); };
+	void SetPlayer() 
+	{
+		if (m_player == nullptr)
+			m_player = new CPlayer(m_userinfo->nickname, E_CharacterType::None, Vector3(0, 0, 0));
+		else
+			m_player->SetInfo(m_userinfo->nickname, E_CharacterType::None, Vector3(0, 0, 0));
+	};
 	CPlayer* GetPlayer() { return m_player; };
 private:
 	t_UserInfo* m_userinfo;

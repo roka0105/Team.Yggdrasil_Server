@@ -2,6 +2,11 @@
 #include "CPlayer.h"
 int CPlayer::createcount = 0;
 
+const int CPlayer::GetID()
+{
+    return m_index;
+}
+
 TCHAR* CPlayer::Getname()
 {
     return m_playername;
@@ -25,4 +30,13 @@ const bool* CPlayer::GetReady()
 void CPlayer::SetReady(bool _ready)
 {
     is_ready = _ready;
+}
+
+void CPlayer::SetInfo(TCHAR* _name, E_CharacterType _c_type, Vector3 _pos)
+{
+    m_obj_type = E_GameObject::Player;
+    _tcscpy(m_playername, _name);
+    m_character_type = _c_type;
+    m_position = _pos;
+    is_ready = false;
 }

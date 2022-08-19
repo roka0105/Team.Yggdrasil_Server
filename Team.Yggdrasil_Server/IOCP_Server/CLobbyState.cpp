@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "CLobbyState.h"
 #include "CLobbyMgr.h"
-#include "CState.h"
 #include "CProtocolMgr.h"
 #include "CRoomMgr.h"
 void CLobbyState::Init()
