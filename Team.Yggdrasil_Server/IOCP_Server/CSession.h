@@ -102,10 +102,10 @@ public:
 	{
 		m_curstate = _state;
 	}
-	void SetPlayer() 
+	void SetPlayer(int _index) 
 	{
 		if (m_player == nullptr)
-			m_player = new CPlayer(m_userinfo->nickname, E_CharacterType::None, Vector3(0, 0, 0));
+			m_player = new CPlayer(_index,m_userinfo->nickname, E_CharacterType::None, Vector3(0, 0, 0));
 		else
 			m_player->SetInfo(m_userinfo->nickname, E_CharacterType::None, Vector3(0, 0, 0));
 	};
