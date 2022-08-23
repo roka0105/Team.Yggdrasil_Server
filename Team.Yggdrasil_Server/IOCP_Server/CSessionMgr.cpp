@@ -74,5 +74,6 @@ void CSessionMgr::RemoveSession(CSession* _ptr)
     }
     printf("Á¾·á %s %d\n", inet_ntoa(item->GetAddr().sin_addr), ntohs(item->GetAddr().sin_port));
     m_session_list.remove(item);
+    item->End();
     delete item;
 }

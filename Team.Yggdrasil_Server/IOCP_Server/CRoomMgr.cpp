@@ -150,16 +150,25 @@ void CRoomMgr::RemoveRoom(unsigned int _id)
 
 }
 
-void CRoomMgr::RemoveSession(t_RoomInfo* _room ,CSession* _session)
+void CRoomMgr::RemoveSession(t_RoomInfo* _room, CSession* _session)
 {
-	
+	bool is_host = false;
 	for (auto session : _room->sessions)
 	{
 		if (memcmp(session, _session, sizeof(CSession)) == false)
 		{
+			if (memcmp(_room->host, session, sizeof(CSession)) == false)
+				is_host = true;
 			_room->sessions.remove(session);
-			return;
+			break;
 		}
+	}
+	if (is_host)
+	{
+		if (_room->sessions.size() != 0)
+			_room->host = _room->sessions.front();
+		else
+			_room->host = nullptr;
 	}
 }
 
@@ -283,19 +292,30 @@ void CRoomMgr::HostReadyFunc(CSession* _session, CRoomState::SendCompType& _stat
 
 	t_RoomInfo* room = FindRoom(roomid);
 	bool allready = AllReadyCheck(room);//플레이어 세명 다 레디 상태일 때 게임 들어가기 체크 함수
+	unsigned long protocol = 0;
+	
 	if (allready == true)
 	{
 		_statetype = CRoomState::SendCompType::EnterGame;
-		
+
+		CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::GAME));
+		CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::Multi));
+		CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::ReadyResult));
+		CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::HostReady));
+		for (auto session : room->sessions)
+		{
+			Packing(protocol, allready, session);
+		}
 	}
-	unsigned long protocol = 0;
-	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::ROOM));
-	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::Multi));
-	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::ReadyResult));
-	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::HostReady));
-
-	Packing(protocol, allready, _session);
-
+	else
+	{
+		CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::ROOM));
+		CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::Multi));
+		CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::ReadyResult));
+		CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::HostReady));
+		//게임시작 실패 방장한테만 보내기
+		Packing(protocol, allready, _session);
+	}
 }
 
 void CRoomMgr::ChattingFunc(CSession* _session)

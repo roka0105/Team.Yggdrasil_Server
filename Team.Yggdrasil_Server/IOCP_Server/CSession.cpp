@@ -20,4 +20,6 @@ void CSession::End() // removesession시 마무리작업하는 함수
 	CloseSocket();
 	//base
 	//CPacket::Packing();
+	if(m_player!=nullptr)
+	delete m_player;
 }
