@@ -109,6 +109,15 @@ public:
 		else
 			m_player->SetInfo(m_userinfo->nickname, E_CharacterType::None, Vector3(0, 0, 0));
 	};
+	int GetRoomID()
+	{
+		return m_roomid;
+	}
+	void SetRoomID(int _index)
+	{
+		m_roomid = _index;
+	}
+	
 	CPlayer* GetPlayer() { return m_player; };
 private:
 	t_UserInfo* m_userinfo;
@@ -118,6 +127,7 @@ private:
 	CLobbyState* m_lobbystate;
 	CRoomState* m_roomstate;
     QuadNode* m_sector;
+	int m_roomid;
 	CPlayer* m_player;
 	friend class CState;
 	//int substate;

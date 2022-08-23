@@ -19,15 +19,25 @@ void CRoomState::Recv()
 	switch ((MAINPROTOCOL)mainprotocol)
 	{
 	case MAINPROTOCOL::ROOM:
-		CRoomMgr::GetInst()->RoomProcess(m_session);
+		CRoomMgr::GetInst()->RoomProcess(m_session,m_sendcom_type);
 		break;
 	case MAINPROTOCOL::LOBBY:
-		//CRoomMgr::GetInst()->BackPageProcess(m_session);
-		m_sendcom_type = SendCompType::BackPage;
+		CRoomMgr::GetInst()->BackPageProcess(m_session,m_sendcom_type);
 		break;
 	}
 }
 
 void CRoomState::Send()
 {
+	switch (m_sendcom_type)
+	{
+	case SendCompType::BackPage:
+		break;
+	case SendCompType::EnterGame:
+		//m_session->SetState(m_session->GetGameState());
+		break;  
+	case SendCompType::EnterLobby:
+		m_session->SetState(m_session->GetLobbyState());
+		break;
+	}
 }

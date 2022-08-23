@@ -3,11 +3,15 @@
 
 class CRoomState :public CState
 {
+   
+public:
     enum class SendCompType
     {
         None,
         BackPage,
         EnterRoom,
+        EnterGame,
+        EnterLobby,
     };
 public:
     CRoomState(CSession* _session):CState(_session)

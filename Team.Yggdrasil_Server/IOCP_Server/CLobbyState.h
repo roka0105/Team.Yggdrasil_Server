@@ -3,6 +3,7 @@
 
 class CLobbyState : public CState 
 {
+public:
 	enum class SendCompType
 	{
 		None,

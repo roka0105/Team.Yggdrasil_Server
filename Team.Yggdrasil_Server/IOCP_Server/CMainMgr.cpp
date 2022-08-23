@@ -206,6 +206,10 @@ int CMainMgr::DisConnect(OVERLAP_EX* _overlap)
     {
         CLobbyMgr::GetInst()->RemoveSession(session);
     }
+	else if (dynamic_cast<CRoomState*>(state) != nullptr)
+	{
+		CRoomMgr::GetInst()->DisConnected(session);
+	}
 	/*printf("%s ,%s\n", typeid(dynamic_cast<CLobbyState*>(state)).name(), typeid(CLobbyState*).name());
 	if (typeid(dynamic_cast<CLobbyState*>(state))== typeid(CLobbyState*))
 	{

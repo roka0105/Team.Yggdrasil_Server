@@ -4,6 +4,7 @@
 #include "CLockGuard.h"
 #include "CProtocolMgr.h"
 #include "CLobbyMgr.h"
+#include "CLoginMgr.h"
 CRoomMgr* CRoomMgr::instance = nullptr;
 
 CRoomMgr* CRoomMgr::GetInst()
@@ -53,9 +54,16 @@ void CRoomMgr::SendInit(CSession* _session)
 	Packing(protocol, static_cast<int>(m_page_room_count), _session);
 }
 
-bool CRoomMgr::EnterRoomProcess(CSession* _session)
+bool CRoomMgr::EnterRoomProcess(CSession* _session, CLobbyState::SendCompType& _statetype)
 {
 	CLockGuard<CLock> lock(m_lock);
+	unsigned long protocol = 0;
+	_session->UnPacking(protocol);
+	unsigned long subprotocol = CProtocolMgr::GetInst()->GetSubProtocol(protocol);
+
+	if (subprotocol != (int)SUBPROTOCOL::NONE)
+		return false;
+
 	byte buf[BUFSIZE];
 	ZeroMemory(buf, BUFSIZE);
 	_session->UnPacking(buf);
@@ -71,15 +79,19 @@ bool CRoomMgr::EnterRoomProcess(CSession* _session)
 	if (enter_result == ERRTYPE::NONE)
 	{
 		_session->SetPlayer(room->sessions.size());
+		_session->SetRoomID(roomindex);
 		if (room->host == nullptr)
 			room->host = _session;
 		room->sessions.push_back(_session);
+		_statetype = CLobbyState::SendCompType::EnterRoom;
 	}
+
 	//전송 프로토콜 room , enterroomresult
-	unsigned long protocol = 0;
+	protocol = 0;
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::ROOM));
 	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::Multi));
 	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::RoomResult));
+
 	int curid = _session->GetPlayer()->GetID();
 	for (CSession* session : room->sessions)
 	{
@@ -138,7 +150,20 @@ void CRoomMgr::RemoveRoom(unsigned int _id)
 
 }
 
-void CRoomMgr::RoomProcess(CSession* _session)
+void CRoomMgr::RemoveSession(t_RoomInfo* _room ,CSession* _session)
+{
+	
+	for (auto session : _room->sessions)
+	{
+		if (memcmp(session, _session, sizeof(CSession)) == false)
+		{
+			_room->sessions.remove(session);
+			return;
+		}
+	}
+}
+
+void CRoomMgr::RoomProcess(CSession* _session, CRoomState::SendCompType& _statetype)
 {
 	unsigned long protocol = 0;
 	_session->UnPacking(protocol);
@@ -153,23 +178,25 @@ void CRoomMgr::RoomProcess(CSession* _session)
 		case static_cast<const unsigned long>(DETAILPROTOCOL::CharacterSelect):
 			CharacterFunc(_session);
 			break;
-			case  static_cast<const unsigned long>(DETAILPROTOCOL::ReadySelect) |
-				static_cast<const unsigned long>(DETAILPROTOCOL::HostReady) :         //방장 레디
-				HostReadyFunc(_session);
+			case  static_cast<const unsigned long>(DETAILPROTOCOL::ReadySelect) | static_cast<const unsigned long>(DETAILPROTOCOL::HostReady) :
+				//방장 레디
+				HostReadyFunc(_session, _statetype);
 				break;
-				case  static_cast<const unsigned long>(DETAILPROTOCOL::ReadySelect) |
-					static_cast<const unsigned long>(DETAILPROTOCOL::NomalReady) :       //팀원 레디
+				case  static_cast<const unsigned long>(DETAILPROTOCOL::ReadySelect) | static_cast<const unsigned long>(DETAILPROTOCOL::NomalReady) :
+					//팀원 레디
 					NomalReadyFunc(_session);
 					break;
-					case static_cast<const unsigned long>(DETAILPROTOCOL::ChatSend) |
-						static_cast<const unsigned long>(DETAILPROTOCOL::AllMsg) :
-
+					case static_cast<const unsigned long>(DETAILPROTOCOL::ChatSend) | static_cast<const unsigned long>(DETAILPROTOCOL::AllMsg) :
+						ChattingFunc(_session);
 						break;
+					
 		}
 		break;
 	case SUBPROTOCOL::Single:
 		break;
 	}
+
+
 }
 
 void CRoomMgr::CharacterFunc(CSession* _session)
@@ -183,7 +210,7 @@ void CRoomMgr::CharacterFunc(CSession* _session)
 	int type = 0;
 	UnPacking(data, roomid, type);
 	t_RoomInfo* room = FindRoom(roomid);
-	ERRTYPE err_type = CharacterCheck(room, type);
+	ERRTYPE err_type = CharacterCheck(room, type, _session);
 
 	if (err_type == ERRTYPE::NONE)
 	{
@@ -223,7 +250,15 @@ void CRoomMgr::NomalReadyFunc(CSession* _session)
 	int id = _session->GetPlayer()->GetID();
 	for (CSession* session : room->sessions)
 	{
-		Packing(protocol, id, ready, _session);
+		if (!memcmp(session, _session, sizeof(CSession)))
+		{
+			Packing(protocol, id, ready, false, _session);
+		}
+		else
+		{
+			Packing(protocol, id, ready, true, session);
+		}
+
 	}
 
 	//모두 레디중인지 체크 모두 레디중이라면 호스트한테 시작버튼 누르라고 신호 보내기
@@ -236,9 +271,121 @@ void CRoomMgr::NomalReadyFunc(CSession* _session)
 	Packing(protocol, allready, room->host);
 }
 
-void CRoomMgr::HostReadyFunc(CSession* _session)
+void CRoomMgr::HostReadyFunc(CSession* _session, CRoomState::SendCompType& _statetype)
 {
+	CLockGuard<CLock> lock(m_lock);
+	byte buf[BUFSIZE];
+	ZeroMemory(buf, BUFSIZE);
+	_session->UnPacking(buf);
+	int roomid = -1;
+	int mapindex = -1;
+	UnPacking(buf, roomid, mapindex);
+
+	t_RoomInfo* room = FindRoom(roomid);
+	bool allready = AllReadyCheck(room);//플레이어 세명 다 레디 상태일 때 게임 들어가기 체크 함수
+	if (allready == true)
+	{
+		_statetype = CRoomState::SendCompType::EnterGame;
+		
+	}
+	unsigned long protocol = 0;
+	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::ROOM));
+	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::Multi));
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::ReadyResult));
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::HostReady));
+
+	Packing(protocol, allready, _session);
+
 }
+
+void CRoomMgr::ChattingFunc(CSession* _session)
+{
+	CLockGuard<CLock> lock(m_lock);
+	TCHAR msg[BUFSIZE];
+	ZeroMemory(msg, BUFSIZE);
+	TCHAR msg2[BUFSIZE];
+	ZeroMemory(msg2, BUFSIZE);
+	byte data[BUFSIZE];
+	ZeroMemory(data, BUFSIZE);
+	bool result = false;
+	int roomindex = 0;
+	_session->UnPacking(data);
+	UnPacking(data, roomindex, msg);
+
+	unsigned long protocol = 0;
+	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, (unsigned long)MAINPROTOCOL::ROOM);
+	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, (unsigned long)SUBPROTOCOL::Multi);
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)DETAILPROTOCOL::ChatRecv);
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, (unsigned long)DETAILPROTOCOL::AllMsg);
+
+	t_RoomInfo* room = FindRoom(roomindex);
+
+	if (_tcslen(msg) != 0)
+	{
+		result = true;
+		_stprintf(msg2, _T(" %s : %s"), _session->GetUserInfo()->id, msg);
+		for (CSession* client : room->sessions)
+		{
+			Packing(protocol, result, msg2, client);
+		}
+		_tprintf(_T("%s\n"), msg2);
+	}
+	else
+	{
+		Packing(protocol, result, _session);
+	}
+}
+
+void CRoomMgr::BackPageProcess(CSession* _session, CRoomState::SendCompType& _statetype)
+{
+	CLockGuard<CLock> lock(m_lock);
+
+	unsigned long protocol = 0;
+	_session->UnPacking(protocol);
+	unsigned long detailprotocol = CProtocolMgr::GetInst()->GetDetailProtocol(protocol);
+	if (detailprotocol != static_cast<unsigned long>(DETAILPROTOCOL::LobbyEnter))
+		return;
+	t_RoomInfo* room = FindRoom(_session->GetRoomID());
+	RemoveSession(room,_session);
+	protocol = 0;
+	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::Multi));
+	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::ROOM));
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::LobbyResult));
+	for (auto another : room->sessions)
+	{
+		Packing(protocol, _session->GetPlayer()->GetID(), another);
+	}
+	protocol = 0;
+	//클라의 state를 변경하기 위해 로비 입장 결과부터 전송한다.
+	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::Multi));
+	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::LOBBY));
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::LobbyResult));
+	_statetype = CRoomState::SendCompType::EnterLobby;
+	Packing(protocol, true, _session);
+	// 방 리스트 정보 보낸다.
+    SendRoom(true, 0, _session);
+	//로비에 들어와있는 유저 리스트에 유저정보 추가한다.
+	CLobbyMgr::GetInst()->AddSession(_session);
+}
+
+void CRoomMgr::DisConnected(CSession* _session)
+{
+	CLockGuard<CLock> lock(m_lock);
+
+	unsigned long protocol = 0;
+
+	t_RoomInfo* room = FindRoom(_session->GetRoomID());
+	RemoveSession(room, _session);
+	protocol = 0;
+	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::Multi));
+	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::ROOM));
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::LobbyResult));
+	for (auto another : room->sessions)
+	{
+		Packing(protocol, _session->GetPlayer()->GetID(), another);
+	}
+}
+
 
 //void CRoomMgr::SendRoom(CSession* _session, unsigned int _id)
 //{
@@ -361,8 +508,12 @@ CRoomMgr::ERRTYPE CRoomMgr::EnterCheck(int _roomindex, t_RoomInfo** _roominfo, c
 		return ERRTYPE::ERR_MAXENTER;
 	}
 }
-CRoomMgr::ERRTYPE CRoomMgr::CharacterCheck(const t_RoomInfo* _roominfo, int _type)
+CRoomMgr::ERRTYPE CRoomMgr::CharacterCheck(const t_RoomInfo* _roominfo, int _type, CSession* _session)
 {
+	if (*(_session->GetPlayer()->GetReady()))
+	{
+		return ERRTYPE::ERR_CHARACTER;
+	}
 	for (CSession* session : _roominfo->sessions)
 	{
 		CPlayer* player = session->GetPlayer();
@@ -380,6 +531,20 @@ CRoomMgr::ERRTYPE CRoomMgr::CharacterCheck(const t_RoomInfo* _roominfo, int _typ
 }
 bool CRoomMgr::AllReadyCheck(t_RoomInfo* _room)
 {
+	int count = 0;
+	for (auto session : _room->sessions)
+	{
+		CPlayer* player = session->GetPlayer();
+		if (*(player->GetReady()) == true)
+		{
+			count++;
+		}
+	}
+	if (count == m_enter_limit)
+	{
+		return true;
+	}
+
 	return false;
 }
 t_RoomInfo* CRoomMgr::FindRoom(int _roomindex)
@@ -559,13 +724,11 @@ void CRoomMgr::Packing(unsigned long _protocol, int result, t_RoomInfo* _room, C
 		size += sizeof(int);
 		//방장정보
 		CSession* host = _room->host;
-		strsize = _tcslen(host->GetUserInfo()->nickname) * CODESIZE;
-		memcpy(ptr, &strsize, sizeof(int));
+		int hostid = host->GetPlayer()->GetID();
+		memcpy(ptr, &hostid, sizeof(int));
 		ptr += sizeof(int);
 		size += sizeof(int);
-		memcpy(ptr, host->GetUserInfo()->nickname, strsize);
-		size += strsize;
-		ptr += strsize;
+
 		//플레이어들 정보 (닉네임,선택한 캐릭터 정보)
 		int objtype = static_cast<int>(ENetObjectType::Player);
 		for (auto session : _room->sessions)
@@ -675,7 +838,7 @@ void CRoomMgr::Packing(unsigned long _protocol, int _result, int _playerid, int 
 	_session->Packing(_protocol, ptr, size);
 }
 
-void CRoomMgr::Packing(unsigned long _protocol, int _playerid, bool _ready, CSession* _session)
+void CRoomMgr::Packing(unsigned long _protocol, int _playerid, bool _ready, bool _another, CSession* _session)
 {
 	byte _buf[BUFSIZE];
 	ZeroMemory(_buf, BUFSIZE);
@@ -687,9 +850,30 @@ void CRoomMgr::Packing(unsigned long _protocol, int _playerid, bool _ready, CSes
 	memcpy(ptr, &_ready, sizeof(bool));
 	ptr += sizeof(bool);
 	size += sizeof(bool);
-
+	memcpy(ptr, &_another, sizeof(bool));
+	ptr += sizeof(bool);
+	size += sizeof(bool);
 	ptr = _buf;
 	_session->Packing(_protocol, ptr, size);
+}
+
+void CRoomMgr::Packing(unsigned long _protocol, bool result, TCHAR* msg, CSession* _session)
+{
+	byte senddata[BUFSIZE];
+	ZeroMemory(senddata, BUFSIZE);
+	byte* ptr = senddata;
+	int size = 0;
+	int strsize = _tcslen(msg) * CODESIZE;
+	memcpy(ptr, &result, sizeof(bool));
+	size += sizeof(bool);
+	ptr += sizeof(bool);
+	memcpy(ptr, &strsize, sizeof(int));
+	size += sizeof(int);
+	ptr += sizeof(int);
+	memcpy(ptr, msg, strsize);
+	size += strsize;
+
+	_session->Packing(_protocol, senddata, size);
 }
 
 void CRoomMgr::UnPacking(byte* _recvdata, int& _roomindex, TCHAR* _pw)
@@ -717,13 +901,13 @@ void CRoomMgr::UnPacking(byte* _recvdata, TCHAR* _name, TCHAR* _pw)
 
 
 
-void CRoomMgr::UnPacking(byte* _recvdata, int& _roomindex, int& _type)
+void CRoomMgr::UnPacking(byte* _recvdata, int& _roomindex, int& _num)
 {
 	byte* ptr = _recvdata;
 
 	memcpy(&_roomindex, ptr, sizeof(int));
 	ptr += sizeof(int);
-	memcpy(&_type, ptr, sizeof(int));
+	memcpy(&_num, ptr, sizeof(int));
 }
 
 void CRoomMgr::UnPacking(byte* _recvdata, int& _roomindex, bool& _ready)

@@ -24,10 +24,10 @@ void CLobbyState::Recv()
 		m_sendcom_type = SendCompType::BackPage;
 		break;
 	case MAINPROTOCOL::ROOM:
-		bool result = CRoomMgr::GetInst()->EnterRoomProcess(m_session);
+		bool result = CRoomMgr::GetInst()->EnterRoomProcess(m_session,m_sendcom_type);
 		if (result)
 		{
-			m_sendcom_type = SendCompType::EnterRoom;
+			CLobbyMgr::GetInst()->RemoveSession(m_session);
 		}
 		break;
 	}
