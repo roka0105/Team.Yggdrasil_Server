@@ -22,9 +22,12 @@ public:
     void CreateQuadTree();
     void SetChildren(QuadNode* _parent,Vector3 _senterpos,Vector3 _distance,int _curdepth);
     void SetViewNode(QuadNode* _parent, int _curdepth);
+    void SetViewNode(CSession* _session);
     void AddObjectNode(QuadNode* _parent,GameObject* obj,int _curdepth);
     void RemoveObjectNode(QuadNode* _parent,GameObject* obj, int _curdepth);
     QuadNode** SerchNode(QuadNode* _parent,Vector3 _pos,int _curdepth,E_NodeType _postype);
+    QuadNode** SerchNode(QuadNode* _parent, int _id, int _curdepth);
+    bool IsInView(QuadNode* _parent,Vector3 _startview,Vector3 _endview);
     //플레이어 샌드패킷
     void PlayerSendPacket(CSession* _session, unsigned long _protocol, bool moveflag);
     //void checksector()
@@ -34,6 +37,7 @@ public:
     //void ItemSendPacket(CSession*,Protocol,_onoff_flag)
 public:
     void Packing(unsigned long _protocol,Vector3 _startpos,Vector3 _endpos, float _h_distance,float _v_distance,int _sectorcount, CSession* _session);
+    void Packing(unsigned long _protocol,list<Vector3>& _starts,Vector3& _distances,CSession* _session);
 private:
     list<CSector*> m_sectorlist;
     Vector3* m_start_position;
