@@ -3,17 +3,12 @@
 using namespace std;
 
 
-//#ifndef _VCTRLIB_BASE_H
-//#define __VCTRLIB_BASE_H
-//
-//#ifndef EXT_VCTRLIB
-//
-//#ifndef BUILD_VCTRLIB
-//#define EXT_VCTRLIB __declspec(dllexport)
-//#else
-//#endif
-//#endif
-
+/*
+  여기서는 default 정렬이 greater 인데 오름차순으로 동작합니다.
+  원래 비스에서 greater 하면 내림차순으로 동작하는걸로 아는데 여기서는 반대로 동작.
+  오름차순 : greater 
+  내림차순 : less
+*/
 #ifdef CREATEDLL_EXPORTS
 #define MYDLL_DECLSPEC __declspec(dllexport)
 #else

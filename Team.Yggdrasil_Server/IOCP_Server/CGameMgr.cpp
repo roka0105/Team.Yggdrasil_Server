@@ -2,6 +2,7 @@
 #include "CGameMgr.h"
 #include "CMapMgr.h"
 #include "CSectorMgr.h"
+#include "CRoomMgr.h"
 
 CGameMgr* CGameMgr::m_instance = nullptr;
 

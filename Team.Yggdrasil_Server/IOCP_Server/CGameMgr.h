@@ -1,5 +1,10 @@
 #pragma once
 class CSession;
+struct t_GameInfo
+{
+	t_RoomInfo* m_roominfo;
+	QuadNode* root;//ºΩ≈Õ
+};
 class CGameMgr
 {
 public:
@@ -18,5 +23,6 @@ public:
 
 private:
 	static CGameMgr* m_instance;
+	list<t_GameInfo*> m_games;
 };
 

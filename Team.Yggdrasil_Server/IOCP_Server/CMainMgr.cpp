@@ -11,6 +11,7 @@
 #include "CLobbyMgr.h"
 #include "CRoomMgr.h"
 #include "CSectorMgr.h"
+#include "CGameMgr.h"
 CMainMgr* CMainMgr::m_instance = nullptr;
 
 CMainMgr::CMainMgr()
@@ -64,7 +65,7 @@ void CMainMgr::Init()
 	C_SetCtrlHandler::GetInst()->Init();
 	CLobbyMgr::GetInst()->Init();
 	CRoomMgr::GetInst()->Init();
-
+	CGameMgr::GetInst()->Init();
 	// ++
 }
 void CMainMgr::End()
@@ -85,7 +86,7 @@ void CMainMgr::End()
 
 	CLogMgr::GetInst()->End();
 	//CLogMgr::GetInst()->FileWriteLog(_T("end6\n"));
-   
+	CGameMgr::GetInst()->End();
 	WSACleanup();
 }
 
@@ -106,6 +107,7 @@ void CMainMgr::Create()
 	CProtocolMgr::Create();
 	CLobbyMgr::Create();
 	CRoomMgr::Create();
+	CGameMgr::Create();
 }
 
 void CMainMgr::Destroy()
@@ -119,6 +121,7 @@ void CMainMgr::Destroy()
 	CProtocolMgr::Destroy();
 	CLobbyMgr::Destroy();
 	CRoomMgr::Destroy();
+	CGameMgr::Destroy();
 }
 
 void CMainMgr::SizeCheck_And_Recv(void* _session, int _combytes) // 이름을 하는 기능을 전부 명시적으로 만든다.
