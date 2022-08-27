@@ -6,6 +6,7 @@
 #include "CRoomState.h"
 #include "CSector.h"
 #include "CPlayer.h"
+#include "CGameState.h"
 
 class CLock;
 struct t_UserInfo
@@ -42,6 +43,7 @@ public:
 		m_loginstate = new CLoginState(this);
 		m_lobbystate = new CLobbyState(this);
 		m_roomstate = new CRoomState(this);
+		m_gamestate = new CGameState(this);
 		m_curstate = m_loginstate;
 		m_userinfo = new t_UserInfo();
 	}
@@ -82,6 +84,10 @@ public:
     {
         m_sector = _nodesector;
     }
+	CSector* GetSector()
+	{
+		return m_sector;
+	}
 	CState* GetState() { return m_curstate; }
 	CState* GetLoginState() 
     { 
@@ -97,6 +103,11 @@ public:
 	{ 
 		m_roomstate->Init();
 		return m_roomstate; 
+	}
+	CState* GetGameState()
+	{
+		m_gamestate->Init();
+		return m_gamestate;
 	}
 	void SetState(CState* _state)
 	{
@@ -126,6 +137,7 @@ private:
 	CLoginState* m_loginstate;
 	CLobbyState* m_lobbystate;
 	CRoomState* m_roomstate;
+	CGameState* m_gamestate;
     QuadNode* m_sector;
 	int m_roomid;
 	CPlayer* m_player;

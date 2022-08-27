@@ -90,13 +90,8 @@ public:
 	SOC CompRecv(int _cb_t);
 	SOC CompSend(int _cb_t);
 
-	void DelayDataSend() 
-	{
-		if (m_send_que.size() != 0)
-		{
-			wsasend();
-		}
-	}
+	void DelayDataSend();
+	
 
 public:
 	SOCKET GetSock() { return m_sock; }

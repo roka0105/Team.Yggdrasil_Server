@@ -47,7 +47,7 @@ TCHAR* CLogMgr::WriteLog(const TCHAR* fmt, ...)
 	_stprintf(cbuf, _T("날짜:%d년%d월%d일 시간: %d시 %d분 "), t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min);
 	int size = _tcslen(cbuf);
 	_vstprintf(cbuf+size, fmt, arg);
-	_tprintf(_T("%s"), cbuf);
+	_tprintf(_T("%s\n"), cbuf);
 
 	va_end(arg);
 	return cbuf;

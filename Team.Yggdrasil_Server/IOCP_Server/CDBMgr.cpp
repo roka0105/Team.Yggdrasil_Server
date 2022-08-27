@@ -102,7 +102,7 @@ list<t_UserInfo*> CDBMgr::GetJoin()
 		ZeroMemory(ID, STRINGSIZE);
 		ZeroMemory(PW, STRINGSIZE);
 		ZeroMemory(NICK, STRINGSIZE);
-		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[0], strlen(m_sql_row[0]), ID, STRINGSIZE);
+		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[0], strlen(m_sql_row[0]),ID, STRINGSIZE);
 		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[1], strlen(m_sql_row[1]), PW, STRINGSIZE);
 		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_sql_row[2], strlen(m_sql_row[2]), NICK, STRINGSIZE);
 		t_UserInfo* user = new t_UserInfo(ID, PW, NICK);
@@ -119,7 +119,7 @@ void CDBMgr::InsertJointbl(t_UserInfo* _user)
 	TCHAR temp[100];
 	ZeroMemory(temp, 100);
 	_stprintf(temp, _T("insert into jointbl values('%s','%s','%s');"), _user->id, _user->pw, _user->nickname);
-	WideCharToMultiByte(CP_ACP, 0, temp, -1, query, 100, NULL, NULL);
+	WideCharToMultiByte(CP_ACP, 0,temp, -1, query, 100, NULL, NULL);
 	if (mysql_query(&m_mysql, (char*)query))
 	{
 		printf("** %s **\n", mysql_error(&m_mysql));

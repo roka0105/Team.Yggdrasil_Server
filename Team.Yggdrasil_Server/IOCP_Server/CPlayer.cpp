@@ -39,3 +39,8 @@ void CPlayer::SetInfo(TCHAR* _name, E_CharacterType _c_type, Vector3 _pos)
     m_position = _pos;
     is_ready = false;
 }
+
+Vector3 CPlayer::GetPos()
+{
+    return m_pos;
+}

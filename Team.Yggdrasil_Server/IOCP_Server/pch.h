@@ -15,7 +15,8 @@
 #include <map>
 #include <fstream>
 #include <tchar.h>
-
+#include <math.h>
+#include "PriorityQueue.h"
 
 using std::ofstream;
 using std::ifstream;
@@ -28,6 +29,7 @@ using std::map;
 
 #include "func.h"
 #include "define.h"
+
 
 //#include "CLock.h"
 //#include "CLockGuard.h"

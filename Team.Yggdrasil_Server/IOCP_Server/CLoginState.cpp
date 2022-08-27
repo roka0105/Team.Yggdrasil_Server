@@ -26,9 +26,6 @@ void CLoginState::Recv()
     case MAINPROTOCOL::INIT:
         CRoomMgr::GetInst()->SendInit(m_session);
         break;
-    case MAINPROTOCOL::TEST: // 섹터 좌표값 전송 확인 위함.
-        CSectorMgr::GetInst()->SendInit(m_session);
-        break;
 	}
 }
 

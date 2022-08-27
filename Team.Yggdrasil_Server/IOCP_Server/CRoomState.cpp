@@ -34,7 +34,7 @@ void CRoomState::Send()
 	case SendCompType::BackPage:
 		break;
 	case SendCompType::EnterGame:
-		//m_session->SetState(m_session->GetGameState());
+	    m_session->SetState(m_session->GetGameState());
 		break;  
 	case SendCompType::EnterLobby:
 		m_session->SetState(m_session->GetLobbyState());

@@ -606,6 +606,7 @@ void CRoomMgr::Packing(unsigned long _protocol, bool _allready, CSession* _sessi
 	memcpy(_buf, &_allready, sizeof(bool));
 	size += sizeof(bool);
 	ptr = _buf;
+	//CLogMgr::GetInst()->FileWriteLog(_T("hostpush\n"));
 	_session->Packing(_protocol, ptr, size);
 }
 
@@ -874,6 +875,7 @@ void CRoomMgr::Packing(unsigned long _protocol, int _playerid, bool _ready, bool
 	ptr += sizeof(bool);
 	size += sizeof(bool);
 	ptr = _buf;
+	//CLogMgr::GetInst()->FileWriteLog(_T("nomalpush\n"));
 	_session->Packing(_protocol, ptr, size);
 }
 

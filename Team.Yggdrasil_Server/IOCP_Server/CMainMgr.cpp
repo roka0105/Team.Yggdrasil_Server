@@ -64,7 +64,7 @@ void CMainMgr::Init()
 	C_SetCtrlHandler::GetInst()->Init();
 	CLobbyMgr::GetInst()->Init();
 	CRoomMgr::GetInst()->Init();
-    CSectorMgr::GetInst()->Init();
+
 	// ++
 }
 void CMainMgr::End()
@@ -85,7 +85,7 @@ void CMainMgr::End()
 
 	CLogMgr::GetInst()->End();
 	//CLogMgr::GetInst()->FileWriteLog(_T("end6\n"));
-    CSectorMgr::GetInst()->End();
+   
 	WSACleanup();
 }
 
@@ -106,7 +106,6 @@ void CMainMgr::Create()
 	CProtocolMgr::Create();
 	CLobbyMgr::Create();
 	CRoomMgr::Create();
-    CSectorMgr::Create();
 }
 
 void CMainMgr::Destroy()
@@ -120,7 +119,6 @@ void CMainMgr::Destroy()
 	CProtocolMgr::Destroy();
 	CLobbyMgr::Destroy();
 	CRoomMgr::Destroy();
-    CSectorMgr::Destory();
 }
 
 void CMainMgr::SizeCheck_And_Recv(void* _session, int _combytes) // 이름을 하는 기능을 전부 명시적으로 만든다.
@@ -144,7 +142,7 @@ void CMainMgr::SizeCheck_And_Recv(void* _session, int _combytes) // 이름을 �
 void CMainMgr::SizeCheck_And_Send(void* _session, int _combytes)
 {
 	CSession* session = reinterpret_cast<CSession*>(_session);
-	SOC sizecheck = session->CompSend(_combytes);
+ 	SOC sizecheck = session->CompSend(_combytes);
 	switch (sizecheck)
 	{
 	case SOC::SOC_TRUE:
