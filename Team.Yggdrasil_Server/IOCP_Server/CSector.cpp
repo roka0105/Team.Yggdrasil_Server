@@ -1,11 +1,5 @@
 #include "pch.h"
 #include "CSector.h"
-int QuadNode::create_count = 0;
-
-int QuadNode::GetCreateCount()
-{
-	return create_count;
-}
 
 QuadNode::QuadNode()
 {
@@ -13,52 +7,42 @@ QuadNode::QuadNode()
 
 QuadNode::QuadNode(Vector3 _senter_pos, Vector3 _distance) :CSector(_senter_pos, _distance)
 {
-	m_id = -1;
+
 }
 
 QuadNode::~QuadNode()
 {
-	while (m_children.size() != 0)
-	{
-		QuadNode* item = m_children.back();
-		m_children.pop_back();
-		delete item;
-	}
+    while (m_children.size() != 0)
+    {
+        QuadNode* item = m_children.back();
+        m_children.pop_back();
+        delete item;
+    }
 }
 
 void QuadNode::AddChildren(QuadNode* _child_node)
 {
-	_child_node->m_parent = this;
-	m_children.push_back(_child_node);
+    _child_node->m_parent = this;
+    m_children.push_back(_child_node);
 }
 
 QuadNode* QuadNode::GetChildNode(int index)
 {
-	int i = 0;
-	for (vector<QuadNode*>::iterator itr = m_children.begin(); itr != m_children.end(); itr++)
-	{
-		if (i == index)
-		{
-			return *itr;
-		}
-		i++;
-	}
-	return nullptr;
-}
-
-void QuadNode::SetID()
-{
-	m_id = create_count++;
-}
-
-int QuadNode::GetID()
-{
-	return m_id;
+    int i = 0;
+    for (vector<QuadNode*>::iterator itr = m_children.begin(); itr != m_children.end(); itr++)
+    {
+        if (i == index)
+        {
+            return *itr;
+        }
+        i++;
+    }
+    return nullptr;
 }
 
 QuadNode* QuadNode::GetParent()
 {
-	return m_parent;
+    return m_parent;
 }
 
 CSector::CSector()
@@ -67,11 +51,11 @@ CSector::CSector()
 
 CSector::CSector(Vector3 _senter_pos, Vector3 _distance)
 {
-	m_senter_pos = _senter_pos;
-	m_distance = _distance;
-	m_start_pos.x = _senter_pos.x - _distance.x;
-	m_start_pos.y = _senter_pos.y;
-	m_start_pos.z = _senter_pos.z + _distance.z;
+    m_senter_pos = _senter_pos;
+    m_distance = _distance;
+    m_start_pos.x = _senter_pos.x - _distance.x;
+    m_start_pos.y = _senter_pos.y;
+    m_start_pos.z = _senter_pos.z + _distance.z;
 }
 
 CSector::~CSector()
@@ -80,89 +64,89 @@ CSector::~CSector()
 
 void CSector::AddObject(GameObject* _object)
 {
-	//m_objects.push_back(_object);
+    m_objects.push_back(_object);
 }
 
 const Vector3 CSector::GetDistance()
 {
-	return m_distance;
+    return m_distance;
 }
 
 const Vector3 CSector::GetSenter()
 {
-	return m_senter_pos;
+    return m_senter_pos;
 }
 
 const Vector3 CSector::GetStartPos()
 {
-	return m_start_pos;
+    return m_start_pos;
 }
 BOOL CSector::IsInSector(const Vector3 _obj_pos)
 {
-	if (_obj_pos.x >= m_start_pos.x && _obj_pos.x <= m_start_pos.x + m_distance.x
-		&& _obj_pos.z <= m_start_pos.z && _obj_pos.z >= m_start_pos.z - m_distance.z)
-	{
-		return true;
-	}
-	return false;
+    if(_obj_pos.x>=m_start_pos.x&&_obj_pos.x<=m_start_pos.x+m_distance.x
+        &&_obj_pos.z<=m_start_pos.z&&_obj_pos.z>=m_start_pos.z-m_distance.z)
+    {
+        return true;
+    }
+    return false;
 }
 BOOL CSector::IsInSector_Direction(const Vector3 _obj_pos, E_NodeType _type)
 {
-	switch (_type)
-	{
-	case E_NodeType::Left:
-		if (_obj_pos.x >= m_start_pos.x - m_distance.x * 2 && _obj_pos.x < m_start_pos.x
-			&& _obj_pos.z <= m_start_pos.z && _obj_pos.z > m_start_pos.z - m_distance.z * 2)
-		{
-			return true;
-		}
-		break;
-	case E_NodeType::LeftUp:
-		if (_obj_pos.x >= m_start_pos.x - m_distance.x * 2 && _obj_pos.x < m_start_pos.x
-			&& _obj_pos.z <= m_start_pos.z + m_distance.z * 2 && _obj_pos.z > m_start_pos.z)
-		{
-			return true;
-		}
-		break;
-	case E_NodeType::LeftDown:
-		if (_obj_pos.x >= m_start_pos.x - m_distance.x * 2 && _obj_pos.x < m_start_pos.x
-			&& _obj_pos.z <= m_start_pos.z - m_distance.z * 2 && _obj_pos.z > m_start_pos.z - m_distance.z * 4)
-		{
-			return true;
-		}
-		break;
-	case E_NodeType::Right:
-		if (_obj_pos.x >= m_start_pos.x && _obj_pos.x < m_start_pos.x + m_distance.x * 2
-			&& _obj_pos.z <= m_start_pos.z && _obj_pos.z > m_start_pos.z - m_distance.z * 2)
-		{
-			return true;
-		}
-		break;
-	case E_NodeType::RightUp:
-		if (_obj_pos.x >= m_start_pos.x + m_distance.x * 2 && _obj_pos.x < m_start_pos.x + m_distance.x * 4
-			&& _obj_pos.z <= m_start_pos.z + m_distance.z * 2 && _obj_pos.z > m_start_pos.z)
-		{
-			return true;
-		}
-		break;
-	case E_NodeType::RightDown:
-		if (_obj_pos.x >= m_start_pos.x + m_distance.x * 2 && _obj_pos.x < m_start_pos.x + m_distance.x * 4
-			&& _obj_pos.z <= m_start_pos.z - m_distance.z * 2 && _obj_pos.z > m_start_pos.z - m_distance.z * 4)
-		{
-			return true;
-		}
-		break;
-	}
+    switch (_type)
+    {
+    case E_NodeType::Left:
+        if (_obj_pos.x >= m_start_pos.x - m_distance.x * 2 && _obj_pos.x < m_start_pos.x
+            && _obj_pos.z <= m_start_pos.z && _obj_pos.z > m_start_pos.z - m_distance.z * 2)
+        {
+            return true;
+        }
+        break;
+    case E_NodeType::LeftUp:
+        if (_obj_pos.x >= m_start_pos.x - m_distance.x * 2 && _obj_pos.x < m_start_pos.x
+            && _obj_pos.z <= m_start_pos.z + m_distance.z * 2 && _obj_pos.z > m_start_pos.z)
+        {
+            return true;
+        }
+        break;
+    case E_NodeType::LeftDown:
+        if (_obj_pos.x >= m_start_pos.x - m_distance.x * 2 && _obj_pos.x < m_start_pos.x
+            && _obj_pos.z <= m_start_pos.z - m_distance.z * 2 && _obj_pos.z > m_start_pos.z - m_distance.z * 4)
+        {
+            return true;
+        }
+        break;
+    case E_NodeType::Right:
+        if (_obj_pos.x >= m_start_pos.x && _obj_pos.x < m_start_pos.x + m_distance.x * 2
+            && _obj_pos.z <= m_start_pos.z && _obj_pos.z > m_start_pos.z - m_distance.z * 2)
+        {
+            return true;
+        }
+        break;
+    case E_NodeType::RightUp:
+        if (_obj_pos.x >= m_start_pos.x + m_distance.x * 2 && _obj_pos.x < m_start_pos.x + m_distance.x * 4
+            && _obj_pos.z <= m_start_pos.z +m_distance.z*2 && _obj_pos.z > m_start_pos.z )
+        {
+            return true;
+        }
+        break;
+    case E_NodeType::RightDown:
+        if (_obj_pos.x >= m_start_pos.x + m_distance.x * 2 && _obj_pos.x < m_start_pos.x + m_distance.x * 4
+            && _obj_pos.z <= m_start_pos.z - m_distance.z * 2 && _obj_pos.z > m_start_pos.z - m_distance.z * 4)
+        {
+            return true;
+        }
+        break;
+    }
 
-	return false;
+    return false;
 }
 
 void CSector::SetViewSector(CSector* _node)
 {
-	m_view_sectorlist.push_back(_node);
+    m_view_sectorlist.push_back(_node);
 }
 
 int QuadNode::Child_Size()
 {
-	return m_children.size();
+    return m_children.size();
 }

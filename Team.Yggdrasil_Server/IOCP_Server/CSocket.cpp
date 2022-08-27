@@ -2,7 +2,7 @@
 #include "CSocket.h"
 #include "CLock.h"
 #include "CLockGuard.h"
-#include "CLogMgr.h"
+
 CSocket::CSocket()
 {
 	m_lock = new CLock();
@@ -56,7 +56,6 @@ CSocket::~CSocket()
 }
 bool CSocket::WSASEND()
 {
-	CLockGuard<CLock> lock(m_lock);
 	wsasend();
 	return true;
 }
@@ -66,7 +65,7 @@ bool CSocket::WSASEND(byte* _buf, int _size)
 	CLockGuard<CLock> lock(m_lock);
 	t_sendbuf* sendbuf = new t_sendbuf(_buf, _size);
 	m_send_que.push(sendbuf);
-	CLogMgr::GetInst()->WriteLog(_T("push que size = %d\n"), m_send_que.size());
+	
 	if (m_send_que.size() == 1)
 	{
 		wsasend();
@@ -80,7 +79,7 @@ bool CSocket::wsasend()
 	DWORD sendbytes, flags;
 	flags = 0;
 	WSABUF wsa_sendbuf;
-	CLogMgr::GetInst()->WriteLog(_T("send que size = %d\n"), m_send_que.size());
+
 	t_sendbuf* sendbuf = m_send_que.front();
 	ZeroMemory(&s_overlap.overlapped, sizeof(OVERLAPPED));
 
@@ -123,13 +122,11 @@ bool CSocket::WSARECV()
 
 void CSocket::SendListPush(t_sendbuf* _tsendbuf)
 {
-	CLockGuard<CLock> lock(m_lock);
 	m_send_que.push(_tsendbuf);
 }
 
 void CSocket::SendListPop()
 {
-	CLockGuard<CLock> lock(m_lock);
 	m_send_que.pop();
 }
 
@@ -179,31 +176,18 @@ SOC CSocket::CompRecv(int _cb_t)
 
 SOC CSocket::CompSend(int _cb_t)
 {
-	CLockGuard<CLock>lock(m_lock);
-	CLogMgr::GetInst()->WriteLog(_T("comp que size = %d\n"), m_send_que.size());
 	t_sendbuf* send = m_send_que.front();
 	send->com_sendbytes += _cb_t;
- 	if (send->com_sendbytes == send->sendbytes)
+	if (send->com_sendbytes == send->sendbytes)
 	{
 		send->com_sendbytes = send->sendbytes = 0;
 		ZeroMemory(send->sendbuf, BUFSIZE);
 		m_send_que.pop();
-		delete send;
 		return SOC::SOC_TRUE;
 	}
 	else
 	{
 		return SOC::SOC_FALSE;
-	}
-}
-
-void CSocket::DelayDataSend()
-{
-	CLockGuard<CLock>lock(m_lock);
-	if (m_send_que.size() != 0)
-	{
-		CLogMgr::GetInst()->WriteLog(_T("delay que size = %d\n"),m_send_que.size());
-		wsasend();
 	}
 }
 

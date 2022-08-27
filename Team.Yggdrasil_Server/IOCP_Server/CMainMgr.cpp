@@ -144,7 +144,7 @@ void CMainMgr::SizeCheck_And_Recv(void* _session, int _combytes) // 이름을 �
 void CMainMgr::SizeCheck_And_Send(void* _session, int _combytes)
 {
 	CSession* session = reinterpret_cast<CSession*>(_session);
- 	SOC sizecheck = session->CompSend(_combytes);
+	SOC sizecheck = session->CompSend(_combytes);
 	switch (sizecheck)
 	{
 	case SOC::SOC_TRUE:

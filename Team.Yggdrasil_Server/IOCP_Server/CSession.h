@@ -82,10 +82,6 @@ public:
     {
         m_sector = _nodesector;
     }
-	CSector* GetSector()
-	{
-		return m_sector;
-	}
 	CState* GetState() { return m_curstate; }
 	CState* GetLoginState() 
     { 

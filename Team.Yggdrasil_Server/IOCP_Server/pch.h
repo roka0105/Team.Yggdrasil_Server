@@ -15,7 +15,6 @@
 #include <map>
 #include <fstream>
 #include <tchar.h>
-#include <math.h>
 
 
 using std::ofstream;

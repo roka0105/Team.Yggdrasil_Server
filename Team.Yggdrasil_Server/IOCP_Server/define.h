@@ -34,28 +34,14 @@ enum class E_GameObject
 };
 enum class E_NodeType
 {
-    /*Left,
+    Left,
     LeftUp,
     LeftDown,
     Right,
     RightUp,
     RightDown,
     Up,
-    Down,*/
-    LLUU,
-    LUU,
-    RUU,
-    RRUU,
-    LLU,
-    LU,
-    RU,
-    RRU,
-    LL,
-    Left,
-    Right,
-    RR,
-    LD,
-    RD
+    Down,
 };
 struct Vector3
 {

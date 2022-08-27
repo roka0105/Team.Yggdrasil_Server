@@ -1,6 +1,6 @@
 #pragma once
 class GameObject;
-class HexTile;
+
 class CSector
 {
 protected:
@@ -18,8 +18,9 @@ public:
     BOOL IsInSector(const Vector3 _obj_pos);// 오브젝트가 노드안에 있는지 체크
     void SetViewSector(CSector* _node);
 private:
+    list<GameObject*> m_objects;
     list<CSector*> m_view_sectorlist;
-    list<HexTile*> m_tile_lise;
+
     Vector3 m_start_pos;
     Vector3 m_senter_pos;         // 노드의 중심 위치
     Vector3 m_distance;           // 밑변/2 
@@ -27,16 +28,13 @@ private:
 class QuadNode : public CSector
 {
 public:
-    static int GetCreateCount();
-public:
     QuadNode();
     QuadNode(Vector3 _senter_pos, Vector3 _distance);
     virtual ~QuadNode();
     void AddChildren(QuadNode* _child_node);// 자식노드 등록  
     QuadNode* GetChildNode(int index);              // 자식노드 가져오기
 
-    void SetID();
-    int GetID();
+
     void SetParent(QuadNode* _parent_node);// 부모노드 설정
     QuadNode* GetParent();                 // 부모노드 가져오기
 
@@ -46,8 +44,6 @@ public:
 
     int Child_Size();
 private:
-    static int create_count;
-    int m_id;
     vector<QuadNode*> m_children; // 자식노드
     QuadNode* m_parent;           // 부모노드
     BOOL m_is_culled;             // 컬링 여부
