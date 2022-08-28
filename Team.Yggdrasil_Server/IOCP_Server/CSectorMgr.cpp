@@ -4,6 +4,9 @@
 #include "GameObject.h"
 #include "CProtocolMgr.h"
 #include "CSession.h"
+#include "CLock.h"
+#include "CLockGuard.h"
+
 CSectorMgr* CSectorMgr::m_instance = nullptr;
 
 CSectorMgr* CSectorMgr::GetInst()
@@ -23,49 +26,26 @@ void CSectorMgr::Destory()
 }
 CSectorMgr::CSectorMgr()
 {
-
+	m_lock = new CLock();
 }
 CSectorMgr::~CSectorMgr()
 {
+	delete m_lock;
 }
 
 void CSectorMgr::Init()
 {
-	//db에서 값 읽어와서 읽어온 값으로 설정하도록 하기
-	//현재는 임시로 값 넣기
-	m_start_position = new Vector3(-45, m_default_y, 38);
-	m_end_position = new Vector3(195, m_default_y, -142);
-	m_tile_distance = new float(30);
-	m_h_mapsize = new int(240);
-	m_v_mapsize = new int(180);
-	m_sector_count = 1;
-	m_depth = new int(2);
-	m_squared_value = new int(2);
-	m_eyesight = new int(14);
-
-	for (int i = 0; i < *m_depth; i++)
-	{
-		m_sector_count *= (*m_squared_value);
-	}
-	m_h_distance = new float(*m_h_mapsize / m_sector_count);
-	m_v_distance = new float(*m_v_mapsize / m_sector_count);
-	CreateQuadTree();
+	
+	
 }
 
 void CSectorMgr::End()
 {
-	delete m_tile_distance;
-	delete m_h_mapsize;
-	delete m_v_mapsize;
-	delete m_squared_value;
-	delete m_depth;
-	delete m_h_distance;
-	delete m_v_distance;
-	delete m_start_position;
-	delete m_end_position;
-	delete m_eyesight;
-
-	delete root;
+	
+}
+void CSectorMgr::AddQuadTree(t_GameInfo* _gameinfo, t_MapInfo* _mapinfo)
+{
+	CreateQuadTree(_gameinfo,_mapinfo);
 }
 #pragma region ver1
 
@@ -79,15 +59,19 @@ void CSectorMgr::End()
 #pragma endregion
 
 #pragma region test ver2
-void CSectorMgr::SendInit(CSession* _session)
+void CSectorMgr::SendInit(UINT _gameid,CSession* _session,t_MapInfo* _mapinfo)
 {
 	unsigned long protocol = 0;
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::INIT));
+	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(CGameMgr::SUBPROTOCOL::SECTOR));
+
 	list<Vector3> starts;
 	Vector3 distance;
+	QuadNode* root = m_roots[_gameid];
+	
 	for (int i = 0; i < QuadNode::GetCreateCount(); i++)
 	{
-		QuadNode* item = reinterpret_cast<QuadNode*>(*SerchNode(root, i, 0));
+		QuadNode* item = reinterpret_cast<QuadNode*>(*SerchNode(root, i, 0,_mapinfo));
 		starts.push_back(item->GetStartPos());
 		if (i == 0)
 		{
@@ -98,47 +82,58 @@ void CSectorMgr::SendInit(CSession* _session)
 	Packing(protocol, starts, distance, _session);
 }
 #pragma endregion
-void CSectorMgr::CreateQuadTree()
+void CSectorMgr::CreateQuadTree(t_GameInfo* _gameinfo,t_MapInfo* _mapinfo)
 {
-	Vector3 distance((*m_h_mapsize), 0, (*m_v_mapsize));
-	Vector3 senter_pos(m_start_position->x + (distance.x / 2), m_default_y, m_start_position->z - (distance.z / 2));
+	
+	Vector3 distance((_mapinfo->m_h_mapsize), 0, (_mapinfo->m_v_mapsize));
+	Vector3 senter_pos(_mapinfo->m_start_position.x + (distance.x / 2), _mapinfo->m_default_y, _mapinfo->m_start_position.z - (distance.z / 2));
 	distance.x /= 2;
 	distance.z /= 2;
-	root = new QuadNode(Vector3(), distance);
+	QuadNode* root = new QuadNode(Vector3(), distance);
 
-	SetChildren(root, senter_pos, distance, 0);
+	CreateChildren(root, senter_pos, distance, 0,_gameinfo);
+
+	{
+		CLockGuard<CLock> lock(m_lock);
+		m_roots.insert({ _gameinfo->m_id,root });
+	}
+	
 	//view sector list 도 setting 하는거 만들기
-	//SetViewNode(root, 0);
+	SetViewNode(root, 0,_mapinfo, _gameinfo->m_id);
+
 }
 
-void CSectorMgr::SetChildren(QuadNode* _parent, Vector3 _senterpos, Vector3 _distance, int _curdepth)
+void CSectorMgr::CreateChildren(QuadNode* _parent, Vector3 _senterpos, Vector3 _distance, int _curdepth, t_GameInfo* _gameinfo)
 {
-	if (*m_depth == _curdepth)
+	t_MapInfo* _mapinfo = _gameinfo->m_mapinfo;
+	if (_mapinfo->m_depth == _curdepth)
 	{
+		//leaf node id 
 		_parent->SetID();
+		_gameinfo->m_leaf_nodes.insert({ _parent->GetID(),_parent });
 		return;
 	}
-	Vector3 distance(_distance.x / (*m_squared_value), 0, _distance.z / (*m_squared_value));
+	Vector3 distance(_distance.x /_mapinfo->m_squared_value, 0, _distance.z / _mapinfo->m_squared_value);
 	Vector3* senterpos = nullptr;
 	QuadNode* child = nullptr;
-	for (int i = 0; i < (*m_squared_value) * 2; i++)
+	for (int i = 0; i < _mapinfo->m_squared_value * 2; i++)
 	{
 		switch (i)
 		{
 		case 0:// left up
-			senterpos = new Vector3(_senterpos.x - distance.x, m_default_y, _senterpos.z + distance.z);
+			senterpos = new Vector3(_senterpos.x - distance.x, _mapinfo->m_default_y, _senterpos.z + distance.z);
 			child = new QuadNode(*senterpos, distance);
 			break;
 		case 1://right up
-			senterpos = new Vector3(_senterpos.x + distance.x, m_default_y, _senterpos.z + distance.z);
+			senterpos = new Vector3(_senterpos.x + distance.x, _mapinfo->m_default_y, _senterpos.z + distance.z);
 			child = new QuadNode(*senterpos, distance);
 			break;
 		case 2://left down
-			senterpos = new Vector3(_senterpos.x - distance.x, m_default_y, _senterpos.z - distance.z);
+			senterpos = new Vector3(_senterpos.x - distance.x, _mapinfo->m_default_y, _senterpos.z - distance.z);
 			child = new QuadNode(*senterpos, distance);
 			break;
 		case 3://right down
-			senterpos = new Vector3(_senterpos.x + distance.x, m_default_y, _senterpos.z - distance.z);
+			senterpos = new Vector3(_senterpos.x + distance.x, _mapinfo->m_default_y, _senterpos.z - distance.z);
 			child = new QuadNode(*senterpos, distance);
 			break;
 		}
@@ -149,85 +144,86 @@ void CSectorMgr::SetChildren(QuadNode* _parent, Vector3 _senterpos, Vector3 _dis
 			return;
 		}
 		_parent->AddChildren(child);
-		SetChildren(child, *senterpos, distance, _curdepth + 1);
+		CreateChildren(child, *senterpos, distance, _curdepth + 1,_gameinfo);
 		if (senterpos != nullptr)
 			delete senterpos;
 	}
 }
 #pragma region viewsector stting ver 1
-void CSectorMgr::SetViewNode(QuadNode* _parent, int _curdepth)
+void CSectorMgr::SetViewNode(QuadNode* _parent, int _curdepth, t_MapInfo* _mapinfo,UINT _gameid)
 {
-    //if (*m_depth == _curdepth)
-    //{
-    //    Vector3 start = _parent->GetStartPos();
-    //    Vector3 distance = _parent->GetDistance();
+    if (_mapinfo->m_depth == _curdepth)
+    {
+        Vector3 start = _parent->GetStartPos();
+        Vector3 distance = _parent->GetDistance();
 
-    //    Vector3 position;
-    //    QuadNode** viewnode = nullptr;
+        Vector3 position;
+        QuadNode** viewnode = nullptr;
 
-    //    //시야의 최대치는 8이다.
-    //    for (int i = 0; i < *m_eyesight; i++)
-    //    {
-    //        switch (static_cast<E_NodeType>(i))
-    //        {
-    //        case E_NodeType::Left:
-    //            //left node
-    //            position.x = start.x - distance.x*2;
-    //            position.y = start.y;
-    //            position.z = start.z;
-    //            break;
-    //        case E_NodeType::LeftUp:
-    //            //left up node
-    //            position.z = start.z + distance.z*2;
-    //            break;
-    //        case E_NodeType::LeftDown:
-    //            //left down node
-    //            position.z = start.z - distance.z*2;
-    //            break;
-    //        case E_NodeType::Right:
-    //            //right node
-    //            position.x = start.x + distance.x*2;
-    //            position.y = start.y;
-    //            position.z = start.z;
-    //            break;
-    //        case E_NodeType::RightUp:
-    //            //right up node
-    //            position.z = start.z + distance.z*2;
-    //            break;
-    //        case E_NodeType::RightDown:
-    //            //right down node
-    //            position.z = start.z - distance.z*2;
-    //            break;
-    //        case E_NodeType::Up:
-    //            //senter up
-    //            position.x = start.x;
-    //            position.y = start.y;
-    //            position.z = start.z + distance.z*2;
-    //            break;
-    //        case E_NodeType::Down:
-    //            //senter down
-    //            position.z = start.z - distance.z*2;
-    //            break;
-    //        }
-    //        viewnode = SerchNode(root, position, 0,static_cast<E_NodeType>(i));
-    //        if (viewnode == nullptr)
-    //            continue;
-    //        else 
-    //            _parent->SetViewSector(*viewnode);
-    //    }
-    //    return;
-    //}
-    //for (int i = 0; i < (*m_depth) * (*m_squared_value); i++)
-    //{
-    //    QuadNode* child = _parent->GetChildNode(i);
-    //    SetViewNode(child, _curdepth+1);
-    //}
+        //시야의 최대치는 8이다.
+        for (int i = 0; i < _mapinfo->m_eyesight; i++)
+        {
+            switch (static_cast<E_NodeType>(i))
+            {
+            case E_NodeType::Left:
+                //left node
+                position.x = start.x - distance.x*2;
+                position.y = start.y;
+                position.z = start.z;
+                break;
+            case E_NodeType::LeftUp:
+                //left up node
+                position.z = start.z + distance.z*2;
+                break;
+            case E_NodeType::LeftDown:
+                //left down node
+                position.z = start.z - distance.z*2;
+                break;
+            case E_NodeType::Right:
+                //right node
+                position.x = start.x + distance.x*2;
+                position.y = start.y;
+                position.z = start.z;
+                break;
+            case E_NodeType::RightUp:
+                //right up node
+                position.z = start.z + distance.z*2;
+                break;
+            case E_NodeType::RightDown:
+                //right down node
+                position.z = start.z - distance.z*2;
+                break;
+            case E_NodeType::Up:
+                //senter up
+                position.x = start.x;
+                position.y = start.y;
+                position.z = start.z + distance.z*2;
+                break;
+            case E_NodeType::Down:
+                //senter down
+                position.z = start.z - distance.z*2;
+                break;
+            }
+            viewnode = SerchNode(m_roots[_gameid], position, 0,static_cast<E_NodeType>(i),_mapinfo);
+            if (viewnode == nullptr)
+                continue;
+            else 
+                _parent->SetViewSector(*viewnode);
+        }
+        return;
+    }
+    for (int i = 0; i < _mapinfo->m_depth * _mapinfo->m_squared_value; i++)
+    {
+        QuadNode* child = _parent->GetChildNode(i);
+        SetViewNode(child, _curdepth+1,_mapinfo,_gameid);
+    }
 
 }
 #pragma endregion
 #pragma region viewsector stting ver2
 void CSectorMgr::SetViewNode(CSession* _session)
 {
+	/*
 	CPlayer* player = _session->GetPlayer();
 	Vector3 playerpos = player->GetPos();
 	float firstcheck_x = 45;
@@ -249,6 +245,7 @@ void CSectorMgr::SetViewNode(CSession* _session)
 			_session->GetSector()->SetViewSector(node);
 		}
 	}
+	*/
 	/*if (_curdepth == *m_depth)
 	{
 	}
@@ -266,7 +263,7 @@ void CSectorMgr::SetViewNode(CSession* _session)
 #pragma endregion
 
 void CSectorMgr::AddObjectNode(QuadNode* _parent, GameObject* obj, int curdepth)
-{
+{/*
 	Vector3 obj_pos = obj->GetVector();
 	if (*m_depth == curdepth)
 	{
@@ -287,11 +284,12 @@ void CSectorMgr::AddObjectNode(QuadNode* _parent, GameObject* obj, int curdepth)
 		if (child->IsInSector(obj_pos))
 			AddObjectNode(child, obj, curdepth + 1);
 	}
-
+	*/
 }
 
 void CSectorMgr::RemoveObjectNode(QuadNode* _parent, GameObject* _obj, int _curdepth)
 {
+	/*
 	Vector3 obj_pos = _obj->GetVector();
 	if (*m_depth == _curdepth)
 	{
@@ -312,14 +310,15 @@ void CSectorMgr::RemoveObjectNode(QuadNode* _parent, GameObject* _obj, int _curd
 		if (child->IsInSector(obj_pos))
 			RemoveObjectNode(child, _obj, _curdepth + 1);
 	}
+	*/
 }
 
-QuadNode** CSectorMgr::SerchNode(QuadNode* _parent, Vector3 _pos, int _curdepth, E_NodeType _type)
+QuadNode** CSectorMgr::SerchNode(QuadNode* _parent, Vector3 _pos, int _curdepth, E_NodeType _type, t_MapInfo* _mapinfo)
 {
-	if (*m_depth == _curdepth)
+	if (_mapinfo->m_depth == _curdepth)
 	{
-		if (m_start_position->x <= _pos.x && m_end_position->x >= _pos.x
-			&& m_start_position->z >= _pos.z && m_end_position->z <= _pos.z)
+		if (_mapinfo->m_start_position.x <= _pos.x && _mapinfo->m_end_position.x >= _pos.x
+			&& _mapinfo->m_start_position.z >= _pos.z && _mapinfo->m_end_position.z <= _pos.z)
 
 		{
 			//if (_parent->IsInSector_Direction(_pos, _type))
@@ -341,16 +340,16 @@ QuadNode** CSectorMgr::SerchNode(QuadNode* _parent, Vector3 _pos, int _curdepth,
 			return nullptr;
 		}
 		if (child->IsInSector(_pos))
-			item = SerchNode(child, _pos, _curdepth + 1, _type);
+			item = SerchNode(child, _pos, _curdepth + 1, _type,_mapinfo);
 		if (item != nullptr)
 			return item;
 	}
 	return nullptr;
 }
 
-QuadNode** CSectorMgr::SerchNode(QuadNode* _parent, int _id, int _curdepth)
+QuadNode** CSectorMgr::SerchNode(QuadNode* _parent, int _id, int _curdepth, t_MapInfo* _mapinfo)
 {
-	if (_curdepth == *m_depth)
+	if (_curdepth == _mapinfo->m_depth)
 	{
 		if (_parent->GetID() == _id)
 			return &_parent;
@@ -366,7 +365,7 @@ QuadNode** CSectorMgr::SerchNode(QuadNode* _parent, int _id, int _curdepth)
 		{
 			return nullptr;
 		}
-		item = SerchNode(child, _id, _curdepth + 1);
+		item = SerchNode(child, _id, _curdepth + 1, _mapinfo);
 		if (item != nullptr)
 			return item;
 	}
@@ -375,6 +374,7 @@ QuadNode** CSectorMgr::SerchNode(QuadNode* _parent, int _id, int _curdepth)
 
 bool CSectorMgr::IsInView(QuadNode* _parent, Vector3 _startview, Vector3 _endview)
 {
+	/*
 	for (int i = 0; i < m_sector_count; i++)
 	{
 		QuadNode* node = reinterpret_cast<QuadNode*>(*SerchNode(root, i, 0));
@@ -383,6 +383,7 @@ bool CSectorMgr::IsInView(QuadNode* _parent, Vector3 _startview, Vector3 _endvie
 			return true;
 		}
 	}
+    */
 	return false;
 }
 
@@ -393,6 +394,32 @@ void CSectorMgr::PlayerSendPacket(CSession* _session, unsigned long _protocol, b
 	moveflag=true이면 이동이 있었다는걸로 섹터 이동이 있는지 체크 후
 	섹터 이동이 있을 시 섹터 정보들을 변경시킵니다.
 	*/
+}
+
+void CSectorMgr::TestSendViewSectorProcess(CSession* _session, t_GameInfo* _gameinfo)
+{
+	
+	unsigned long protocol = 0;
+	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::TEST));
+	
+	int test_sector_index = 9;
+
+	list<Vector3> starts;
+	Vector3 distance;
+
+	QuadNode* sector = reinterpret_cast<QuadNode*>(*SerchNode(m_roots[_gameinfo->m_id], test_sector_index, 0, _gameinfo->m_mapinfo));
+	list<CSector*> viewlist = sector->GetViewSector();
+	int count = 0;
+	for (auto viewnode : viewlist)
+	{
+		if (count == 0)
+		{
+			distance = viewnode->GetDistance();
+		}
+		count++;
+		starts.push_back(viewnode->GetStartPos());
+	}
+	Packing(protocol, starts, distance, _session);
 }
 
 void CSectorMgr::Packing(unsigned long _protocol, Vector3 _startpos, Vector3 _endpos, float _h_distance, float _v_distance, int _sectorcount, CSession* _session)

@@ -17,6 +17,7 @@ public:
     BOOL IsInSector_Direction(const Vector3 _obj_pos,E_NodeType _type); 
     BOOL IsInSector(const Vector3 _obj_pos);// 오브젝트가 노드안에 있는지 체크
     void SetViewSector(CSector* _node);
+    list<CSector*>& GetViewSector();
 private:
     list<CSector*> m_view_sectorlist;
     list<HexTile*> m_tile_lise;
@@ -31,7 +32,7 @@ public:
 public:
     QuadNode();
     QuadNode(Vector3 _senter_pos, Vector3 _distance);
-    virtual ~QuadNode();
+    virtual ~QuadNode()final;
     void AddChildren(QuadNode* _child_node);// 자식노드 등록  
     QuadNode* GetChildNode(int index);              // 자식노드 가져오기
 

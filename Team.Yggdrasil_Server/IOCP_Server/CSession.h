@@ -46,12 +46,16 @@ public:
 		m_gamestate = new CGameState(this);
 		m_curstate = m_loginstate;
 		m_userinfo = new t_UserInfo();
+
+		m_roomid = -1;
+		m_gameid = -1;
 	}
 	~CSession() 
 	{
 		delete m_loginstate;
 		delete m_lobbystate;
 		delete m_roomstate;
+		delete m_gamestate;
 		delete m_userinfo;
 	}
 	void Init();
@@ -128,7 +132,14 @@ public:
 	{
 		m_roomid = _index;
 	}
-	
+	int GetGameID()
+	{
+		return m_gameid;
+	}
+	void SetGameID(int _index)
+	{
+		m_gameid = _index;
+	}
 	CPlayer* GetPlayer() { return m_player; };
 private:
 	t_UserInfo* m_userinfo;
@@ -140,6 +151,7 @@ private:
 	CGameState* m_gamestate;
     QuadNode* m_sector;
 	int m_roomid;
+	int m_gameid;
 	CPlayer* m_player;
 	friend class CState;
 	//int substate;

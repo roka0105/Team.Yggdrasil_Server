@@ -163,6 +163,11 @@ void CSector::SetViewSector(CSector* _node)
 	m_view_sectorlist.push_back(_node);
 }
 
+list<CSector*>& CSector::GetViewSector()
+{
+	return m_view_sectorlist;
+}
+
 int QuadNode::Child_Size()
 {
 	return m_children.size();

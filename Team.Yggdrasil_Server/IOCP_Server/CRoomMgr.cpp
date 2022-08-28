@@ -5,6 +5,7 @@
 #include "CProtocolMgr.h"
 #include "CLobbyMgr.h"
 #include "CLoginMgr.h"
+#include "CGameMgr.h"
 CRoomMgr* CRoomMgr::instance = nullptr;
 
 CRoomMgr* CRoomMgr::GetInst()
@@ -293,19 +294,36 @@ void CRoomMgr::HostReadyFunc(CSession* _session, CRoomState::SendCompType& _stat
 	t_RoomInfo* room = FindRoom(roomid);
 	bool allready = AllReadyCheck(room);//플레이어 세명 다 레디 상태일 때 게임 들어가기 체크 함수
 	unsigned long protocol = 0;
-	
+	allready = true;
+	//클라 한개로 test를 위해 allready = true 로 해둠.
 	if (allready == true)
 	{
+		//진입할 게임의 정보를 설정한다.
+		//지금 맵 종류가 1개 밖에 없으니까 무조건 0번 맵 골라야함.
+		
+		t_MapInfo* map = CMapMgr::GetInst()->GetMapInfo(mapindex);
+		if (map == nullptr)
+		{
+			//예외처리하기.
+		}
+		t_GameInfo* game = new t_GameInfo(room, map);
+		_session->SetGameID(game->m_id);
+		CGameMgr::GetInst()->AddGameInfo(game);
+
 		_statetype = CRoomState::SendCompType::EnterGame;
 
 		CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::GAME));
 		CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::Multi));
 		CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::ReadyResult));
 		CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::HostReady));
-		for (auto session : room->sessions)
+		//클라 한개로 test를 위해 host session에만 전송.
+		Packing(protocol, allready, _session);
+
+		/*for (auto session : room->sessions)
 		{
+			session->SetGameID(game->m_id);
 			Packing(protocol, allready, session);
-		}
+		}*/
 	}
 	else
 	{

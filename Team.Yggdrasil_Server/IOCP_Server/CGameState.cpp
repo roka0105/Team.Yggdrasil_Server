@@ -3,6 +3,7 @@
 #include "CSession.h"
 #include "CProtocolMgr.h"
 #include "CGameMgr.h"
+#include "CSectorMgr.h"
 void CGameState::Recv()
 {
 	unsigned long protocol;
@@ -14,6 +15,9 @@ void CGameState::Recv()
 	{
 	case MAINPROTOCOL::INIT:
 		CGameMgr::GetInst()->LoadingProcess(m_session);
+		break;
+	case MAINPROTOCOL::TEST:
+		CGameMgr::GetInst()->TestFunc(m_session);
 		break;
 	}
 }

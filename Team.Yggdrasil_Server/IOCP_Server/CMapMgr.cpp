@@ -1,6 +1,7 @@
-#include "CMapMgr.h"
 #include "pch.h"
 #include "CMapMgr.h"
+#include "CLock.h"
+#include "CLockGuard.h"
 CMapMgr* CMapMgr::m_instance = nullptr;
 CMapMgr* CMapMgr::GetInst()
 {
@@ -22,17 +23,35 @@ void CMapMgr::Destroy()
 
 CMapMgr::CMapMgr()
 {
+    m_lock = new CLock();
 }
 
 CMapMgr::~CMapMgr()
 {
+    delete m_lock;
 }
 
 void CMapMgr::Init()
 {
+    t_MapInfo* map = new t_MapInfo(0,Vector3(-45,0,38),Vector3(195,0,-142),30,240,180,2,2,8,3);
+    m_maps.insert({ 0,map });
 }
 
 void CMapMgr::End()
 {
     
+}
+
+t_MapInfo* CMapMgr::GetMapInfo(UINT _mapid)
+{
+    CLockGuard<CLock> lock(m_lock);
+    auto item = m_maps.find(_mapid);
+    if (item == m_maps.end())
+    {
+        return nullptr;
+    }
+    else
+    {
+        return m_maps[_mapid];
+    }
 }
