@@ -12,6 +12,11 @@ bool HexTile::InHex(Vector3 _objpos)
 		return false;
 }
 
+Vector3 HexTile::GetSenterPos()
+{
+	return m_senter;
+}
+
 void HexTile::operator=(UINT _time)
 {
 	m_time = _time;

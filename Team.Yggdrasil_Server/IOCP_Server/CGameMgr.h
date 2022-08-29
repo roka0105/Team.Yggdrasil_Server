@@ -34,13 +34,16 @@ public:
 	{
 		NONE,
 		SECTOR,
-		MAP,
+		Object,
 		MAX
 	};
 	enum class DETAILPROTOCOL
 	{
 		NONE,
-		
+		Tile,
+		Player,
+		Boss,
+		Item,
 	};
 public:
 	static void Create();
@@ -56,6 +59,7 @@ public:
 	void LoadingProcess(CSession* _session);
 
 	void InitSector(CSession* _session);
+	void InitTile(CSession* _session);
 
 	void AddGameInfo(t_GameInfo* _game);
 	t_GameInfo* FindGameInfo(int _roomid);
@@ -64,6 +68,7 @@ public:
 	void TestFunc(CSession* _session);
 	//
 	void UnPacking(byte* _recvbuf, UINT& _roomid);
+	void UnPacking(byte* _recvbuf, list<Vector3>& _poslist,float& _radius);
 private:
 	static CGameMgr* m_instance;
 	CLock* m_lock;

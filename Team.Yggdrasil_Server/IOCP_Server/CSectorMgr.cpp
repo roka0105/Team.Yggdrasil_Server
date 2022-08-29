@@ -6,6 +6,7 @@
 #include "CSession.h"
 #include "CLock.h"
 #include "CLockGuard.h"
+#include "HexTile.h"
 
 CSectorMgr* CSectorMgr::m_instance = nullptr;
 
@@ -80,6 +81,11 @@ void CSectorMgr::SendInit(UINT _gameid,CSession* _session,t_MapInfo* _mapinfo)
 	}
 
 	Packing(protocol, starts, distance, _session);
+}
+QuadNode* CSectorMgr::SerchObjectNode(t_GameInfo* _gameinfo, Vector3 _pos)
+{
+	QuadNode* node = reinterpret_cast<QuadNode*>(*SerchObjectNode(m_roots[_gameinfo->m_id], _pos, 0, _gameinfo->m_mapinfo));
+	return node;
 }
 #pragma endregion
 void CSectorMgr::CreateQuadTree(t_GameInfo* _gameinfo,t_MapInfo* _mapinfo)
@@ -204,7 +210,7 @@ void CSectorMgr::SetViewNode(QuadNode* _parent, int _curdepth, t_MapInfo* _mapin
                 position.z = start.z - distance.z*2;
                 break;
             }
-            viewnode = SerchNode(m_roots[_gameid], position, 0,static_cast<E_NodeType>(i),_mapinfo);
+            viewnode = SerchNode(m_roots[_gameid], position, 0,_mapinfo);
             if (viewnode == nullptr)
                 continue;
             else 
@@ -313,7 +319,7 @@ void CSectorMgr::RemoveObjectNode(QuadNode* _parent, GameObject* _obj, int _curd
 	*/
 }
 
-QuadNode** CSectorMgr::SerchNode(QuadNode* _parent, Vector3 _pos, int _curdepth, E_NodeType _type, t_MapInfo* _mapinfo)
+QuadNode** CSectorMgr::SerchNode(QuadNode* _parent, Vector3 _pos, int _curdepth, t_MapInfo* _mapinfo)
 {
 	if (_mapinfo->m_depth == _curdepth)
 	{
@@ -340,7 +346,41 @@ QuadNode** CSectorMgr::SerchNode(QuadNode* _parent, Vector3 _pos, int _curdepth,
 			return nullptr;
 		}
 		if (child->IsInSector(_pos))
-			item = SerchNode(child, _pos, _curdepth + 1, _type,_mapinfo);
+			item = SerchNode(child, _pos, _curdepth + 1,_mapinfo);
+		if (item != nullptr)
+			return item;
+	}
+	return nullptr;
+}
+
+QuadNode** CSectorMgr::SerchObjectNode(QuadNode* _parent, Vector3 _pos, int _curdepth, t_MapInfo* _mapinfo)
+{
+	if (_mapinfo->m_depth == _curdepth)
+	{
+		if (_mapinfo->m_start_position.x <= _pos.x && _mapinfo->m_end_position.x >= _pos.x
+			&& _mapinfo->m_start_position.z >= _pos.z && _mapinfo->m_end_position.z <= _pos.z)
+
+		{
+			//if (_parent->IsInSector_Direction(_pos, _type))
+			//{
+
+			return &_parent;
+			//}
+		}
+		return nullptr;
+	}
+	QuadNode* child = nullptr;
+	QuadNode** item = nullptr;
+	int size = _parent->Child_Size();
+	for (int i = 0; i < size; i++)
+	{
+		child = _parent->GetChildNode(i);
+		if (child == nullptr)
+		{
+			return nullptr;
+		}
+		if (child->IsInSector_Obj(_pos))
+			item = SerchObjectNode(child, _pos, _curdepth + 1, _mapinfo);
 		if (item != nullptr)
 			return item;
 	}
@@ -398,7 +438,12 @@ void CSectorMgr::PlayerSendPacket(CSession* _session, unsigned long _protocol, b
 
 void CSectorMgr::TestSendViewSectorProcess(CSession* _session, t_GameInfo* _gameinfo)
 {
-	
+	/*지금 player가 있는 sector의 viewlist만 전송하는데 렌더할 때는 자기 자신의 정보까지 보내야 함.*/
+	byte data[BUFSIZE];
+	ZeroMemory(data, BUFSIZE);
+	_session->UnPacking(data);
+	Vector3 obj_pos;
+	UnPacking(data, obj_pos);
 	unsigned long protocol = 0;
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::TEST));
 	
@@ -407,7 +452,9 @@ void CSectorMgr::TestSendViewSectorProcess(CSession* _session, t_GameInfo* _game
 	list<Vector3> starts;
 	Vector3 distance;
 
-	QuadNode* sector = reinterpret_cast<QuadNode*>(*SerchNode(m_roots[_gameinfo->m_id], test_sector_index, 0, _gameinfo->m_mapinfo));
+	QuadNode* sector = reinterpret_cast<QuadNode*>(*SerchObjectNode(m_roots[_gameinfo->m_id], obj_pos, 0, _gameinfo->m_mapinfo));
+	
+	
 	list<CSector*> viewlist = sector->GetViewSector();
 	int count = 0;
 	for (auto viewnode : viewlist)
@@ -418,6 +465,37 @@ void CSectorMgr::TestSendViewSectorProcess(CSession* _session, t_GameInfo* _game
 		}
 		count++;
 		starts.push_back(viewnode->GetStartPos());
+	}
+	Packing(protocol, starts, distance, _session);
+}
+
+void CSectorMgr::TestSendViewTileProcess(CSession* _session, t_GameInfo* _gameinfo)
+{
+	byte data[BUFSIZE];
+	ZeroMemory(data, BUFSIZE);
+	_session->UnPacking(data);
+	Vector3 obj_pos;
+	UnPacking(data, obj_pos);
+	unsigned long protocol = 0;
+	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::TEST));
+
+	list<Vector3> starts;
+	Vector3 distance;
+
+	QuadNode* sector = reinterpret_cast<QuadNode*>(*SerchObjectNode(m_roots[_gameinfo->m_id], obj_pos, 0, _gameinfo->m_mapinfo));
+
+
+	list<CSector*> viewlist = sector->GetViewSector();
+	viewlist.push_back(sector);
+
+	int count = 0;
+	for (auto viewnode : viewlist)
+	{
+		for (auto tile : viewnode->GetTileList())
+		{
+			Vector3 pos = tile->GetSenterPos();
+			starts.push_back(pos);
+		}
 	}
 	Packing(protocol, starts, distance, _session);
 }
@@ -495,6 +573,17 @@ void CSectorMgr::Packing(unsigned long _protocol, list<Vector3>& _starts, Vector
 	}
 	ptr = data;
 	_session->Packing(_protocol, ptr, size);
+}
+
+void CSectorMgr::UnPacking(byte* _recvbuf, Vector3& _pos)
+{
+	byte* ptr = _recvbuf;
+	memcpy(&_pos.x, ptr, sizeof(float));
+	ptr += sizeof(float);
+	memcpy(&_pos.y, ptr, sizeof(float));
+	ptr += sizeof(float);
+	memcpy(&_pos.z, ptr, sizeof(float));
+	ptr += sizeof(float);
 }
 
 

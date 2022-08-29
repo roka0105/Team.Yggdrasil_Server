@@ -50,8 +50,6 @@ void CMainMgr::Run()
 }
 void CMainMgr::Init()
 {
-
-
 	WSADATA ws;
 	if (WSAStartup(MAKEWORD(2, 2), &ws) != 0)
 		exit(1);

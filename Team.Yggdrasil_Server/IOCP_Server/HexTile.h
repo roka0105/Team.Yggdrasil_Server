@@ -25,6 +25,7 @@ public:
 
 	}
 	bool InHex(Vector3 _objpos);
+	Vector3 GetSenterPos();
 	void operator=(UINT _time);
 private:
 	int m_id;

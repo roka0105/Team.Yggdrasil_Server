@@ -17,12 +17,13 @@ CSocket::CSocket(int _port)
 	m_lock = new CLock();
 
 	int retval = 0;
-
+	
 	m_sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (m_sock == INVALID_SOCKET)
 	{
 		err_quit(_T("socket()"));
 	}
+	
 	ZeroMemory(&m_addr, sizeof(SOCKADDR_IN));
 	m_addr.sin_family = AF_INET;
 	m_addr.sin_addr.s_addr = htonl(INADDR_ANY);

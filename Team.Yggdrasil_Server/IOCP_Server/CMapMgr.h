@@ -7,15 +7,19 @@ struct t_MapInfo
 	{
 
 	}
-	t_MapInfo(UINT _id,Vector3 _start,Vector3 _end,float _tile_distance,int _hsize,int _vsize,
+	t_MapInfo(UINT _id,Vector3 _start,Vector3 _end,float _tile_distance,
 		      int _squared,int _depth,int _eyesight,float _defualty)
 	{
 		m_id = _id;
 		m_start_position = _start;
 		m_end_position = _end;
 		m_tile_distance = _tile_distance;
-		m_h_mapsize = _hsize;
-		m_v_mapsize = _vsize;
+		// 맵이 시작지점에서 종료지점까지 x 증가 z 감소
+		float x = (m_start_position.x < 0 ? abs(m_start_position.x) : -m_start_position.x)
+			     +(m_end_position.x);
+		float z = abs((m_start_position.z > 0 ? -m_start_position.z : m_start_position.z)+ (m_end_position.z));
+		m_h_mapsize = x;
+		m_v_mapsize = z;
 		m_squared_value = _squared;
 		m_sector_count = 1;
 		m_depth = _depth;
@@ -60,6 +64,7 @@ public:
 	void Init();
 	void End();
 	t_MapInfo* GetMapInfo(UINT _mapid);
+
 private:
 	CLock* m_lock;
 	list<HexTile*> m_tiles;

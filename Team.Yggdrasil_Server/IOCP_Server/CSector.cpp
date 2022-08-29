@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "CSector.h"
+#include "HexTile.h"
 int QuadNode::create_count = 0;
 
 int QuadNode::GetCreateCount()
@@ -80,7 +81,17 @@ CSector::~CSector()
 
 void CSector::AddObject(GameObject* _object)
 {
-	//m_objects.push_back(_object);
+	if (dynamic_cast<HexTile*>(_object) != nullptr)
+	{
+		HexTile* hex = dynamic_cast<HexTile*>(_object);
+		m_tile_list.push_back(hex);
+	}
+	else
+	{
+		//해당하는 위치의 tile 검색
+		//해당 tile에 addobject
+	}
+	
 }
 
 const Vector3 CSector::GetDistance()
@@ -106,6 +117,17 @@ BOOL CSector::IsInSector(const Vector3 _obj_pos)
 	}
 	return false;
 }
+
+BOOL CSector::IsInSector_Obj(const Vector3& _obj_pos)
+{
+	if (_obj_pos.x >= m_start_pos.x && _obj_pos.x <= m_start_pos.x + m_distance.x*2
+		&& _obj_pos.z <= m_start_pos.z && _obj_pos.z >= m_start_pos.z - m_distance.z*2)
+	{
+		return true;
+	}
+	return false;
+}
+
 BOOL CSector::IsInSector_Direction(const Vector3 _obj_pos, E_NodeType _type)
 {
 	/*
@@ -166,6 +188,11 @@ void CSector::SetViewSector(CSector* _node)
 list<CSector*>& CSector::GetViewSector()
 {
 	return m_view_sectorlist;
+}
+
+list<HexTile*>& CSector::GetTileList()
+{
+	return m_tile_list;
 }
 
 int QuadNode::Child_Size()

@@ -33,7 +33,7 @@ CMapMgr::~CMapMgr()
 
 void CMapMgr::Init()
 {
-    t_MapInfo* map = new t_MapInfo(0,Vector3(-45,0,38),Vector3(195,0,-142),30,240,180,2,2,8,3);
+    t_MapInfo* map = new t_MapInfo(0,Vector3(-81,0,53.3),Vector3(221,0,-152),30,2,2,8,3);
     m_maps.insert({ 0,map });
 }
 
@@ -55,3 +55,4 @@ t_MapInfo* CMapMgr::GetMapInfo(UINT _mapid)
         return m_maps[_mapid];
     }
 }
+
