@@ -10,6 +10,7 @@ int QuadNode::GetCreateCount()
 
 QuadNode::QuadNode()
 {
+
 }
 
 QuadNode::QuadNode(Vector3 _senter_pos, Vector3 _distance) :CSector(_senter_pos, _distance)
@@ -84,7 +85,7 @@ void CSector::AddObject(GameObject* _object)
 	if (dynamic_cast<HexTile*>(_object) != nullptr)
 	{
 		HexTile* hex = dynamic_cast<HexTile*>(_object);
-		m_tile_list.push_back(hex);
+		m_tile_list.insert(hex);
 	}
 	else
 	{
@@ -190,15 +191,15 @@ BOOL CSector::IsInSector_Direction(const Vector3 _obj_pos, E_NodeType _type)
 
 void CSector::SetViewSector(CSector* _node)
 {
-	m_view_sectorlist.push_back(_node);
+	m_view_sectorlist.insert(_node);
 }
 
-list<CSector*>& CSector::GetViewSector()
+unordered_set<CSector*>& CSector::GetViewSector()
 {
 	return m_view_sectorlist;
 }
 
-list<HexTile*>& CSector::GetTileList()
+unordered_set<HexTile*>& CSector::GetTileList()
 {
 	return m_tile_list;
 }

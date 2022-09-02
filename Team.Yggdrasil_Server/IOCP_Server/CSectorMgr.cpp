@@ -216,6 +216,7 @@ void CSectorMgr::SetViewNode(QuadNode* _parent, int _curdepth, t_MapInfo* _mapin
             else 
                 _parent->SetViewSector(*viewnode);
         }
+		_parent->SetViewSector(_parent);
         return;
     }
     for (int i = 0; i < _mapinfo->m_depth * _mapinfo->m_squared_value; i++)
@@ -455,7 +456,7 @@ void CSectorMgr::TestSendViewSectorProcess(CSession* _session, t_GameInfo* _game
 	QuadNode* sector = reinterpret_cast<QuadNode*>(*SerchObjectNode(m_roots[_gameinfo->m_id], obj_pos, 0, _gameinfo->m_mapinfo));
 	
 	
-	list<CSector*> viewlist = sector->GetViewSector();
+	unordered_set<CSector*> viewlist = sector->GetViewSector();
 	int count = 0;
 	for (auto viewnode : viewlist)
 	{
@@ -485,8 +486,8 @@ void CSectorMgr::TestSendViewTileProcess(CSession* _session, t_GameInfo* _gamein
 	QuadNode* sector = reinterpret_cast<QuadNode*>(*SerchObjectNode(m_roots[_gameinfo->m_id], obj_pos, 0, _gameinfo->m_mapinfo));
 
 
-	list<CSector*> viewlist = sector->GetViewSector();
-	viewlist.push_back(sector);
+	unordered_set<CSector*> viewlist = sector->GetViewSector();
+	//viewlist.push_back(sector);
 
 	int count = 0;
 	for (auto viewnode : viewlist)
@@ -498,6 +499,21 @@ void CSectorMgr::TestSendViewTileProcess(CSession* _session, t_GameInfo* _gamein
 		}
 	}
 	Packing(protocol, starts, distance, _session);
+}
+
+void CSectorMgr::TestPlayerMove(CSession* _session, t_GameInfo* _gameinfo)
+{
+	byte data[BUFSIZE];
+	ZeroMemory(data, BUFSIZE);
+	_session->UnPacking(data);
+	Vector3 obj_pos;
+	UnPacking(data, obj_pos);
+	CPlayer* player = _session->GetPlayer();
+	Vector3 beforpos = player->GetVector();
+	Vector3 afterpos(beforpos.x - obj_pos.x, beforpos.y, beforpos.z);
+	player->SetVector(afterpos);
+	QuadNode* sector = SerchObjectNode(_gameinfo,afterpos);
+	_session->SetSector(sector);
 }
 
 void CSectorMgr::Packing(unsigned long _protocol, Vector3 _startpos, Vector3 _endpos, float _h_distance, float _v_distance, int _sectorcount, CSession* _session)

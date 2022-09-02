@@ -16,6 +16,7 @@
 #include <fstream>
 #include <tchar.h>
 #include <math.h>
+#include <unordered_set>
 #include "PriorityQueue.h"
 
 using std::ofstream;

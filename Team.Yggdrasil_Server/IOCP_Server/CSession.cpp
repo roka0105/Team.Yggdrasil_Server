@@ -12,7 +12,6 @@ void CSession::Init()
 	s_overlap.session = this;
 
 	m_player = nullptr;
-	
 }
 
 void CSession::End() // removesession시 마무리작업하는 함수
@@ -23,6 +22,7 @@ void CSession::End() // removesession시 마무리작업하는 함수
 	if(m_player!=nullptr)
 	delete m_player;
 }
+
 
 void CSession::RenderQueue_Push(HexTile* tile)
 {

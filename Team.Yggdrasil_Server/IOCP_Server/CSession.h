@@ -37,7 +37,7 @@ struct t_UserInfo
 };
 struct mygreater
 {
-	bool operator()(HexTile* _t1,HexTile* _t2)
+	bool operator()(HexTile* _t1, HexTile* _t2)
 	{
 		return _t1->GetTime() > _t2->GetTime();
 	}
@@ -63,14 +63,20 @@ public:
 
 		m_roomid = -1;
 		m_gameid = -1;
+
+		m_real_queue = new PriorityQueue<HexTile*, list<HexTile*>, mygreater>();
+		m_temp_queue = new PriorityQueue<HexTile*, list<HexTile*>, mygreater>();
 	}
-	~CSession() 
+	~CSession()
 	{
 		delete m_loginstate;
 		delete m_lobbystate;
 		delete m_roomstate;
 		delete m_gamestate;
 		delete m_userinfo;
+
+		delete m_real_queue;
+		delete m_temp_queue;
 	}
 	void Init();
 	void End();
@@ -93,51 +99,70 @@ public:
 			m_userinfo->is_login = _flag;
 			return;
 		}
-		_tcsncpy(m_userinfo->id, _id,_tcslen(_id)*CODESIZE);
+		_tcsncpy(m_userinfo->id, _id, _tcslen(_id) * CODESIZE);
 		_tcscpy(m_userinfo->pw, _pw);
 		_tcscpy(m_userinfo->nickname, _nick);
 		m_userinfo->is_login = _flag;
 	}
-    void SetSector(QuadNode* _nodesector)
-    {
-        m_sector = _nodesector;
+	void SetSector(QuadNode* _nodesector)
+	{
+		m_sector = _nodesector;
 		double curtime = 0;
-		time_t start, end;
-		start = time(NULL);
+		time_t last_update_time= time(NULL);
 		//이때 viewlist 섹터들 읽어와서 타일 정보들 queue 에 넣기 (시간 재서)
-		list<CSector*> viewlist = m_sector->GetViewSector();
+		//섹터가 갱신대써 그럼 렌더링 할 구역을 다시 넣을거지! 그럼 시간을 갱신해서 다시 넣지!
+		//그럼 중복되는게 있으면 이전꺼는 밀리겠지! 그럼 알아서 제외되겠찌! 근데 머지...
+		//아....음...포인터라 중복데이터인데 시간이 달라도 이후에 들어오면 시간이 같이 바뀌넹 ㅎ.ㅎ.ㅎ.ㅎ.ㅎ
+		//타일 번호랑 시간만 가지고있는 구조체를 넣을까 으음,,,,,,
+		unordered_set<CSector*>& viewlist = m_sector->GetViewSector();
+	
+		bool same = false;
 		for (auto sector : viewlist)
 		{
-			list<HexTile*> tilelist = sector->GetTileList();
+			unordered_set<HexTile*> tilelist = sector->GetTileList();
+			
+			while(m_real_queue->Empty()==false)
+			{
+				HexTile* temp = m_real_queue->Front();
+				m_real_queue->Pop();
+				auto itr = tilelist.find(temp);
+				if (itr != tilelist.end())
+				{
+					temp->SetRenderTime(last_update_time);
+					m_temp_queue->Push(temp);
+					tilelist.erase(temp);
+				}
+			}
 			for (auto tile : tilelist)
 			{
-				end = time(NULL);
-				curtime = static_cast<double>(end - start);
-				tile->SetRenderTime(curtime);
-				m_render_queue.Push(tile);
+				tile->SetRenderTime(last_update_time);
+				m_temp_queue->Push(tile);
 			}
 		}
-
-    }
+		PriorityQueue<HexTile*, list<HexTile*>, mygreater>* tempqueue;
+		tempqueue = m_real_queue;
+		m_real_queue = m_temp_queue;
+		m_temp_queue=tempqueue;
+	}
 	CSector* GetSector()
 	{
 		return m_sector;
 	}
 	CState* GetState() { return m_curstate; }
-	CState* GetLoginState() 
-    { 
-        m_loginstate->Init();
-        return m_loginstate; 
-    }
-	CState* GetLobbyState() 
+	CState* GetLoginState()
+	{
+		m_loginstate->Init();
+		return m_loginstate;
+	}
+	CState* GetLobbyState()
 	{
 		m_lobbystate->Init();
-		return m_lobbystate; 
+		return m_lobbystate;
 	}
-	CState* GetRoomState() 
-	{ 
+	CState* GetRoomState()
+	{
 		m_roomstate->Init();
-		return m_roomstate; 
+		return m_roomstate;
 	}
 	CState* GetGameState()
 	{
@@ -148,10 +173,10 @@ public:
 	{
 		m_curstate = _state;
 	}
-	void SetPlayer(int _index) 
+	void SetPlayer(int _index)
 	{
 		if (m_player == nullptr)
-			m_player = new CPlayer(_index,m_userinfo->nickname, E_CharacterType::None, Vector3(0, 0, 0));
+			m_player = new CPlayer(_index, m_userinfo->nickname, E_CharacterType::None, Vector3(0, 0, 0));
 		else
 			m_player->SetInfo(m_userinfo->nickname, E_CharacterType::None, Vector3(0, 0, 0));
 	};
@@ -181,8 +206,10 @@ private:
 	CLobbyState* m_lobbystate;
 	CRoomState* m_roomstate;
 	CGameState* m_gamestate;
-    QuadNode* m_sector;
-	PriorityQueue<HexTile*,list<HexTile*>,myless> m_render_queue;
+	QuadNode* m_sector;
+	PriorityQueue<HexTile*, list<HexTile*>, mygreater>* m_real_queue;
+	PriorityQueue<HexTile*, list<HexTile*>, mygreater>* m_temp_queue;
+	
 	int m_roomid;
 	int m_gameid;
 	CPlayer* m_player;

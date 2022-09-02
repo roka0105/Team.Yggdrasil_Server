@@ -55,6 +55,7 @@ public:
 	// TEST Func
 	void TestSendViewSectorProcess(CSession* _session,t_GameInfo* _gameinfo);
 	void TestSendViewTileProcess(CSession* _session, t_GameInfo* _gameinfo);
+	void TestPlayerMove(CSession* _session, t_GameInfo* _gameinfo);
 public:
 	void Packing(unsigned long _protocol, Vector3 _startpos, Vector3 _endpos, float _h_distance, float _v_distance, int _sectorcount, CSession* _session);
 	void Packing(unsigned long _protocol, list<Vector3>& _starts, Vector3& _distances, CSession* _session);

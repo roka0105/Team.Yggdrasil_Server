@@ -18,11 +18,11 @@ public:
     BOOL IsInSector(const Vector3 _obj_pos);// 오브젝트가 노드안에 있는지 체크
     BOOL IsInSector_Obj(const Vector3& _obj_pos);
     void SetViewSector(CSector* _node);
-    list<CSector*>& GetViewSector();
-    list<HexTile*>& GetTileList();
+    unordered_set<CSector*>& GetViewSector();
+    unordered_set<HexTile*>& GetTileList();
 private:
-    list<CSector*> m_view_sectorlist;
-    list<HexTile*> m_tile_list;
+    unordered_set<CSector*> m_view_sectorlist;
+    unordered_set<HexTile*> m_tile_list;
     Vector3 m_start_pos;
     Vector3 m_senter_pos;         // 노드의 중심 위치
     Vector3 m_distance;           // 밑변/2 

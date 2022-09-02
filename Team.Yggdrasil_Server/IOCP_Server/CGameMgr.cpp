@@ -137,9 +137,6 @@ void CGameMgr::InitSector(CSession* _session)
 {
 	CLockGuard<CLock> lock(m_lock);
 	t_GameInfo* game = FindGameInfo(_session->GetRoomID());
-	//sector당 소유하고 있을 viewnode들 설정.
-	CSectorMgr::GetInst()->SetViewNode(_session);
-	
 
 	//sector들의 위치정보 보냄
 	CSectorMgr::GetInst()->SendInit(game->m_id, _session, game->m_mapinfo);
@@ -185,6 +182,7 @@ void CGameMgr::InitPlayer(CSession* _session)
 	{
 		CSession* session = game->m_roominfo->sessions[index];
 		CPlayer* player = session->GetPlayer();
+	
 		player->SetVector(vec);
 		game->m_datainfo->m_players.push_back(player);
 
@@ -261,7 +259,8 @@ void CGameMgr::InitItem(CSession* _session)
 void CGameMgr::TestFunc(CSession* _session)
 {
 	t_GameInfo* game = FindGameInfo(_session->GetRoomID());
-	CSectorMgr::GetInst()->TestSendViewTileProcess(_session, game);
+	//CSectorMgr::GetInst()->TestSendViewTileProcess(_session, game);
+	CSectorMgr::GetInst()->TestPlayerMove(_session, game);
 }
 
 void CGameMgr::Packing(unsigned long _protocol, CSession* _session)

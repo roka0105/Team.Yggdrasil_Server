@@ -68,8 +68,7 @@ int main()
 		cout<<v.front()<<endl;
 		v.erase(v.begin());
 	}*/
-	const std::function<bool(Person*, Person*)>& func = [](Person* first, Person* second)->bool {return first->GetID() > second->GetID(); };
-	PriorityQueue < Person*, list<Person*>,func> queue;
+	PriorityQueue < Person*, list<Person*>,PersonSort> queue;
 	queue.Push(new Person(4, 2, 3));
 	queue.Push(new Person(1, 2, 3));
 	queue.Push(new Person(5, 2, 3));
