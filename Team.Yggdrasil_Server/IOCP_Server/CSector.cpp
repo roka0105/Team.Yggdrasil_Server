@@ -90,6 +90,14 @@ void CSector::AddObject(GameObject* _object)
 	{
 		//해당하는 위치의 tile 검색
 		//해당 tile에 addobject
+		for (HexTile* tile : m_tile_list)
+		{
+			if (tile->InHex(_object->GetVector()))
+			{
+				tile->AddObject(_object);
+				break;
+			}
+		}
 	}
 	
 }

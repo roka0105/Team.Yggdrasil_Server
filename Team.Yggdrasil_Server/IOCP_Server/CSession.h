@@ -7,6 +7,7 @@
 #include "CSector.h"
 #include "CPlayer.h"
 #include "CGameState.h"
+#include "HexTile.h"
 
 class CLock;
 struct t_UserInfo
@@ -34,7 +35,20 @@ struct t_UserInfo
 	TCHAR nickname[STRINGSIZE];
 	bool is_login;
 };
-
+struct mygreater
+{
+	bool operator()(HexTile* _t1,HexTile* _t2)
+	{
+		return _t1->GetTime() > _t2->GetTime();
+	}
+};
+struct myless
+{
+	bool operator()(HexTile* _t1, HexTile* _t2)
+	{
+		return _t1->GetTime() < _t2->GetTime();
+	}
+};
 class CSession :public CPacket
 {
 public:
@@ -87,6 +101,23 @@ public:
     void SetSector(QuadNode* _nodesector)
     {
         m_sector = _nodesector;
+		double curtime = 0;
+		time_t start, end;
+		start = time(NULL);
+		//이때 viewlist 섹터들 읽어와서 타일 정보들 queue 에 넣기 (시간 재서)
+		list<CSector*> viewlist = m_sector->GetViewSector();
+		for (auto sector : viewlist)
+		{
+			list<HexTile*> tilelist = sector->GetTileList();
+			for (auto tile : tilelist)
+			{
+				end = time(NULL);
+				curtime = static_cast<double>(end - start);
+				tile->SetRenderTime(curtime);
+				m_render_queue.Push(tile);
+			}
+		}
+
     }
 	CSector* GetSector()
 	{
@@ -141,6 +172,7 @@ public:
 		m_gameid = _index;
 	}
 	CPlayer* GetPlayer() { return m_player; };
+	void RenderQueue_Push(HexTile* tile);
 private:
 	t_UserInfo* m_userinfo;
 	// STATE
@@ -150,6 +182,7 @@ private:
 	CRoomState* m_roomstate;
 	CGameState* m_gamestate;
     QuadNode* m_sector;
+	PriorityQueue<HexTile*,list<HexTile*>,myless> m_render_queue;
 	int m_roomid;
 	int m_gameid;
 	CPlayer* m_player;

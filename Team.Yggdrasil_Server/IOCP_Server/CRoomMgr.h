@@ -28,7 +28,7 @@ struct t_RoomInfo
 	ENetObjectType type;
 	TCHAR name[STRINGSIZE];
 	TCHAR password[STRINGSIZE];
-	list<CSession*> sessions;
+	vector<CSession*> sessions;
 	CSession* host;
 	unsigned int mode;
 };
@@ -109,7 +109,7 @@ public:
 private:
 	CRoomMgr();
 	~CRoomMgr();
-	void Packing(unsigned long _protocol, bool _allready,CSession* _session);
+	void Packing(unsigned long _protocol, bool _host_flag,bool _allready,CSession* _session);
     void Packing(unsigned long _protocol, int _roomcount, CSession* _session);
 	//방 1개 정보 packing
 	void Packing(unsigned long _protocol,t_RoomInfo* _room, CSession* _session);

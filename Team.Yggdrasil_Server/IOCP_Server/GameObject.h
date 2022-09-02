@@ -14,7 +14,7 @@ public:
     {
         return m_position;
     }
-    void SerVector(Vector3 _pos)
+    void SetVector(Vector3 _pos)
     {
         m_position = _pos;
     }

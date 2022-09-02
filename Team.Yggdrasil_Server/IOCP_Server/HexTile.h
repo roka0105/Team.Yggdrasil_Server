@@ -26,7 +26,12 @@ public:
 	}
 	bool InHex(Vector3 _objpos);
 	Vector3 GetSenterPos();
-	void operator=(UINT _time);
+	const UINT& GetTime();
+	void AddObject(GameObject* _obj);
+	void SetRenderTime(UINT _time);
+	bool operator>(const HexTile& _tile);
+	bool operator<(const HexTile& _tile);
+	bool operator==(const HexTile& _tile);
 private:
 	int m_id;
 	UINT m_time;

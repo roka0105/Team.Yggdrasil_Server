@@ -2,6 +2,7 @@
 #include <vector>
 #include <set>
 #include <stack>
+#include <list>
 using namespace std;
 
 template<typename T, typename Container = vector<T>, typename _Pr = greater <typename Container::value_type>>
@@ -186,26 +187,31 @@ private:
 	};
 	Heap heap;
 	Container contain;
-	
+	int capacity;
 public:
 	Queue()
 	{
-		
+		capacity = 3;
 	}
 	void Push(T _data)
-	{
+	{   
+		if (contain.size() == capacity)
+		{
+			contain.pop_front();
+		}
 		contain.push_back(_data);
+		Sort();
 	}
 	void Pop()
 	{
 		T data = contain.front();
-		typename Container::iterator point;
+		/*typename Container::iterator point;
 		for (typename Container::iterator itr = contain.begin(); itr != contain.end(); itr++)
 		{
 			if (data == *itr)
 				point = itr;
-		}
-		contain.erase(point);
+		}*/
+		contain.remove(data);
 	}
 	void Sort()
 	{
@@ -222,7 +228,7 @@ public:
 	T Front()
 	{
 		T data = contain.front();
-		typename Container::iterator point;
+		/*typename Container::iterator point;
 		for (typename Container::iterator itr = contain.begin(); itr != contain.end(); itr++)
 		{
 			if (data == *itr)
@@ -230,8 +236,8 @@ public:
 				point = itr;
 				break;
 			}
-		}
-		contain.erase(point);
+		}*/
+		//contain.remove(data);
 		return data;
 	}
 	size_t Size()
@@ -334,16 +340,15 @@ int main()
 	정렬방식 안넣었을 때
 	default 인 greater가 Person 의 operator > 를 호출해줌.
 	*/
-	/*
+	
 	PersonSort sort;
-	Queue<Person> queue;
+	Queue<Person,list<Person>,less<>> queue;
 	queue.Push(Person(4, 2, 3));
 	queue.Push(Person(1, 2, 3));
 	queue.Push(Person(5, 2, 3));
 	queue.Push(Person(3, 2, 3));
 	queue.Push(Person(2, 2, 3));
-	*/
-
+	
 	/*사용자 정의 operator 사용*/
 	//Queue<Person, vector<Person>, PersonSort> queue;
 	//queue.Push(Person(4, 2, 3));
@@ -352,13 +357,13 @@ int main()
 	//queue.Push(Person(3, 2, 3));
 	//queue.Push(Person(2, 2, 3));
 
-	//queue.Sort();
+	
 
-	//while (!queue.Empty())
-	//{
-	//	cout << queue.Front().GetID() << endl;
-	//	//queue.Pop();
-	//}
+	while (!queue.Empty())
+	{
+		cout << queue.Front().GetID() << endl;
+		//queue.Pop();
+	}
 
 	/*vector<int> contain;
 	contain.push_back(1);

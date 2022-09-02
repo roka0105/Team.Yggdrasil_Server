@@ -160,7 +160,7 @@ void CRoomMgr::RemoveSession(t_RoomInfo* _room, CSession* _session)
 		{
 			if (memcmp(_room->host, session, sizeof(CSession)) == false)
 				is_host = true;
-			_room->sessions.remove(session);
+			_room->sessions.erase(remove(_room->sessions.begin(), _room->sessions.end(), session));
 			break;
 		}
 	}
@@ -199,7 +199,7 @@ void CRoomMgr::RoomProcess(CSession* _session, CRoomState::SendCompType& _statet
 					case static_cast<const unsigned long>(DETAILPROTOCOL::ChatSend) | static_cast<const unsigned long>(DETAILPROTOCOL::AllMsg) :
 						ChattingFunc(_session);
 						break;
-					
+
 		}
 		break;
 	case SUBPROTOCOL::Single:
@@ -300,7 +300,7 @@ void CRoomMgr::HostReadyFunc(CSession* _session, CRoomState::SendCompType& _stat
 	{
 		//진입할 게임의 정보를 설정한다.
 		//지금 맵 종류가 1개 밖에 없으니까 무조건 0번 맵 골라야함.
-		
+
 		t_MapInfo* map = CMapMgr::GetInst()->GetMapInfo(mapindex);
 		if (map == nullptr)
 		{
@@ -317,12 +317,14 @@ void CRoomMgr::HostReadyFunc(CSession* _session, CRoomState::SendCompType& _stat
 		CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::ReadyResult));
 		CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::HostReady));
 		//클라 한개로 test를 위해 host session에만 전송.
-		Packing(protocol, allready, _session);
+		Packing(protocol, true, allready, _session);
 
 		/*for (auto session : room->sessions)
 		{
+			if (memcmp(_session, session,sizeof(CSession)) == false)
+				continue;
 			session->SetGameID(game->m_id);
-			Packing(protocol, allready, session);
+			Packing(protocol,false, allready, session);
 		}*/
 	}
 	else
@@ -384,7 +386,7 @@ void CRoomMgr::BackPageProcess(CSession* _session, CRoomState::SendCompType& _st
 	if (detailprotocol != static_cast<unsigned long>(DETAILPROTOCOL::LobbyEnter))
 		return;
 	t_RoomInfo* room = FindRoom(_session->GetRoomID());
-	RemoveSession(room,_session);
+	RemoveSession(room, _session);
 	protocol = 0;
 	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::Multi));
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::ROOM));
@@ -401,7 +403,7 @@ void CRoomMgr::BackPageProcess(CSession* _session, CRoomState::SendCompType& _st
 	_statetype = CRoomState::SendCompType::EnterLobby;
 	Packing(protocol, true, _session);
 	// 방 리스트 정보 보낸다.
-    SendRoom(true, 0, _session);
+	SendRoom(true, 0, _session);
 	//로비에 들어와있는 유저 리스트에 유저정보 추가한다.
 	CLobbyMgr::GetInst()->AddSession(_session);
 }
@@ -614,13 +616,15 @@ CRoomMgr::~CRoomMgr()
 	delete m_lock;
 }
 
-void CRoomMgr::Packing(unsigned long _protocol, bool _allready, CSession* _session)
+void CRoomMgr::Packing(unsigned long _protocol, bool _host_flag, bool _allready, CSession* _session)
 {
 	byte _buf[BUFSIZE];
 	ZeroMemory(_buf, BUFSIZE);
 	byte* ptr = _buf;
 	int size = 0;
-
+	memcpy(_buf, &_host_flag, sizeof(bool));
+	size += sizeof(bool);
+	ptr += sizeof(bool);
 	memcpy(_buf, &_allready, sizeof(bool));
 	size += sizeof(bool);
 	ptr = _buf;

@@ -5,12 +5,21 @@
 #include <list>
 #include <stack>
 #include <set>
+
 using namespace std;
 struct Student
 {
 	int id;
 	int math, eng;
 	Student(int num, int m, int e) : id(num), math(m), eng(e) {}
+	bool operator>(const Student& b)
+	{
+		return this->id > b.id;
+	}
+	bool operator<(const Student& b)
+	{
+		return this->id < b.id;
+	}
 	/*bool operator<(const Student s)const
 	{
 		return this->id > s.id;
@@ -30,7 +39,7 @@ class a
 };
 int main()
 {
-
+	
 	priority_queue<Student,vector<Student>,cmp> pq;
 	
 	pq.push(Student(3,100,50));

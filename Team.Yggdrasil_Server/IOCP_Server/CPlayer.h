@@ -40,7 +40,5 @@ private:
 	TCHAR m_playername[STRINGSIZE];
 	E_CharacterType m_character_type;
 	bool is_ready;
-	Vector3 m_pos;
-
 };
 
