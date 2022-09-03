@@ -1,16 +1,8 @@
 #pragma once
-
+//#include "global.h"
 //그 헤더에서는 lock 변수만 만들려고 CLock 전방선언한거고 cpp에서 쓰거든 그래서 cpp에서 인클루드함.
 class CLock;
 
-enum class IO_TYPE
-{
-	NONE,
-	ACCEPT,
-	SEND,
-	RECV,
-	DISCONNECT,
-};
 
 struct OVERLAP_EX
 {

@@ -12,6 +12,8 @@
 #include "CRoomMgr.h"
 #include "CSectorMgr.h"
 #include "CGameMgr.h"
+#include "Exception_Handler.h"
+
 CMainMgr* CMainMgr::m_instance = nullptr;
 
 CMainMgr::CMainMgr()
@@ -33,6 +35,7 @@ void CMainMgr::Loop()
 }
 void CMainMgr::Run()
 {
+	Exception_Handler::Instance()->run();
 	while (1)
 	{
 		SOCKET clientsock;
@@ -64,6 +67,7 @@ void CMainMgr::Init()
 	CLobbyMgr::GetInst()->Init();
 	CRoomMgr::GetInst()->Init();
 	CGameMgr::GetInst()->Init();
+	Exception_Handler::Instance()->_initalize(_T("server_exception.dmp"));
 	// ++
 }
 void CMainMgr::End()
@@ -106,6 +110,7 @@ void CMainMgr::Create()
 	CLobbyMgr::Create();
 	CRoomMgr::Create();
 	CGameMgr::Create();
+	Exception_Handler::Create();
 }
 
 void CMainMgr::Destroy()
@@ -120,9 +125,10 @@ void CMainMgr::Destroy()
 	CLobbyMgr::Destroy();
 	CRoomMgr::Destroy();
 	CGameMgr::Destroy();
+	Exception_Handler::Destroy();
 }
 
-void CMainMgr::SizeCheck_And_Recv(void* _session, int _combytes) // 이름을 하는 기능을 전부 명시적으로 만든다.
+void CMainMgr::SizeCheck_And_Recv(void* _session, int _combytes, t_ThreadInfo* _threadinfo) // 이름을 하는 기능을 전부 명시적으로 만든다.
 {
 	CSession* session = reinterpret_cast<CSession*>(_session);
 	SOC sizecheck = session->CompRecv(_combytes);
@@ -131,7 +137,7 @@ void CMainMgr::SizeCheck_And_Recv(void* _session, int _combytes) // 이름을 �
 	{
 	case SOC::SOC_TRUE:
 		//recvprocess
-		session->GetState()->Recv();
+		session->GetState()->Recv(_threadinfo);
 		break;
 	case SOC::SOC_FALSE:
 		break;
@@ -140,7 +146,7 @@ void CMainMgr::SizeCheck_And_Recv(void* _session, int _combytes) // 이름을 �
 	session->WSARECV();
 }
 
-void CMainMgr::SizeCheck_And_Send(void* _session, int _combytes)
+void CMainMgr::SizeCheck_And_Send(void* _session, int _combytes, t_ThreadInfo* _threadinfo)
 {
 	CSession* session = reinterpret_cast<CSession*>(_session);
  	SOC sizecheck = session->CompSend(_combytes);
@@ -148,7 +154,7 @@ void CMainMgr::SizeCheck_And_Send(void* _session, int _combytes)
 	{
 	case SOC::SOC_TRUE:
 		//SendProcess(session);
-		session->GetState()->Send();
+		session->GetState()->Send(_threadinfo);
 		session->DelayDataSend();
 		break;
 	case SOC::SOC_FALSE:

@@ -1,4 +1,4 @@
-#include "pch.h"
+
 #include "CLogMgr.h"
 #include "CLock.h"
 #include "CLockGuard.h"
@@ -77,7 +77,6 @@ TCHAR* CLogMgr::FileWriteLog(const TCHAR* fmt, ...)
 
 	return cbuf;
 }
-
 //고치기 안나옴
 TCHAR* CLogMgr::FileReadLogLast()
 {
@@ -133,23 +132,23 @@ CLogMgr::~CLogMgr()
 	delete m_lock;
 }
 
-void err_quit(const TCHAR* msg)
-{
-	LPVOID lpMsgBuf;
-	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
-		WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf,
-		0, NULL);
-	MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_OK);
-	LocalFree(lpMsgBuf);
-	exit(-1);
-}
-
-void err_display(const TCHAR* msg)
-{
-	LPVOID lpMsgBuf;
-	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
-		WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf,
-		0, NULL);
-	_tprintf(_T("[%s] %s"), msg, lpMsgBuf);
-	LocalFree(lpMsgBuf);
-}
+//void err_quit(const TCHAR* msg)
+//{
+//	LPVOID lpMsgBuf;
+//	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
+//		WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf,
+//		0, NULL);
+//	MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_OK);
+//	LocalFree(lpMsgBuf);
+//	exit(-1);
+//}
+//
+//void err_display(const TCHAR* msg)
+//{
+//	LPVOID lpMsgBuf;
+//	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
+//		WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf,
+//		0, NULL);
+//	_tprintf(_T("[%s] %s"), msg, lpMsgBuf);
+//	LocalFree(lpMsgBuf);
+//}

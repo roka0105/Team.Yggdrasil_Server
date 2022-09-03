@@ -321,7 +321,7 @@ void CRoomMgr::HostReadyFunc(CSession* _session, CRoomState::SendCompType& _stat
 
 		/*for (auto session : room->sessions)
 		{
-			if (memcmp(_session, session,sizeof(CSession)) == false)
+			if (memcmp(_session, session,sizeof(CSession)) == 0)
 				continue;
 			session->SetGameID(game->m_id);
 			Packing(protocol,false, allready, session);

@@ -1,6 +1,8 @@
 #pragma once
 #include "CSession.h"
 
+
+
 // recv, send, accept, disconnected
 class CIocp
 {
@@ -14,13 +16,14 @@ public:
 	virtual int DisConnect(OVERLAP_EX* _overlap) = 0;
 	virtual void* GetQueueAccept(ULONG_PTR _com_key, OVERLAP_EX* _overlap) = 0;
 	virtual void PostQueueAccept(SOCKET _clientsock) = 0;
-	virtual void SizeCheck_And_Recv(void* _session, int _combytes) = 0;
-	virtual void SizeCheck_And_Send(void* _session, int _combytes) = 0;
+	virtual void SizeCheck_And_Recv(void* _session, int _combytes,t_ThreadInfo* _threadinfo) = 0;
+	virtual void SizeCheck_And_Send(void* _session, int _combytes, t_ThreadInfo* _threadinfo) = 0;
 	void PostDisConnect(void* _ptr);
 	virtual bool GetQueueErrorCheck(int _retval, int _cb_t, OVERLAP_EX* _overlapex); // iocp에서만 쓰는 함수
 
+public:
+	static map<DWORD, t_ThreadInfo*> g_threadinfo;
 protected:
 	HANDLE m_hcp;
-
 };
 

@@ -1,4 +1,7 @@
 #pragma once
+#ifndef _INCLUDE_GUARD_
+#define _INCLUDE_GUARD_
+
 #include "CPacket.h"
 #include "CState.h"
 #include "CLoginState.h"
@@ -108,29 +111,49 @@ public:
 	{
 		m_sector = _nodesector;
 		double curtime = 0;
-		time_t last_update_time= time(NULL);
-		//이때 viewlist 섹터들 읽어와서 타일 정보들 queue 에 넣기 (시간 재서)
-		//섹터가 갱신대써 그럼 렌더링 할 구역을 다시 넣을거지! 그럼 시간을 갱신해서 다시 넣지!
-		//그럼 중복되는게 있으면 이전꺼는 밀리겠지! 그럼 알아서 제외되겠찌! 근데 머지...
-		//아....음...포인터라 중복데이터인데 시간이 달라도 이후에 들어오면 시간이 같이 바뀌넹 ㅎ.ㅎ.ㅎ.ㅎ.ㅎ
-		//타일 번호랑 시간만 가지고있는 구조체를 넣을까 으음,,,,,,
+		time_t last_update_time = time(NULL);
 		unordered_set<CSector*>& viewlist = m_sector->GetViewSector();
-	
+
 		bool same = false;
-		for (auto sector : viewlist)
+		unordered_set<HexTile*> tilelist;
+		list<HexTile*> suc_tile;
+		list<HexTile*> new_tile;
+		while (m_real_queue->Empty() == false)
 		{
-			unordered_set<HexTile*> tilelist = sector->GetTileList();
-			
-			while(m_real_queue->Empty()==false)
+			same = false;
+			HexTile* temp = m_real_queue->Front();
+			m_real_queue->Pop();
+			for (auto sector : viewlist)
 			{
-				HexTile* temp = m_real_queue->Front();
-				m_real_queue->Pop();
+				tilelist = sector->GetTileList();
 				auto itr = tilelist.find(temp);
 				if (itr != tilelist.end())
-				{
+				{   //리얼 큐랑 타일리스트 둘다 있는 경우
+					//중복데이터면 시간갱신해서 넣기
 					temp->SetRenderTime(last_update_time);
 					m_temp_queue->Push(temp);
-					tilelist.erase(temp);
+					suc_tile.push_back(temp);
+					same = true;
+					break;
+				}
+			}
+			if (!same)
+			{   //리얼 큐에 있고 타일 리스트에 없는 경우=원래 시간으로 넣기.
+				//다 돌았는데 tilelist에 없었다. real queue에만 있었다.
+				m_temp_queue->Push(temp);
+			}
+		}
+
+		//리얼 큐에 없고 타일 리스트에만 있는경우
+		for (auto sector : viewlist)
+		{
+			tilelist = sector->GetTileList();
+			for (auto suc : suc_tile)
+			{
+				auto itr = tilelist.find(suc);
+				if (itr != tilelist.end())
+				{
+					tilelist.erase(suc);
 				}
 			}
 			for (auto tile : tilelist)
@@ -139,10 +162,11 @@ public:
 				m_temp_queue->Push(tile);
 			}
 		}
+		
 		PriorityQueue<HexTile*, list<HexTile*>, mygreater>* tempqueue;
 		tempqueue = m_real_queue;
 		m_real_queue = m_temp_queue;
-		m_temp_queue=tempqueue;
+		m_temp_queue = tempqueue;
 	}
 	CSector* GetSector()
 	{
@@ -209,7 +233,7 @@ private:
 	QuadNode* m_sector;
 	PriorityQueue<HexTile*, list<HexTile*>, mygreater>* m_real_queue;
 	PriorityQueue<HexTile*, list<HexTile*>, mygreater>* m_temp_queue;
-	
+
 	int m_roomid;
 	int m_gameid;
 	CPlayer* m_player;
@@ -217,4 +241,4 @@ private:
 	//int substate;
 };
 
-
+#endif

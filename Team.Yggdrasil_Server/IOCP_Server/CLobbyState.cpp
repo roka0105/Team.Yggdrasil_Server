@@ -7,11 +7,14 @@ void CLobbyState::Init()
 {
 	m_sendcom_type = SendCompType::None;
 }
-void CLobbyState::Recv()
+void CLobbyState::Recv(t_ThreadInfo* _threadinfo)
 {
 	//mainprotocol 분리
 	unsigned long protocol = 0;
 	m_session->UnPacking(protocol);
+	_threadinfo->io_type = IO_TYPE::RECV;
+	_threadinfo->cur_state = E_STATE::LOBBY;
+	_threadinfo->protocol = protocol;
 	unsigned long mainprotocol = CProtocolMgr::GetInst()->GetMainProtocol(protocol);
 	//switch문 mainprotocol로 분기
 	switch ((MAINPROTOCOL)mainprotocol)
@@ -36,8 +39,10 @@ void CLobbyState::Recv()
 	//로그인 (이 경우는 클라가 로비에서 나와서 다시 메뉴선택을 할 경우 state login 에서 처리해 주기 때문에 여기서 state를 변경해줌)
 }
 
-void CLobbyState::Send()
+void CLobbyState::Send(t_ThreadInfo* _threadinfo)
 {
+	_threadinfo->io_type = IO_TYPE::SEND;
+	_threadinfo->cur_state = E_STATE::LOBBY;
 	switch (m_sendcom_type)
 	{
 	case SendCompType::BackPage:

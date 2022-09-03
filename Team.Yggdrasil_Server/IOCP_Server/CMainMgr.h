@@ -34,8 +34,8 @@ public:
 	void PostQueueAccept(SOCKET _clientsock);
 	void PostDisConnect(CSession* _ptr);
 	//virtual bool GetQueueErrorCheck(int _retval, int _cb_t, OVERLAP_EX* _overlapex)final;
-	virtual void SizeCheck_And_Recv(void* _session, int _combytes)final;
-	virtual void SizeCheck_And_Send(void* _session, int _combytes)final;
+	virtual void SizeCheck_And_Recv(void* _session, int _combytes, t_ThreadInfo* _threadinfo)final;
+	virtual void SizeCheck_And_Send(void* _session, int _combytes, t_ThreadInfo* _threadinfo)final;
 
 	
 	// ++ 새롭게 추가된 내용

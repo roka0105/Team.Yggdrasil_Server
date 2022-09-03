@@ -10,8 +10,8 @@ public:
     {
         is_lobby = false;
     }
-	virtual void Recv() final;
-	virtual void Send() final;
+	virtual void Recv(t_ThreadInfo* _threadinfo) final;
+	virtual void Send(t_ThreadInfo* _threadinfo) final;
 private:
 	bool is_lobby;
 };

@@ -193,7 +193,7 @@ private:
 public:
 	PriorityQueue()
 	{
-		capacity = 45;
+		capacity = 20;
 	}
 	void Push(T _data)
 	{

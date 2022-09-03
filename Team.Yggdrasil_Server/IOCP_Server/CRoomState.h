@@ -19,8 +19,8 @@ public:
         m_sendcom_type = SendCompType::None;
     }
     void Init();
-    virtual  void Recv() final;
-    virtual void Send() final;
+    virtual  void Recv(t_ThreadInfo* _threadinfo) final;
+    virtual void Send(t_ThreadInfo* _threadinfo) final;
 private:
     SendCompType m_sendcom_type;
 };

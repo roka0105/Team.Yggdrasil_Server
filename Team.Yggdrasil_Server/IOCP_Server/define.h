@@ -43,6 +43,14 @@ enum class E_NodeType
     Up,
     Down,
 };
+enum class E_STATE
+{
+    LOGIN,
+    LOBBY,
+    ROOM,
+    GAME,
+};
+
 struct Vector3
 {
     Vector3()
@@ -67,3 +75,23 @@ struct Vector3
     float y;
     float z;
 };
+enum class IO_TYPE
+{
+    NONE,
+    ACCEPT,
+    SEND,
+    RECV,
+    DISCONNECT,
+};
+struct t_ThreadInfo
+{
+    IO_TYPE io_type;
+    E_STATE cur_state;
+    unsigned long protocol;
+};
+
+static void CreateError()
+{
+    LPBYTE test = nullptr;
+    *test = 1234;
+}

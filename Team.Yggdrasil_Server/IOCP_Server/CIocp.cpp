@@ -4,12 +4,15 @@
 #include "CMainMgr.h"
 #include "CRoomMgr.h"
 
+map<DWORD, t_ThreadInfo*> CIocp::g_threadinfo;
 
 DWORD CIocp::WorkThread(LPVOID _iocp)
 {
 	int retval;
 
 	CIocp* ciocp = reinterpret_cast<CIocp*>(_iocp);
+	t_ThreadInfo* myinfo = new t_ThreadInfo();
+	g_threadinfo[GetCurrentThreadId()] = myinfo;
 
 	while (1)
 	{
@@ -29,11 +32,11 @@ DWORD CIocp::WorkThread(LPVOID _iocp)
 			break;
 		case IO_TYPE::RECV:
 			session = overlap_ptr->session;
-			ciocp->SizeCheck_And_Recv(session, cbTransferred); // 여기서 함수하나에 전부 처리하도록
+			ciocp->SizeCheck_And_Recv(session, cbTransferred,myinfo); // 여기서 함수하나에 전부 처리하도록
 			break;
 		case IO_TYPE::SEND:
 			session = overlap_ptr->session;
-			ciocp->SizeCheck_And_Send(session, cbTransferred);
+			ciocp->SizeCheck_And_Send(session, cbTransferred,myinfo);
 			break;
 		case IO_TYPE::DISCONNECT:
 			ciocp->DisConnect(overlap_ptr);
@@ -93,4 +96,5 @@ bool CIocp::GetQueueErrorCheck(int _retval, int _cb_t, OVERLAP_EX* _overlapex)
 	}
 	return false;
 }
+
 

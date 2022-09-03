@@ -77,7 +77,6 @@ TCHAR* CLogMgr::FileWriteLog(const TCHAR* fmt, ...)
 
 	return cbuf;
 }
-
 //고치기 안나옴
 TCHAR* CLogMgr::FileReadLogLast()
 {
