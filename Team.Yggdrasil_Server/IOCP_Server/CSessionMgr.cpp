@@ -49,6 +49,7 @@ CSessionMgr::~CSessionMgr()
 
 CSession* CSessionMgr::AddSession(SOCKET _sock)
 {
+    int size = sizeof(CSession);
     CSession* session = new CSession(_sock);
     
     CLockGuard<CLock> lock(m_lock);

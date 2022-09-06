@@ -1,5 +1,8 @@
-#include "pch.h"
-#include "CMainMgr.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <Windows.h>
+#include <crtdbg.h>
+#include "testclass.h"
 #include "C_SetCtrlHandler.h"
 C_SetCtrlHandler* C_SetCtrlHandler::instance = nullptr;
 
@@ -36,9 +39,7 @@ BOOL WINAPI C_SetCtrlHandler::CtrlHandler(DWORD _CtrlType)
     case CTRL_C_EVENT:
     case CTRL_CLOSE_EVENT:
     case CTRL_BREAK_EVENT:
-        CMainMgr::GetInst()->End();
-        CMainMgr::GetInst()->Destroy();
-        MessageBox(NULL, _T("1234"), _T("1234"), MB_OK);
+      
         break;
     }
     return true;

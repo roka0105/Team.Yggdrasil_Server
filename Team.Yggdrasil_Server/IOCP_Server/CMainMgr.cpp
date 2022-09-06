@@ -53,6 +53,7 @@ void CMainMgr::Run()
 }
 void CMainMgr::Init()
 {
+	
 	WSADATA ws;
 	if (WSAStartup(MAKEWORD(2, 2), &ws) != 0)
 		exit(1);
@@ -74,21 +75,15 @@ void CMainMgr::End()
 {
 
 	CLoginMgr::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog(_T("end1\n"));
 	CLobbyMgr::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog(_T("end2\n"));
 	CRoomMgr::GetInst()->End();
 	CSessionMgr::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog(_T("end3\n"));
 	CDBMgr::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog(_T("end4\n"));
-
 	C_SetCtrlHandler::GetInst()->End();
-	CLogMgr::GetInst()->FileWriteLog(_T("end5\n"));
-
 	CLogMgr::GetInst()->End();
-	//CLogMgr::GetInst()->FileWriteLog(_T("end6\n"));
 	CGameMgr::GetInst()->End();
+
+	MemoryPool_2::End();
 	WSACleanup();
 }
 
@@ -149,7 +144,7 @@ void CMainMgr::SizeCheck_And_Recv(void* _session, int _combytes, t_ThreadInfo* _
 void CMainMgr::SizeCheck_And_Send(void* _session, int _combytes, t_ThreadInfo* _threadinfo)
 {
 	CSession* session = reinterpret_cast<CSession*>(_session);
- 	SOC sizecheck = session->CompSend(_combytes);
+	SOC sizecheck = session->CompSend(_combytes);
 	switch (sizecheck)
 	{
 	case SOC::SOC_TRUE:
@@ -206,11 +201,11 @@ int CMainMgr::DisConnect(OVERLAP_EX* _overlap)
 	{
 		CLoginMgr::GetInst()->RemoveLogingInfo(userinfo);
 	}
-    CState* state = session->GetState();
-    if (dynamic_cast<CLobbyState*>(state) != nullptr)
-    {
-        CLobbyMgr::GetInst()->RemoveSession(session);
-    }
+	CState* state = session->GetState();
+	if (dynamic_cast<CLobbyState*>(state) != nullptr)
+	{
+		CLobbyMgr::GetInst()->RemoveSession(session);
+	}
 	else if (dynamic_cast<CRoomState*>(state) != nullptr)
 	{
 		CRoomMgr::GetInst()->DisConnected(session);
@@ -220,7 +215,7 @@ int CMainMgr::DisConnect(OVERLAP_EX* _overlap)
 	{
 		CLobbyMgr::GetInst()->RemoveSession(session);
 	}
-    */
+	*/
 	C_SetCtrlHandler::GetInst()->End();
 
 	// 클라이언트 나감처리

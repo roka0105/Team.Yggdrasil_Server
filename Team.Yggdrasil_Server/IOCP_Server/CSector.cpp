@@ -108,6 +108,11 @@ const Vector3 CSector::GetDistance()
 	return m_distance;
 }
 
+void CSector::SetDistance(Vector3 _pos)
+{
+	m_distance = _pos;
+}
+
 const Vector3 CSector::GetSenter()
 {
 	return m_senter_pos;
@@ -120,7 +125,7 @@ const Vector3 CSector::GetStartPos()
 BOOL CSector::IsInSector(const Vector3 _obj_pos)
 {
 	if (_obj_pos.x >= m_start_pos.x && _obj_pos.x <= m_start_pos.x + m_distance.x
-		&& _obj_pos.z <= m_start_pos.z && _obj_pos.z >= m_start_pos.z - m_distance.z)
+ 		&& _obj_pos.z <= m_start_pos.z && _obj_pos.z >= m_start_pos.z - m_distance.z)
 	{
 		return true;
 	}

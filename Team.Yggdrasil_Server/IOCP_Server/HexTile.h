@@ -27,6 +27,7 @@ public:
 	bool InHex(Vector3 _objpos);
 	Vector3 GetSenterPos();
 	const UINT& GetTime();
+	const UINT& GetID();
 	void AddObject(GameObject* _obj);
 	void SetRenderTime(UINT _time);
 	bool operator>(const HexTile& _tile);

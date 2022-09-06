@@ -22,6 +22,11 @@ const UINT& HexTile::GetTime()
 	return m_time;
 }
 
+const UINT& HexTile::GetID()
+{
+	return m_id;
+}
+
 void HexTile::AddObject(GameObject* _obj)
 {
 	m_objects.push_back(_obj);

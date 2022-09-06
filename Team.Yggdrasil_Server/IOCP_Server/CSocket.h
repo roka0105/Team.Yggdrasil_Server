@@ -1,6 +1,5 @@
 #pragma once
-//#include "global.h"
-//그 헤더에서는 lock 변수만 만들려고 CLock 전방선언한거고 cpp에서 쓰거든 그래서 cpp에서 인클루드함.
+#include "MemoryPool_2.h"
 class CLock;
 
 
@@ -60,7 +59,7 @@ struct t_recvbuf
 	bool is_recvmode;
 };
 
-class CSocket
+class CSocket:public MemoryPool_2
 {
 public:
 	CSocket();

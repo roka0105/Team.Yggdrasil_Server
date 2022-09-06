@@ -48,7 +48,7 @@ public:
 	static LONG WINAPI Exception_Callback(__in struct _EXCEPTION_POINTERS* exceptioninfo);
 	
 private:
-	wstring _dump_file_name;
+	wstring  _dump_file_name;
 	MINIDUMP_TYPE _dump_type;
 	LPTOP_LEVEL_EXCEPTION_FILTER _prev_filter;
 };

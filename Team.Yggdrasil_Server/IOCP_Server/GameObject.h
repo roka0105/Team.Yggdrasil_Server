@@ -1,6 +1,6 @@
 #pragma once
-
-class GameObject
+#include "MemoryPool_2.h"
+class GameObject:public MemoryPool_2
 {
 public:
     GameObject()

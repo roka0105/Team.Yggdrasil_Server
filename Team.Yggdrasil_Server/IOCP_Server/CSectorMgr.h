@@ -28,7 +28,6 @@ private:
 public:
 	void Init();
 	void End();
-
 	void AddQuadTree(t_GameInfo* _gameinfo,t_MapInfo* _mapinfo);
 	void SendInit(UINT _gameid, CSession* _session, t_MapInfo* _mapinfo);
 	QuadNode* SerchObjectNode(t_GameInfo* _gameinfo,Vector3 _pos);
@@ -37,6 +36,7 @@ public:
 	{
 		return m_roots[gameid];
 	}
+	
 	// 미완성
 	void SetViewNode(CSession* _session);
 	void AddObjectNode(QuadNode* _parent, GameObject* obj, int _curdepth);
@@ -63,8 +63,5 @@ public:
 private:
 	CLock* m_lock;
 	map<UINT, QuadNode*> m_roots; // key = gameinfo id,  value = rootnode 
-	map <UINT, PriorityQueue<HexTile*, vector<HexTile*>>> m_render_queues;//key= gameinfo id, value = 렌더중인 타일 정보 
-	
-
 };
 

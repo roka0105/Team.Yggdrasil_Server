@@ -1,16 +1,8 @@
 #include <iostream>
-#include <vector>
-#include <set>
-#include <stack>
-#include <list>
-#include <algorithm>
-#include <functional>
-#include "PriorityQueue.h"
-using namespace std;
+#include "LRU_Queue.h"
 
 class Person
 {
-
 	int id;
 	int math, eng;
 public:
@@ -19,22 +11,6 @@ public:
 	int GetID()
 	{
 		return id;
-	}
-	bool operator>(const Person& _p)const
-	{
-		return this->id > _p.id;
-	}
-	bool operator<(const Person& _p)const
-	{
-		return this->id < _p.id;
-	}
-	bool operator>(const Person* _p)
-	{
-		return this->id > _p->id;
-	}
-	bool operator<(const Person* _p)
-	{
-		return this->id < _p->id;
 	}
 	bool operator==(const Person& _p)const
 	{
@@ -46,7 +22,7 @@ struct PersonSort
 {
 	bool operator()(Person a, Person b)
 	{
-		return a.GetID() > b.GetID();
+		return a.GetID() < b.GetID();
 	}
 	bool operator()(Person* a, Person* b)
 	{
@@ -68,17 +44,27 @@ int main()
 		cout<<v.front()<<endl;
 		v.erase(v.begin());
 	}*/
-	PriorityQueue < Person*, list<Person*>,PersonSort> queue;
-	queue.Push(new Person(4, 2, 3));
-	queue.Push(new Person(1, 2, 3));
-	queue.Push(new Person(5, 2, 3));
-	queue.Push(new Person(3, 2, 3));
-	queue.Push(new Person(2, 2, 3));
+	LRU_Queue<Person*,PersonSort> queue(3);
+	Person* data=nullptr;
+	if (queue.Push(new Person(1, 2, 3), data))
+		cout << data->GetID() << endl;
+	data = nullptr;
+	if(queue.Push(new Person(2, 2, 3),data))
+		cout << data->GetID() << endl;
+	data = nullptr;
+	if(queue.Push(new Person(3, 2, 3),data))
+		cout << data->GetID() << endl;
+	data = nullptr;
+	if(queue.Push(new Person(4, 2, 3),data))
+		cout << data->GetID() << endl;
+	data = nullptr;
+	if(queue.Push(new Person(5, 2, 3),data))
+		cout << data->GetID() << endl;
+	data = nullptr;
 
 	while (!queue.Empty())
 	{
 		cout << queue.Front()->GetID() << endl;
 		queue.Pop();
 	}
-
 }

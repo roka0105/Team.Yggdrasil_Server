@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "MemoryPool_2.h"
 
 map<UINT, t_pool_info*> MemoryPool_2::memorypools;

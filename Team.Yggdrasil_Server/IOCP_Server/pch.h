@@ -17,8 +17,8 @@
 #include <tchar.h>
 #include <math.h>
 #include <unordered_set>
-#include "PriorityQueue.h"
-
+#include "LRU_Queue.h"
+//#include "PriorityQueue2.h"
 using std::ofstream;
 using std::ifstream;
 using std::list;

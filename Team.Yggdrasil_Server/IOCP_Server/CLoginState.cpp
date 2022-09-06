@@ -22,7 +22,6 @@ void CLoginState::Recv(t_ThreadInfo* _threadinfo)
 	{
 	case MAINPROTOCOL::LOGIN:
 		CLoginMgr::GetInst()->LoginProcess(m_session);
-		::CreateError();
 		break;
 	case MAINPROTOCOL::LOBBY:
 		is_lobby = true;

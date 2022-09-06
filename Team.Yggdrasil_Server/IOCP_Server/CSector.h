@@ -1,7 +1,8 @@
 #pragma once
+#include "MemoryPool_2.h"
 class GameObject;
 class HexTile;
-class CSector
+class CSector :public MemoryPool_2
 {
 protected:
     CSector();
@@ -12,6 +13,7 @@ public:
     void AddObject(GameObject* _object);      // 오브젝트 등록
     void SetArea(Vector3 _senter_pos);
     const Vector3 GetDistance();
+    void SetDistance(Vector3 _pos);
     const Vector3 GetSenter();
     const Vector3 GetStartPos();
     BOOL IsInSector_Direction(const Vector3 _obj_pos,E_NodeType _type); 

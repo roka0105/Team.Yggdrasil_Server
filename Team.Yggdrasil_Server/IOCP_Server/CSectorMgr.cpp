@@ -116,11 +116,15 @@ void CSectorMgr::CreateChildren(QuadNode* _parent, Vector3 _senterpos, Vector3 _
 	{
 		//leaf node id 
 		_parent->SetID();
+		/*Vector3 vec = _parent->GetDistance();
+		vec.x += 1;
+		vec.z += 1;
+		_parent->SetDistance(vec);*/
 		_gameinfo->m_leaf_nodes.insert({ _parent->GetID(),_parent });
 		return;
 	}
 	Vector3 distance(_distance.x /_mapinfo->m_squared_value, 0, _distance.z / _mapinfo->m_squared_value);
-	Vector3* senterpos = nullptr;
+ 	Vector3* senterpos = nullptr;
 	QuadNode* child = nullptr;
 	for (int i = 0; i < _mapinfo->m_squared_value * 2; i++)
 	{
@@ -162,7 +166,10 @@ void CSectorMgr::SetViewNode(QuadNode* _parent, int _curdepth, t_MapInfo* _mapin
     {
         Vector3 start = _parent->GetStartPos();
         Vector3 distance = _parent->GetDistance();
-
+		if (_parent->GetID() == 8)
+		{
+			printf("id=8");
+		}
         Vector3 position;
         QuadNode** viewnode = nullptr;
 
@@ -509,10 +516,8 @@ void CSectorMgr::TestPlayerMove(CSession* _session, t_GameInfo* _gameinfo)
 	Vector3 obj_pos;
 	UnPacking(data, obj_pos);
 	CPlayer* player = _session->GetPlayer();
-	Vector3 beforpos = player->GetVector();
-	Vector3 afterpos(beforpos.x - obj_pos.x, beforpos.y, beforpos.z);
-	player->SetVector(afterpos);
-	QuadNode* sector = SerchObjectNode(_gameinfo,afterpos);
+	player->SetVector(obj_pos);
+	QuadNode* sector = SerchObjectNode(_gameinfo,obj_pos);
 	_session->SetSector(sector);
 }
 

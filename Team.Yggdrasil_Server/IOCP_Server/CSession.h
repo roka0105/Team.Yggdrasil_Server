@@ -12,6 +12,7 @@
 #include "CGameState.h"
 #include "HexTile.h"
 
+
 class CLock;
 struct t_UserInfo
 {
@@ -40,6 +41,10 @@ struct t_UserInfo
 };
 struct mygreater
 {
+	bool operator()(HexTile _t1, HexTile _t2)
+	{
+		return _t1.GetTime() > _t2.GetTime();
+	}
 	bool operator()(HexTile* _t1, HexTile* _t2)
 	{
 		return _t1->GetTime() > _t2->GetTime();
@@ -47,6 +52,10 @@ struct mygreater
 };
 struct myless
 {
+	bool operator()(HexTile _t1, HexTile _t2)
+	{
+		return _t1.GetTime() < _t2.GetTime();
+	}
 	bool operator()(HexTile* _t1, HexTile* _t2)
 	{
 		return _t1->GetTime() < _t2->GetTime();
@@ -67,8 +76,8 @@ public:
 		m_roomid = -1;
 		m_gameid = -1;
 
-		m_real_queue = new PriorityQueue<HexTile*, list<HexTile*>, mygreater>();
-		m_temp_queue = new PriorityQueue<HexTile*, list<HexTile*>, mygreater>();
+		m_real_queue = new LRU_Queue<HexTile*,mygreater>(20);
+		m_temp_queue = new LRU_Queue<HexTile*, mygreater>(20);
 	}
 	~CSession()
 	{
@@ -131,7 +140,12 @@ public:
 				{   //리얼 큐랑 타일리스트 둘다 있는 경우
 					//중복데이터면 시간갱신해서 넣기
 					temp->SetRenderTime(last_update_time);
-					m_temp_queue->Push(temp);
+					HexTile* data = nullptr;
+					if (m_temp_queue->Push(temp, data))
+					{
+						cout << data->GetTime() << " 이거 지워짐\n";
+						delete data;
+					}
 					suc_tile.push_back(temp);
 					same = true;
 					break;
@@ -140,7 +154,12 @@ public:
 			if (!same)
 			{   //리얼 큐에 있고 타일 리스트에 없는 경우=원래 시간으로 넣기.
 				//다 돌았는데 tilelist에 없었다. real queue에만 있었다.
-				m_temp_queue->Push(temp);
+				HexTile* data = nullptr;
+				if (m_temp_queue->Push(temp, data))
+				{
+					cout << data->GetTime() << " 이거 지워짐\n";
+					delete data;
+				}
 			}
 		}
 
@@ -159,11 +178,16 @@ public:
 			for (auto tile : tilelist)
 			{
 				tile->SetRenderTime(last_update_time);
-				m_temp_queue->Push(tile);
+				HexTile* data = nullptr;
+				if (m_temp_queue->Push(tile, data))
+				{
+					cout << data->GetID()<<"|"<<data->GetTime() << " 이거 지워짐\n";
+					delete data;
+				}
 			}
 		}
 		
-		PriorityQueue<HexTile*, list<HexTile*>, mygreater>* tempqueue;
+		LRU_Queue<HexTile*,mygreater>* tempqueue;
 		tempqueue = m_real_queue;
 		m_real_queue = m_temp_queue;
 		m_temp_queue = tempqueue;
@@ -231,8 +255,8 @@ private:
 	CRoomState* m_roomstate;
 	CGameState* m_gamestate;
 	QuadNode* m_sector;
-	PriorityQueue<HexTile*, list<HexTile*>, mygreater>* m_real_queue;
-	PriorityQueue<HexTile*, list<HexTile*>, mygreater>* m_temp_queue;
+	LRU_Queue<HexTile*, mygreater>* m_real_queue;
+	LRU_Queue<HexTile*,mygreater>* m_temp_queue;
 
 	int m_roomid;
 	int m_gameid;
