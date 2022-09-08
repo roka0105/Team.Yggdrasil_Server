@@ -121,6 +121,10 @@ public:
 	{
 		return contain.size() == 0;
 	}
+	const T& operator[](int _index)
+	{
+		return contain[_index];
+	}
 };
 
 

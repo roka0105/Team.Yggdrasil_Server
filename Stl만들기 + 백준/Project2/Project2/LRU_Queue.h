@@ -29,6 +29,10 @@ public:
 	{
 		queue->Pop();
 	}
+	const T& operator[](int _index)
+	{
+		return (*queue)[_index];
+	}
 
 protected:
 	PriorityQueue<T, _Pr>* queue;

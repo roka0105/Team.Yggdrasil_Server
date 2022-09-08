@@ -444,23 +444,23 @@ void CSectorMgr::PlayerSendPacket(CSession* _session, unsigned long _protocol, b
 	*/
 }
 
-void CSectorMgr::TestSendViewSectorProcess(CSession* _session, t_GameInfo* _gameinfo)
+void CSectorMgr::TestSendViewSectorProcess(CSession* _session, t_GameInfo* _gameinfo,Vector3 _objpos)
 {
 	/*지금 player가 있는 sector의 viewlist만 전송하는데 렌더할 때는 자기 자신의 정보까지 보내야 함.*/
-	byte data[BUFSIZE];
+	/*byte data[BUFSIZE];
 	ZeroMemory(data, BUFSIZE);
 	_session->UnPacking(data);
 	Vector3 obj_pos;
-	UnPacking(data, obj_pos);
+	UnPacking(data, obj_pos);*/
 	unsigned long protocol = 0;
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::TEST));
-	
+	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(CGameMgr::SUBPROTOCOL::SECTOR));
 	int test_sector_index = 9;
 
 	list<Vector3> starts;
 	Vector3 distance;
 
-	QuadNode* sector = reinterpret_cast<QuadNode*>(*SerchObjectNode(m_roots[_gameinfo->m_id], obj_pos, 0, _gameinfo->m_mapinfo));
+	QuadNode* sector = reinterpret_cast<QuadNode*>(*SerchObjectNode(m_roots[_gameinfo->m_id], _objpos, 0, _gameinfo->m_mapinfo));
 	
 	
 	unordered_set<CSector*> viewlist = sector->GetViewSector();
@@ -477,33 +477,42 @@ void CSectorMgr::TestSendViewSectorProcess(CSession* _session, t_GameInfo* _game
 	Packing(protocol, starts, distance, _session);
 }
 
-void CSectorMgr::TestSendViewTileProcess(CSession* _session, t_GameInfo* _gameinfo)
+void CSectorMgr::TestSendViewTileProcess(CSession* _session, t_GameInfo* _gameinfo,Vector3 _objpos)
 {
-	byte data[BUFSIZE];
-	ZeroMemory(data, BUFSIZE);
-	_session->UnPacking(data);
-	Vector3 obj_pos;
-	UnPacking(data, obj_pos);
+	//byte data[BUFSIZE];
+	//ZeroMemory(data, BUFSIZE);
+	//_session->UnPacking(data);
+	//Vector3 obj_pos;
+	//UnPacking(data, obj_pos);
 	unsigned long protocol = 0;
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::TEST));
-
+	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(CGameMgr::SUBPROTOCOL::Object));
+	CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(CGameMgr::DETAILPROTOCOL::Tile));
 	list<Vector3> starts;
 	Vector3 distance;
 
-	QuadNode* sector = reinterpret_cast<QuadNode*>(*SerchObjectNode(m_roots[_gameinfo->m_id], obj_pos, 0, _gameinfo->m_mapinfo));
+	//QuadNode* sector = reinterpret_cast<QuadNode*>(*SerchObjectNode(m_roots[_gameinfo->m_id], _objpos, 0, _gameinfo->m_mapinfo));
 
 
-	unordered_set<CSector*> viewlist = sector->GetViewSector();
-	//viewlist.push_back(sector);
+	//unordered_set<CSector*> viewlist = sector->GetViewSector();
+	////viewlist.push_back(sector);
 
-	int count = 0;
-	for (auto viewnode : viewlist)
+	//int count = 0;
+	//for (auto viewnode : viewlist)
+	//{
+	//	for (auto tile : viewnode->GetTileList())
+	//	{
+	//		Vector3 pos = tile->GetSenterPos();
+	//		starts.push_back(pos);
+	//	}
+	//}
+	LRU_Queue<HexTile*, mygreater> render_queue = _session->GetCurTiles();
+	int size = render_queue.Size();
+	for(int i=0;i<size;i++)
 	{
-		for (auto tile : viewnode->GetTileList())
-		{
-			Vector3 pos = tile->GetSenterPos();
-			starts.push_back(pos);
-		}
+		HexTile* tile = render_queue[i];
+		Vector3 pos = tile->GetSenterPos();
+		starts.push_back(pos);
 	}
 	Packing(protocol, starts, distance, _session);
 }
@@ -519,6 +528,8 @@ void CSectorMgr::TestPlayerMove(CSession* _session, t_GameInfo* _gameinfo)
 	player->SetVector(obj_pos);
 	QuadNode* sector = SerchObjectNode(_gameinfo,obj_pos);
 	_session->SetSector(sector);
+	TestSendViewSectorProcess(_session,_gameinfo,obj_pos);
+	TestSendViewTileProcess(_session, _gameinfo, obj_pos);
 }
 
 void CSectorMgr::Packing(unsigned long _protocol, Vector3 _startpos, Vector3 _endpos, float _h_distance, float _v_distance, int _sectorcount, CSession* _session)

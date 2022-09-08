@@ -28,7 +28,16 @@ public:
 	{
 		queue->Pop();
 	}
-
+	int Size()
+	{
+		return queue->Size();
+	}
+	/*컨테이너의 값만 빼오는것이기 때문에 정렬 X,삭제 X 요소의 값들 출력만 한다.
+	  lru에서 관리하는 render중인 타일에 대한 정보를 얻기 위해서 만들었다.*/
+	const T& operator[](int _index)
+	{
+		return (*queue)[_index];
+	}
 protected:
 	PriorityQueue<T, _Pr>* queue;
 private:

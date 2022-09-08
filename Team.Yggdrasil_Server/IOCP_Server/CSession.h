@@ -245,7 +245,7 @@ public:
 		m_gameid = _index;
 	}
 	CPlayer* GetPlayer() { return m_player; };
-	void RenderQueue_Push(HexTile* tile);
+	const LRU_Queue<HexTile*, mygreater>& GetCurTiles();
 private:
 	t_UserInfo* m_userinfo;
 	// STATE

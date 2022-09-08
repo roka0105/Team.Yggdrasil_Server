@@ -53,8 +53,8 @@ public:
 	//void ItemSendPacket(CSession*,Protocol,_onoff_flag)
 
 	// TEST Func
-	void TestSendViewSectorProcess(CSession* _session,t_GameInfo* _gameinfo);
-	void TestSendViewTileProcess(CSession* _session, t_GameInfo* _gameinfo);
+	void TestSendViewSectorProcess(CSession* _session,t_GameInfo* _gameinfo,Vector3 _objpos);
+	void TestSendViewTileProcess(CSession* _session, t_GameInfo* _gameinfo,Vector3 _objpos);
 	void TestPlayerMove(CSession* _session, t_GameInfo* _gameinfo);
 public:
 	void Packing(unsigned long _protocol, Vector3 _startpos, Vector3 _endpos, float _h_distance, float _v_distance, int _sectorcount, CSession* _session);

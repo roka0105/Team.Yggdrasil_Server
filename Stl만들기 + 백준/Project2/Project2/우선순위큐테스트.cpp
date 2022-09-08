@@ -62,9 +62,10 @@ int main()
 		cout << data->GetID() << endl;
 	data = nullptr;
 
+	int i = 0;
 	while (!queue.Empty())
 	{
-		cout << queue.Front()->GetID() << endl;
-		queue.Pop();
+		cout << queue[i]->GetID() << endl;
+		i++;
 	}
 }
