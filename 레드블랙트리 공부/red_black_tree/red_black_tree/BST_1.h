@@ -1,11 +1,6 @@
 #pragma once
 #include <iostream>
-enum class NodeType
-{
-	Black,
-	Red,
-	Nil
-};
+
 template<typename T>
 class Node
 {
@@ -19,7 +14,6 @@ public:
 	Node<T>* left;
 	Node<T>* right;
 	T data;
-	NodeType type;
 };
 template <typename T>
 class Node<T*>
@@ -38,7 +32,6 @@ public:
 	Node<T*>* left;
 	Node<T*>* right;
 	T* data;
-	NodeType color;
 };
 template <typename T>
 class BST_1
@@ -58,8 +51,6 @@ private:
 		T data;
 		NodeColor color;
 	};*/
-	int depth;
-	int leaf;
 	Node<T>* root;
 private:
 	void push_node(Node<T>** _root, Node<T>* _node)
