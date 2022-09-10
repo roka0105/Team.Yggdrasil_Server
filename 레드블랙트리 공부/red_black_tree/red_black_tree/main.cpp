@@ -65,17 +65,6 @@ int main()
 	flag = tree.Pop(13);*/
 #pragma endregion
 #pragma region 기본 이진트리 테스트 2
-	RBT<int> tree;
-	tree.Push(10);
-	tree.Push(9);
-	tree.Push(8);
-	tree.Push(7);
-	tree.Push(6);
-	tree.Push(5);
-	tree.Push(4);
-	tree.Push(3);
-	tree.Push(2);
-	tree.Push(1);
 #pragma endregion
 
 #pragma region NillNode 상속, dynamic cast로 node 정보 구분하기 테스트 
@@ -105,15 +94,50 @@ int main()
 #pragma endregion
 
 #pragma region RBT Push Test
-	/*Red_Black_Tree<int> rbt;
-	rbt.Push(11);
-	rbt.Push(2);
-	rbt.Push(4);
-	rbt.Push(15);
-	rbt.Push(1);
-	rbt.Push(7);
-	rbt.Push(5);
-	rbt.Push(8);
-	rbt.Push(4);*/
+	RBT<int> tree;
+	//test1
+
+	/*
+	tree.Push(11);
+	tree.Push(2);
+	tree.Push(14);
+	tree.Push(1);
+	tree.Push(7);
+	tree.Push(15);
+	tree.Push(5);
+	tree.Push(8);
+	tree.Push(4);*/
+
+	//test2
+	/*tree.Push(10);
+	tree.Push(9);
+	tree.Push(8);
+	tree.Push(7);
+	tree.Push(6);
+	tree.Push(5);
+	tree.Push(4);
+	tree.Push(3);
+	tree.Push(2);
+	tree.Push(1);*/
+	
+	//test3
+
+	/*tree.Push(1);
+	tree.Push(2);
+	tree.Push(3);
+	tree.Push(4);
+	tree.Push(5);
+	tree.Push(6);
+	tree.Push(7);
+	tree.Push(8);
+	tree.Push(9);
+	tree.Push(10);*/
 #pragma endregion
+
+#pragma region  RBT Pop Test
+	tree.Push(20);
+	tree.Push(1);
+	tree.Pop(20);
+#pragma endregion
+
 }

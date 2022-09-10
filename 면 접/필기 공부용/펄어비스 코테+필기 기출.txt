@@ -1,0 +1,21 @@
+펄어비스 코테
+쓰레드 구현문제
+로딩 쓰레드:: 메모장 읽어오고 cs인 datalist 저장
+출력 쓰레드:: 읽어온 dataList 출력
+datalist 내용을 짤라서 profileList에 넣음
+Profile이라는 클래스에 name age job있고
+중복되면 지움
+RemvoeChar()함수 구현 ::문자열 공백 제거
+
+필기
+코드문제점 찾고 수정 1시간 주는데 그정도 필요한가 싶음
+bool 함수명(const int32 아이템갯수,const int32 아이템가격)
+{
+ Int32 money = getMoney();
+if(money < 아이템갯수*아이템가격)
+{
+return false;
+}
+setMoney(money - 아이템가격*아이템갯수);
+return true;
+}

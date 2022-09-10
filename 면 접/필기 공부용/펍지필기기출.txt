@@ -1,0 +1,77 @@
+펍지 Pre-test
+stack call이란?
+stack overflow란?
+2. 시간복잡도 문제(정렬안된 배열)
+3.리스트 꺼꾸로 돌려서 리턴
+4.array list map 무엇이고 예시
+5. 멀티쓰레드 공유자원 동기화문제
+6.출력결과 클래스2개(상속문제) :: 소멸자 부모virtual 사용안했을경우 
+​
+보너스문제
+언리얼 리플리케이션이란?
+언리얼 가비지컬랙터 메커니즘 
+​
+6
+​
+class A
+{
+public:
+	A()
+	{
+		cout << "a 생성"<<endl;
+	}
+	~A()
+	{
+		cout << " a 소멸" << endl;
+	}
+public:
+	virtual void print()
+	{
+		cout << "dd" << endl;
+	}
+};
+class B : A
+{
+public:
+	B()
+	{
+		cout << "b생성" << endl;
+	}
+	B(int a)
+	{
+		cout << a << "생성" << endl;
+	}
+	~B()
+	{
+		cout << "b 소멸" << endl;
+	}
+	virtual void print()
+	{
+		cout << "cc" << endl;
+	}
+};​
+////////////
+3번문제 내가 작성한것
+void Reverse()
+	{
+		Node<T>* front = head->next;
+		Node<T>* tmp = head;
+		Node<T>* cur = head;
+​
+		while (true)
+		{
+			if (front != nullptr)
+			{
+				cur = front;
+				front = front->next;
+				cur->next = tmp;
+				tmp = cur;
+			}
+			else
+			{
+				head->next = nullptr;
+				head = cur;
+				break;
+			}
+		}
+	}​
