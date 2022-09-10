@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="소스 파일\Dump">
+      <UniqueIdentifier>{b676b6be-b4f6-4160-b7ab-d0072cfab12d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Lock">
+      <UniqueIdentifier>{bbeea8ed-1c3b-42e4-84f7-85f24fe30af8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="소스.cpp">
@@ -30,12 +36,48 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="CLoginMgr.cpp">
+    <ClCompile Include="우선순위큐테스트.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="dump_test.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Exception_Handler.cpp">
+      <Filter>소스 파일\Dump</Filter>
+    </ClCompile>
+    <ClCompile Include="CLock.cpp">
+      <Filter>소스 파일\Lock</Filter>
+    </ClCompile>
+    <ClCompile Include="CLockGuard.cpp">
+      <Filter>소스 파일\Lock</Filter>
+    </ClCompile>
+    <ClCompile Include="배열 힙정렬 공부.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="LRU_Queue.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Queue.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Exception_Handler.h">
+      <Filter>소스 파일\Dump</Filter>
+    </ClInclude>
+    <ClInclude Include="CLock.h">
+      <Filter>소스 파일\Lock</Filter>
+    </ClInclude>
+    <ClInclude Include="CLockGuard.h">
+      <Filter>소스 파일\Lock</Filter>
+    </ClInclude>
+    <ClInclude Include="global.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="PriorityQueue.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="LRU_Queue.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

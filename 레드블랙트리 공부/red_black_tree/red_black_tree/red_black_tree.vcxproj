@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{de8977b7-fb7d-4bf9-9289-a8a963249b0f}</ProjectGuid>
-    <RootNamespace>MemoryPool</RootNamespace>
+    <ProjectGuid>{76a733e4-ca52-4268-9f0a-220405508283}</ProjectGuid>
+    <RootNamespace>redblacktree</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -139,22 +139,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="C_SetCtrlHandler.cpp" />
+    <ClCompile Include="BST_1.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MemoryPool.cpp" />
-    <ClCompile Include="MemoryPool_2.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="testclass.cpp" />
+    <ClCompile Include="RBT.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C_SetCtrlHandler.h" />
-    <ClInclude Include="MemoryPool.h" />
-    <ClInclude Include="MemoryPool_2.h" />
-    <ClInclude Include="testclass.h" />
+    <ClInclude Include="BST_1.h" />
+    <ClInclude Include="PriorityQueue2.h" />
+    <ClInclude Include="RBT.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

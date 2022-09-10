@@ -15,34 +15,37 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="CLock.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryPool.cpp">
+    <ClCompile Include="CLockGuard.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryPool_2.cpp">
+    <ClCompile Include="CLogMgr.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="C_SetCtrlHandler.cpp">
+    <ClCompile Include="dump_test.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="testclass.cpp">
+    <ClCompile Include="Exception_Handler.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MemoryPool.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="MemoryPool_2.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="C_SetCtrlHandler.h">
+    <ClInclude Include="CLock.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
-    <ClInclude Include="testclass.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="CLockGuard.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CLogMgr.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Exception_Handler.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="global.h">
+      <Filter>소스 파일</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

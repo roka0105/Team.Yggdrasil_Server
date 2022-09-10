@@ -73,6 +73,36 @@
     <Filter Include="소스 파일\Object\Player">
       <UniqueIdentifier>{91c0824b-d0dd-456a-99a6-555dafbd9d55}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Manager\GameMgr">
+      <UniqueIdentifier>{59f37bc0-111c-449d-b1b2-62c7ecb66e14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Object\HexTile">
+      <UniqueIdentifier>{f56f3bee-24af-4df6-ac79-58171b08579f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Manager\GameMgr\CMapMgr">
+      <UniqueIdentifier>{8b6444ac-95ff-440e-bcbd-75837f810d6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Object\Boss">
+      <UniqueIdentifier>{bf62114b-e58e-4ef9-b716-4e0c36f46458}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Object\Item">
+      <UniqueIdentifier>{f3783f0f-edf3-454d-9cfb-5597da2eb1bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Core\Dump">
+      <UniqueIdentifier>{9ad49ca5-0038-452c-9c14-58f2d8da7b6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Core\MemoryPool">
+      <UniqueIdentifier>{5080c871-4b9b-4494-9904-a3edb7240d40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Core\STL">
+      <UniqueIdentifier>{4cce104d-c5bb-445a-b50a-92b5127a294b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Core\STL\PriorityQueue">
+      <UniqueIdentifier>{06a47018-762d-4d77-ae2f-08544aaf8844}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Core\STL\Red Black Tree">
+      <UniqueIdentifier>{fd4fbb76-9396-4220-869f-36ea8a3cb370}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\CSessionMgr.cpp">
@@ -159,6 +189,33 @@
     <ClCompile Include="..\CLoginMgr.cpp">
       <Filter>소스 파일\Manager\LoginMgr</Filter>
     </ClCompile>
+    <ClCompile Include="..\HexTile.cpp">
+      <Filter>소스 파일\Object\HexTile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CMapMgr.cpp">
+      <Filter>소스 파일\Manager\GameMgr\CMapMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CGameMgr.cpp">
+      <Filter>소스 파일\Manager\GameMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CGameState.cpp">
+      <Filter>소스 파일\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Boss.cpp">
+      <Filter>소스 파일\Object\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Item.cpp">
+      <Filter>소스 파일\Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Exception_Handler.cpp">
+      <Filter>소스 파일\Core\Dump</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MemoryPool_2.cpp">
+      <Filter>소스 파일\Core\MemoryPool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RBT.cpp">
+      <Filter>소스 파일\Core\STL\Red Black Tree</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ProjectString.h">
@@ -242,9 +299,6 @@
     <ClInclude Include="..\CSector.h">
       <Filter>소스 파일\Object\Sector</Filter>
     </ClInclude>
-    <ClInclude Include="Memorypool.h">
-      <Filter>소스 파일\Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\CPlayer.h">
       <Filter>소스 파일\Object\Player</Filter>
     </ClInclude>
@@ -253,6 +307,45 @@
     </ClInclude>
     <ClInclude Include="..\define.h">
       <Filter>소스 파일\default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\HexTile.h">
+      <Filter>소스 파일\Object\HexTile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CMapMgr.h">
+      <Filter>소스 파일\Manager\GameMgr\CMapMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CGameMgr.h">
+      <Filter>소스 파일\Manager\GameMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CGameState.h">
+      <Filter>소스 파일\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PriorityQueue.h">
+      <Filter>소스 파일\Core\STL\PriorityQueue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Boss.h">
+      <Filter>소스 파일\Object\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Item.h">
+      <Filter>소스 파일\Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Exception_Handler.h">
+      <Filter>소스 파일\Core\Dump</Filter>
+    </ClInclude>
+    <ClInclude Include="Memorypool.h">
+      <Filter>소스 파일\Core\MemoryPool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MemoryPool_2.h">
+      <Filter>소스 파일\Core\MemoryPool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LRU_Queue.h">
+      <Filter>소스 파일\Core\STL\PriorityQueue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PriorityQueue2.h">
+      <Filter>소스 파일\Core\STL\PriorityQueue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RBT.h">
+      <Filter>소스 파일\Core\STL\Red Black Tree</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

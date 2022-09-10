@@ -18,30 +18,21 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryPool.cpp">
+    <ClCompile Include="BST_1.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryPool_2.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="C_SetCtrlHandler.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="testclass.cpp">
+    <ClCompile Include="RBT.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MemoryPool.h">
+    <ClInclude Include="PriorityQueue2.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="MemoryPool_2.h">
+    <ClInclude Include="BST_1.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="C_SetCtrlHandler.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="testclass.h">
+    <ClInclude Include="RBT.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

@@ -50,3 +50,20 @@ case 1(왼/오 ver)
 
 ======== 
 
+
+
+삭제된 색의 위치를 대체한 노드 = extra 붙음
+삭제될 노드의 자식이 0,1 이면 본인색 삭제 본인위치가 extra
+삭제될 노드의 자식이 2 이면 successor 위치를 대체한 노드가 extra
+
+
+레드에 extra 가 붙었다면 = black.
+우리가 변환해줘야 할 문제들은 doubly black 인 경우.
+
+
+===========
+pop test 
+
+오른쪽 doubly black 에서 왼쪽 검정,왼쪽 왼쪽 자식 레드 (case 4r)  <<완료>>
+오른쪽 case 3 <<완료>>
+
