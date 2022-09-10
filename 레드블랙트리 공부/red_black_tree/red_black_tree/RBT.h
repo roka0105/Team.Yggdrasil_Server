@@ -11,7 +11,7 @@ template<typename T>
 class Node
 {
 public:
-	Node(NodeType _type) :parent(nullptr), type(_type), data(-1), is_extra(false)
+	Node(NodeType _type) :parent(nullptr), left(nullptr), right(nullptr), type(_type), data(-1), is_extra(false)
 	{
 
 	}
@@ -66,7 +66,11 @@ private:
 	{
 		Node<T>* ptr = *_root;
 		if (*_root == nilnode)
+		{
+			serchnode = _root;
 			return false;
+		}
+
 		if (ptr->data == data)
 		{
 			serchnode = _root;
@@ -113,6 +117,76 @@ private:
 			}
 		}
 		return &nilnode;
+	}
+	void LeftRotation(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
+	{
+		Node<T>** parent_space;
+		serch_node(&root,parent->data, parent_space);
+		// 부모의 부모 백업 
+		Node<T>* grandparent = parent->parent;
+		
+		if (sibling == nilnode)
+		{
+			sibling = (*_node);
+		}
+		// 형제의 부모를 부모의 부모로 설정
+		sibling->parent = grandparent;
+		// 형제의 왼쪽 백업
+		Node<T>* left_backup = sibling->left;
+		// 형제의 왼쪽에 부모 넣기
+		sibling->left = parent;
+		// 부모의 오른쪽에 왼쪽 백업 넣기.
+		parent->right = left_backup;
+		// 왼쪽 백업의 부모를 부모로 하기.
+		left_backup->parent = parent;
+		//부모의 부모를 형제로 설정
+		parent->parent = sibling;
+
+		// 부모자리에 형제 넣기
+		*parent_space = sibling;
+	}
+	void RightRotation(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
+	{
+		Node<T>** parent_space ;
+		serch_node(&root, parent->data, parent_space);
+		// 부모의 부모 백업 
+		Node<T>* grandparent = parent->parent;
+		
+		if (sibling == nilnode)
+		{
+			sibling = (*_node);
+		}
+		// 형제의 부모를 부모의 부모로 설정
+		sibling->parent = grandparent;
+		// 형제의 오른쪽 백업
+		Node<T>* right_backup = sibling->right;
+		// 형제의 오른쪽에 부모 넣기
+		sibling->right = parent;
+		// 부모의 왼쪽에 오른쪽 백업 넣기.
+		parent->left = right_backup;
+		// 오른쪽 백업의 부모를 부모로 하기.
+		right_backup->parent = parent;
+		//부모의 부모를 형제로 설정
+		parent->parent = sibling;
+
+		// 부모자리에 형제 넣기
+		*parent_space = sibling;
+	}
+	void Children_Alter_Black(Node<T>* _parent, Node<T>* _child_1, Node<T>* _child_2)
+	{
+		//delete 에서 형제의 양쪽 자식이 red인 경우 양쪽 자식을 black으로 만든 후 
+		//형제를 red로 만들어서 case 1 수행
+		if (_child_1->type != _child_2->type && _child_1->type !=NodeType::Red)
+		{
+			return;
+		}
+
+		NodeType tempcolor = _parent->type;
+
+		_parent->type = _child_1->type;
+
+		_child_1->type = tempcolor;
+		_child_2->type = tempcolor;
 	}
 #pragma region insert func
 	//case 1 : 부모와 삼촌이 레드일 때 
@@ -297,22 +371,44 @@ private:
 	:  doubly black (_node) 의 형제 노드가 Black 일 때
 	   그 형제의 오른쪽 자녀가 Red 이다.
 
-	   해답
+	   해답 (extra node 가 왼쪽 기준)
 	:  오른쪽 형제 = 부모 색
-	   오른쪽 형제의 자녀(Red) = Black
+	   형제의 오른쪽 자녀(Red) = Black
 	   부모 = Black
-	   오른쪽일 시 : 왼쪽 회전 (부모 기준)
-	   왼쪽일  시  : 오른쪽 회전(부모기준)
+	   왼쪽일 시 : 왼쪽 회전 (부모 기준)
+	  
+
+		해답 (extra node 가 오른쪽 기준)
+	:  왼쪽 형제 = 부모 색
+	   형제의 왼쪽 자녀(Red) = Black
+	   부모 = Black
+	   오른쪽일  시  : 오른쪽 회전(부모기준)
 	*/
 	//case 4 - r
-	void delete_case4_r(Node<T>** _node)
+	void delete_case4_r(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
 	{
-
+		NodeType tempcolor = parent->type;
+		//형제 부모의 색으로 변경
+		sibling->type = tempcolor;
+		//왼쪽 자녀 Red -> Black
+		sibling->left->type = NodeType::Black;
+		//부모 Black
+		parent->type = NodeType::Black;
+		//오른쪽 회전
+		RightRotation(_node, parent, sibling);
 	}
 	//case 4 - l
-	void delete_case4_l(Node<T>** _node)
+	void delete_case4_l(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
 	{
-
+		NodeType tempcolor = parent->type;
+		//형제 부모의 색으로 변경
+		sibling->type = tempcolor;
+		//오른쪽 자녀 Red -> Black
+		sibling->right->type = NodeType::Black;
+		//부모 Black
+		parent->type = NodeType::Black;
+		//왼쪽 회전
+		LeftRotation(_node, parent, sibling);
 	}
 #pragma endregion
 #pragma region case 3
@@ -325,8 +421,32 @@ private:
 	   case 4 수행.
 	*/
 	//case 3 - r
+	void delete_case3_r(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
+	{
+		NodeType tempcolor = sibling->type;
+		//형제와 형제의 오른쪽(Red)의 색과 바꾼다.
+		sibling->type = sibling->right->type;
+		sibling->right->type = tempcolor;
+		//형제 기준 왼쪽 회전.
+		Node<T>** sibling_right_child = &((*_node)->parent->left->right);
+		LeftRotation(sibling_right_child, sibling, sibling->left);
+		
+		//case 4
+		delete_case4_r(_node, parent, sibling->parent);
+	}
 	//case 3 - l
-
+	void delete_case3_l(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
+	{
+		NodeType tempcolor = sibling->type;
+		//형제와 형제의 왼쪽(Red)의 색과 바꾼다.
+		sibling->type = sibling->left->type;
+		sibling->left->type = tempcolor;
+		//형제 기준 오른쪽 회전.
+		Node<T>** sibling_left_child = &((*_node)->parent->right->left);
+		RightRotation(sibling_left_child, sibling, sibling->right);
+		//case 4
+		delete_case4_l(_node, parent, sibling->parent);
+	}
 #pragma endregion
 #pragma region case 2
 	/* case 2 설명
@@ -344,62 +464,137 @@ private:
 	   doubly black 이면 다시 case문들을 수행 한다. RBT_Delete() 호출.
 	*/
 	//case 2
+	void delete_case2(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
+	{
+		//extra node 의 extra 상태를 해제 한다.
+		(*_node)->is_extra = false;
+		//형제 노드(검정)을 red 로 변경
+		sibling->type = NodeType::Red;
+		//부모의 상태에 extra 상태 추가.
+		parent->is_extra = true;
 
+		if (parent->type == NodeType::Red|| parent->parent == nullptr)
+		{
+			parent->type = NodeType::Black;
+			parent->is_extra = false;
+		}
+		//부모가 doubly black 일 때 
+		else 
+		{
+			RBT_Delete(&(*_node)->parent);
+		}
+	}
 #pragma endregion
 #pragma region case 1
 	/* case 1 설명
 	:  doubly black 의 형제가 Red 일 때
 
 	   해답
-	:  형제를 Black 으로 만들고 RBT_Delete().
+	:  형제를 Black 으로 만들고 회전 후  RBT_Delete().
 	*/
 	//case 1 - r
+	void delete_case1_r(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
+	{
+		NodeType tempcolor = parent->type;
+		parent->type = sibling->type;
+
+		Node<T>** parent_space = &(*_node)->parent;
+
+		RightRotation(_node, parent, sibling);
+
+		RBT_Delete(_node);
+	}
 	//case 1 - l
+	void delete_case1_l(Node<T>** _node,Node<T>* parent,Node<T>* sibling)
+	{
+		NodeType tempcolor = parent->type;
+		parent->type = sibling->type;
+
+		Node<T>** parent_space = &(*_node)->parent;
+		
+		LeftRotation(_node, parent, sibling);
+
+		RBT_Delete(_node);
+	}
 #pragma endregion
 	void RBT_Delete(Node<T>** _node)
-	{   
-		Node<T>** parent = (*_node)->parent;
-		Node<T>** sibling = nullptr;
-		Node<T>* child_r = nullptr;
-		Node<T>* child_l = nullptr;
+	{
+		Node<T>* parent = (*_node)->parent;
+		Node<T>* sibling = nullptr;
 
 		// 현재 노드가 부모기준 왼쪽이다.
-		if ((*parent)->left == (*_node))
+		if (parent->left == (*_node))
 		{
-			sibling = (*parent)->right;
-			if ((*sibling)->type == NodeType::Black)
+			sibling = parent->right;
+			if (sibling->type == NodeType::Black)
 			{
-				child_r = (*sibling)->right;
-				child_l = (*sibling)->left;
-
-				if (child_r->type == NodeType::Red)
+				//자식 둘다 Red
+				if (sibling->left->type== NodeType::Red && sibling->right->type == NodeType::Red)
 				{
-
+					Children_Alter_Black(parent, sibling->left, sibling->right);
+					delete_case1_l(_node,parent,sibling);
 				}
+				//오른쪽만 Red
+				else if (sibling->right->type == NodeType::Red)
+				{
+					delete_case4_l(_node,parent,sibling);
+				}
+				//왼쪽만 Red
+				else if(sibling->left->type == NodeType::Red)
+				{
+					delete_case3_l(_node, parent, sibling);
+				}
+				/*
+				  형제: 검정
+				  형제의 자식1 : 검정 
+				  형제의 자식 2 : 검정 
+				*/
 				else
 				{
-
+					delete_case2(_node, parent, sibling);
 				}
 			}
 			else // 형제가 red 일 때 case 1 
 			{
-
+				delete_case1_l(_node, parent, sibling);
 			}
 		}
 		else
 		{
-			sibling = (*parent)->left;
-			if ((*sibling)->type == NodeType::Black)
+			sibling = parent->left;
+			if (sibling->type == NodeType::Black)
 			{
-
+				//자식 둘다 Red
+				if (sibling->left->type == NodeType::Red && sibling->right->type == NodeType::Red)
+				{
+					Children_Alter_Black(parent, sibling->left, sibling->right);
+					delete_case1_r(_node, parent, sibling);
+				}
+				//왼쪽만 Red
+				else if (sibling->left->type == NodeType::Red)
+				{
+					delete_case4_r(_node, parent, sibling);
+				}
+				//오른쪽만 Red
+				else if (sibling->right->type == NodeType::Red)
+				{
+					delete_case3_r(_node, parent, sibling);
+				}
+				/*
+				  형제: 검정
+				  형제의 자식1 : 검정
+				  형제의 자식 2 : 검정
+				*/
+				else
+				{
+					delete_case2(_node, parent, sibling);
+				}
 			}
-			else // 형제가 red 일 때 case 1
+			else // 형제가 red 일 때 case 1 
 			{
-
+				delete_case1_r(_node, parent, sibling);
 			}
 		}
-
-		
 	}
 #pragma endregion
 #pragma endregion
@@ -423,29 +618,36 @@ private:
 			push_node(&((*_root)->right), _node);
 		}
 	}
-	void child_up(Node<T>** _root, NodeType& _delete_color)
+	Node<T>* child_up(Node<T>** _root, NodeType& _delete_color)
 	{
 		Node<T>* ptr = (*_root);
 		Node<T>* parent_ptr = (*_root)->parent;
+		Node<T>* extranode = nullptr;
 		if (*_root == nilnode)
 		{
-			return;
+			return nilnode;
 		}
 		//자식이 없는 경우
 		if (ptr->right == nilnode && ptr->left == nilnode)
 		{
 			_delete_color = ptr->type;
 			(*_root) = nilnode;
+			(*_root)->is_extra = true; // 삭제된 색의 노드를 대체한 노드에 extra 부여 
+			extranode = (*_root);
 		}//하나만 있는 경우
 		else if (ptr->right == nilnode)
 		{
 			_delete_color = ptr->type;
 			(*_root) = ptr->left;
+			(*_root)->is_extra = true; // 삭제된 색의 노드를 대체한 노드에 extra 부여 
+			extranode = (*_root);
 		}
 		else if (ptr->left == nilnode)
 		{
 			_delete_color = ptr->type;
 			(*_root) = ptr->right;
+			(*_root)->is_extra = true; // 삭제된 색의 노드를 대체한 노드에 extra 부여 
+			extranode = (*_root);
 		}//둘다 있는 경우
 		else
 		{
@@ -471,7 +673,7 @@ private:
 				(*_root) = leftest;
 
 				NodeType dummy_color = NodeType::None;
-				child_up(&(leftest), dummy_color);
+				extranode = child_up(&(leftest), dummy_color);
 
 				temp->left = leftest;
 				leftest->parent = temp;
@@ -488,6 +690,10 @@ private:
 				(*tempnode) = leftest;
 				(*tempnode)->left = root_left;
 				(*tempnode)->right = leftest->right;
+				(*tempnode)->right->is_extra = true;
+
+				extranode = (*tempnode)->right;
+
 				root_left->parent = (*tempnode);
 			}
 			//교체된 successor 노드에 색깔을 사용할 색으로 변경.
@@ -495,6 +701,8 @@ private:
 		}
 		//교체된 successor 노드의 부모 설정.
 		(*_root)->parent = parent_ptr;
+
+		return extranode;
 	}
 	void pop_node(Node<T>** _root)
 	{
@@ -502,29 +710,53 @@ private:
 			return;
 		Node<T>* ptr = *_root;
 		NodeType delete_color = NodeType::None;
-
-		child_up(_root, delete_color);
+		Node<T>* extranode = nullptr;
+		extranode = child_up(_root, delete_color);
 		//위반 속성이 있는지 체크
 		if (delete_color == NodeType::Black)
 		{
-			if ((*_root) == nilnode)
+			//root 노드가 삭제된 것일 때.
+			if (extranode == nilnode && extranode->parent == nullptr)
 			{
 				delete ptr;
 				return;
 			}
-			else if((*_root)->parent==nullptr)
+			//값이 변경(삭제)된 위치가 root 일 때 교체된 successor 노드의 색을 black으로 변경.
+			else if ((*_root)->parent == nullptr)
 			{
 				(*_root)->type = NodeType::Black;
+
+				//삭제된 색의 위치를 대체한 노드가 root 이면 extra 상태를 끈다.
+				if (extranode == (*_root))
+				{
+					(*_root)->is_extra = false;
+					return;
+				}
+			}
+
+			//extra가 붙은 노드의 색이 red 이면 black 으로 변경
+			if (extranode->type == NodeType::Red)
+			{
+				extranode->type = NodeType::Black;
 				return;
 			}
-			// 삭제되는 색이 black 이라면 삭제된 자리에 가져다 놓은 successor 노드에 extra 속성 부여.
-			(*_root)->is_extra = true;
-
-			//이어 붙인 successor에 extra 속성이 붙어 있을것이기 때문에
-			//그것 기준으로 속성에 부합하게 노드 재배치.
-			RBT_Delete(_root);
+			
+			//extra 노드 기준으로 속성에 부합하게 노드 재배치.
+			//삭제한 노드의 자식이 0-1 이면 본인의 위치가 extra 이지만
+			//삭제한 노드의 자식이 2 이면 successor 위치가 extra 이다.
+			Node<T>** extra_space;
+			serch_node(_root, extranode->data, extra_space);
+			RBT_Delete(extra_space);
+		}
+		//삭제될 색상이 Red 이면 extra 속성 X
+		else
+		{
+			extranode->is_extra = false;
 		}
 		delete ptr;
+
+		nilnode->parent = nullptr;
+		nilnode->is_extra = false;
 	}
 
 #pragma endregion

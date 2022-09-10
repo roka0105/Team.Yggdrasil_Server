@@ -135,9 +135,30 @@ int main()
 #pragma endregion
 
 #pragma region  RBT Pop Test
+	tree.Push(35);
 	tree.Push(20);
-	tree.Push(1);
-	tree.Pop(20);
+	tree.Push(50);
+	tree.Push(10);
+	tree.Push(30);
+	tree.Push(40);
+	tree.Push(80);
+	tree.Push(5);
+	tree.Push(15);
+	tree.Push(25);
+	tree.Push(33);
+	tree.Push(37);
+	tree.Push(45);
+	tree.Push(2);
+	tree.Push(27);
+
+	tree.Pop(15);
+	tree.Pop(33);
+	tree.Pop(37);
+	tree.Pop(35);
+	tree.Pop(40);
+	tree.Pop(50);
+	tree.Pop(80);
+	tree.Pop(27);
 #pragma endregion
 
 }
