@@ -4,7 +4,7 @@
 #include "CMainMgr.h"
 #include "CRoomMgr.h"
 
-map<DWORD, t_ThreadInfo*> CIocp::g_threadinfo;
+RBT<DWORD, t_ThreadInfo*> CIocp::g_threadinfo;
 
 DWORD CIocp::WorkThread(LPVOID _iocp)
 {
@@ -12,7 +12,7 @@ DWORD CIocp::WorkThread(LPVOID _iocp)
 
 	CIocp* ciocp = reinterpret_cast<CIocp*>(_iocp);
 	t_ThreadInfo* myinfo = new t_ThreadInfo();
-	g_threadinfo[GetCurrentThreadId()] = myinfo;
+	g_threadinfo.Push(GetCurrentThreadId(),myinfo);
 
 	while (1)
 	{

@@ -2,6 +2,14 @@
 #include "RBT.h"
 #include <iostream>
 
+class Person
+{
+public:
+	Person()
+	{
+
+	}
+};
 #pragma region NillNode 상속, dynamic cast로 node 정보 구분하기 테스트 
 /*
 enum class Type
@@ -94,7 +102,7 @@ int main()
 #pragma endregion
 
 #pragma region RBT Push Test
-	RBT<int,char> tree;
+	RBT<int,Person*> tree;
 	//test1
 
 	/*
@@ -162,17 +170,17 @@ int main()
 #pragma endregion
 
 #pragma region RBT Map Test
-	tree.Push(1, 'A');
-	tree.Push(2, 'B');
-	tree.Push(3, 'C');
-	tree.Push(4, 'D');
-	tree.Push(5, 'E');
-	tree.Push(6, 'F');
-	tree.Push(7, 'G');
-	tree.Push(8, 'H');
+	tree.Push(1, new Person());
+	tree.Push(2, new Person());
+	tree.Push(3, new Person());
+	tree.Push(4, new Person());
+	tree.Push(5, new Person());
+	tree.Push(6, new Person());
+	tree.Push(7, new Person());
+	tree.Push(8, new Person());
 
 
-	int size = tree.Size();
+	/*int size = tree.Size();
 	for (int i = 1; i <= size; i++)
 	{
 		std::cout << tree[i] << std::endl;
@@ -188,7 +196,7 @@ int main()
 			continue;
 		}
 		std::cout << tree[i] << std::endl;
-	}
+	}*/
 
 	
 #pragma endregion

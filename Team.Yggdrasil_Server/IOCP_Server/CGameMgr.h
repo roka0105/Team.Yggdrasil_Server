@@ -43,7 +43,7 @@ struct t_GameInfo
 
 	t_RoomInfo* m_roominfo;
 	t_MapInfo* m_mapinfo;
-	map<UINT, QuadNode*> m_leaf_nodes;
+	RBT<UINT, QuadNode*> m_leaf_nodes;
 	t_DataInfo* m_datainfo;
 
 };

@@ -101,7 +101,7 @@ void CSectorMgr::CreateQuadTree(t_GameInfo* _gameinfo,t_MapInfo* _mapinfo)
 
 	{
 		CLockGuard<CLock> lock(m_lock);
-		m_roots.insert({ _gameinfo->m_id,root });
+		m_roots.Push(_gameinfo->m_id,root);
 	}
 	
 	//view sector list 도 setting 하는거 만들기
@@ -120,7 +120,7 @@ void CSectorMgr::CreateChildren(QuadNode* _parent, Vector3 _senterpos, Vector3 _
 		vec.x += 1;
 		vec.z += 1;
 		_parent->SetDistance(vec);*/
-		_gameinfo->m_leaf_nodes.insert({ _parent->GetID(),_parent });
+		_gameinfo->m_leaf_nodes.Push( _parent->GetID(),_parent );
 		return;
 	}
 	Vector3 distance(_distance.x /_mapinfo->m_squared_value, 0, _distance.z / _mapinfo->m_squared_value);

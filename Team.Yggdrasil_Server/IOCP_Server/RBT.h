@@ -75,6 +75,10 @@ private:
 	bool serch_node(Node<Key, Value>** _root, Key _key, Node<Key, Value>**& serchnode)
 	{
 		Node<Key, Value>* ptr = *_root;
+		if (*_root == nullptr)
+		{
+			return false;
+		}
 		if (*_root == nilnode)
 		{
 			serchnode = _root;
@@ -613,7 +617,7 @@ private:
 	{
 		Node<Key, Value>* ptr = (*_root);
 		// 노드가 nil 이면 추가할 node 넣기.
-		if (*_root == nilnode)
+		if (*_root == nilnode||*_root==nullptr)
 		{
 			*_root = _node;
 		}
@@ -771,7 +775,7 @@ private:
 
 #pragma endregion
 public:
-	RBT() :root(nilnode)
+	RBT() :root(nilnode),count(0)
 	{
 
 	}
@@ -808,7 +812,7 @@ public:
 	{
 		return count;
 	}
-	Value operator[](Key _key)
+	Value& operator[](Key _key)
 	{
 		Value value;
 		bool flag = Find(_key, value);

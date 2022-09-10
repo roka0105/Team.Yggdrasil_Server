@@ -62,6 +62,7 @@ public:
 	void UnPacking(byte* _recvbuf, Vector3& _pos);
 private:
 	CLock* m_lock;
-	map<UINT, QuadNode*> m_roots; // key = gameinfo id,  value = rootnode 
+	RBT<UINT, QuadNode*> m_roots; // key = gameinfo id,  value = rootnode 
+
 };
 

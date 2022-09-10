@@ -68,7 +68,7 @@ public:
 	static void End();
 
 protected:
-	static map</*객체크기*/UINT,/*pool 정보*/t_pool_info*> memorypools;
+	static RBT</*객체크기*/UINT,/*pool 정보*/t_pool_info*> memorypools;
 	
 };
 

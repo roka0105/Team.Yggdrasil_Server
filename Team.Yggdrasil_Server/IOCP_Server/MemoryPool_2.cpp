@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "MemoryPool_2.h"
 
-map<UINT, t_pool_info*> MemoryPool_2::memorypools;
+RBT<UINT, t_pool_info*> MemoryPool_2::memorypools;
 
 
 void* MemoryPool_2::operator new(size_t _size)
@@ -19,10 +19,11 @@ void* MemoryPool_2::operator new(size_t _size)
 		// 그 byte size 자체로 new 를 해준다.
 		return malloc(_size);
 	}
-	if (memorypools.find(size) == memorypools.end())
+	t_pool_info* dummy=nullptr;
+	if (memorypools.Find(size,dummy)==false)
 	{
 		//키 못찾음
-		memorypools[size] = new t_pool_info(MAXMEMORY_BYTE, size);
+		memorypools.Push(size, new t_pool_info(MAXMEMORY_BYTE, size));
 	}
 	else
 	{
@@ -101,9 +102,11 @@ int MemoryPool_2::AssignSize(size_t _size)
 
 void MemoryPool_2::End()
 {
-	for (auto info : memorypools)
+	int size = memorypools.Size();
+	for (int i=0;i<size;i++)
 	{
-		delete info.second;
+		memorypools.Pop(i);
+		//or
+		//delete memorypools[i];
 	}
-	memorypools.clear();
 }

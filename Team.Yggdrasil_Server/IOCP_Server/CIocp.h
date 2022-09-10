@@ -22,7 +22,7 @@ public:
 	virtual bool GetQueueErrorCheck(int _retval, int _cb_t, OVERLAP_EX* _overlapex); // iocp에서만 쓰는 함수
 
 public:
-	static map<DWORD, t_ThreadInfo*> g_threadinfo;
+	static RBT<DWORD, t_ThreadInfo*> g_threadinfo;
 protected:
 	HANDLE m_hcp;
 };
