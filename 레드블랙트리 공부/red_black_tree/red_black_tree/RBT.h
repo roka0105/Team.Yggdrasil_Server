@@ -1,5 +1,5 @@
 #pragma once
-
+#include <list>
 enum class NodeType
 {
 	None,
@@ -7,15 +7,19 @@ enum class NodeType
 	Red
 };
 
-template<typename T>
+template<typename Key, typename Value>
 class Node
 {
 public:
-	Node(NodeType _type) :parent(nullptr), left(nullptr), right(nullptr), type(_type), data(-1), is_extra(false)
+	Node() :parent(nullptr), left(nullptr), right(nullptr), type(NodeType::None), data(-1), is_extra(false), key(-1)
 	{
 
 	}
-	Node(T _data, Node<T>* nilnode, NodeType _type) :parent(nullptr), left(nilnode), right(nilnode), data(_data), type(_type), is_extra(false)
+	Node(NodeType _type) :parent(nullptr), left(nullptr), right(nullptr), type(_type), data(-1), is_extra(false), key(-1)
+	{
+
+	}
+	Node(Key _key, Value _data, Node<Key, Value>* nilnode, NodeType _type) :parent(nullptr), left(nilnode), right(nilnode), data(_data), type(_type), is_extra(false), key(_key)
 	{
 	}
 	~Node()
@@ -25,19 +29,24 @@ public:
 	Node* parent;
 	Node* left;
 	Node* right;
-	T data;
+	Key key;
+	Value data;
 	NodeType type;
 	bool is_extra;
 };
-template <typename T>
-class Node<T*>
+template <typename Key, typename Value>
+class Node<Key, Value*>
 {
 public:
-	Node(NodeType _type) :parent(nullptr), type(_type), data(-1), is_extra(false)
+	Node() :parent(nullptr), left(nullptr), right(nullptr), type(NodeType::None), data(nullptr), is_extra(false), key(-1)
 	{
 
 	}
-	Node(T* _data, Node<T>* nilnode, NodeType _type) :parent(nullptr), left(nilnode), right(nilnode), data(_data), type(_type), is_extra(false)
+	Node(NodeType _type) :parent(nullptr), type(_type), data(nullptr), is_extra(false), key(-1)
+	{
+
+	}
+	Node(Key _key, Value* _data, Node<Key, Value>* nilnode, NodeType _type) :parent(nullptr), left(nilnode), right(nilnode), data(_data), type(_type), is_extra(false), key(_key)
 	{
 	}
 	~Node()
@@ -47,46 +56,47 @@ public:
 	Node* parent;
 	Node* left;
 	Node* right;
-	T* data;
+	Key key;
+	Value* data;
 	NodeType type;
 	bool is_extra;
 };
-template <typename T>
+template <typename Key, typename Value>
 class RBT
 {
 private:
-	Node<T>* root;
+	Node<Key, Value>* root;
 	int count;
-	static Node<T>* nilnode;
+	static Node<Key, Value>* nilnode;
 	//static Node<T>* extranode;
 private:
 #pragma region red_black_tree func
 private:
-	bool serch_node(Node<T>** _root, T data, Node<T>**& serchnode)
+	bool serch_node(Node<Key, Value>** _root, Key _key, Node<Key, Value>**& serchnode)
 	{
-		Node<T>* ptr = *_root;
+		Node<Key, Value>* ptr = *_root;
 		if (*_root == nilnode)
 		{
 			serchnode = _root;
 			return false;
 		}
 
-		if (ptr->data == data)
+		if (ptr->key == _key)
 		{
 			serchnode = _root;
 			return true;
 		}
-		else if (ptr->data > data)
+		else if (ptr->key > _key)
 		{
-			return serch_node(&((*_root)->left), data, serchnode);
+			return serch_node(&((*_root)->left), _key, serchnode);
 		}
-		else if (ptr->data < data)
+		else if (ptr->key < _key)
 		{
-			return serch_node(&((*_root)->right), data, serchnode);
+			return serch_node(&((*_root)->right), _key, serchnode);
 		}
 		return false;
 	}
-	Node<T>** GetGrandParent(Node<T>** _node)
+	Node<Key, Value>** GetGrandParent(Node<Key, Value>** _node)
 	{
 		if ((*_node) != nilnode)
 		{
@@ -97,9 +107,9 @@ private:
 			return nullptr;
 		}
 	}
-	Node<T>** GetUncle(Node<T>** _node)
+	Node<Key, Value>** GetUncle(Node<Key, Value>** _node)
 	{
-		Node<T>** grand_parent = GetGrandParent(_node);
+		Node<Key, Value>** grand_parent = GetGrandParent(_node);
 		if ((*grand_parent) == nullptr)
 		{
 			return nullptr;
@@ -118,13 +128,13 @@ private:
 		}
 		return &nilnode;
 	}
-	void LeftRotation(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
+	void LeftRotation(Node<Key, Value>** _node, Node<Key, Value>* parent, Node<Key, Value>* sibling)
 	{
-		Node<T>** parent_space;
-		serch_node(&root,parent->data, parent_space);
+		Node<Key, Value>** parent_space;
+		serch_node(&root, parent->key, parent_space);
 		// 부모의 부모 백업 
-		Node<T>* grandparent = parent->parent;
-		
+		Node<Key, Value>* grandparent = parent->parent;
+
 		if (sibling == nilnode)
 		{
 			sibling = (*_node);
@@ -132,7 +142,7 @@ private:
 		// 형제의 부모를 부모의 부모로 설정
 		sibling->parent = grandparent;
 		// 형제의 왼쪽 백업
-		Node<T>* left_backup = sibling->left;
+		Node<Key, Value>* left_backup = sibling->left;
 		// 형제의 왼쪽에 부모 넣기
 		sibling->left = parent;
 		// 부모의 오른쪽에 왼쪽 백업 넣기.
@@ -145,13 +155,13 @@ private:
 		// 부모자리에 형제 넣기
 		*parent_space = sibling;
 	}
-	void RightRotation(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
+	void RightRotation(Node<Key, Value>** _node, Node<Key, Value>* parent, Node<Key, Value>* sibling)
 	{
-		Node<T>** parent_space ;
-		serch_node(&root, parent->data, parent_space);
+		Node<Key, Value>** parent_space;
+		serch_node(&root, parent->key, parent_space);
 		// 부모의 부모 백업 
-		Node<T>* grandparent = parent->parent;
-		
+		Node<Key, Value>* grandparent = parent->parent;
+
 		if (sibling == nilnode)
 		{
 			sibling = (*_node);
@@ -159,7 +169,7 @@ private:
 		// 형제의 부모를 부모의 부모로 설정
 		sibling->parent = grandparent;
 		// 형제의 오른쪽 백업
-		Node<T>* right_backup = sibling->right;
+		Node<Key, Value>* right_backup = sibling->right;
 		// 형제의 오른쪽에 부모 넣기
 		sibling->right = parent;
 		// 부모의 왼쪽에 오른쪽 백업 넣기.
@@ -172,11 +182,11 @@ private:
 		// 부모자리에 형제 넣기
 		*parent_space = sibling;
 	}
-	void Children_Alter_Black(Node<T>* _parent, Node<T>* _child_1, Node<T>* _child_2)
+	void Children_Alter_Black(Node<Key, Value>* _parent, Node<Key, Value>* _child_1, Node<Key, Value>* _child_2)
 	{
 		//delete 에서 형제의 양쪽 자식이 red인 경우 양쪽 자식을 black으로 만든 후 
 		//형제를 red로 만들어서 case 1 수행
-		if (_child_1->type != _child_2->type && _child_1->type !=NodeType::Red)
+		if (_child_1->type != _child_2->type && _child_1->type != NodeType::Red)
 		{
 			return;
 		}
@@ -191,10 +201,10 @@ private:
 #pragma region insert func
 	//case 1 : 부모와 삼촌이 레드일 때 
 	//  => 부모와 삼촌을 black 으로 바꾸고 root node가 red 인지 검사, red 면 black으로 변경.
-	void insert_case1(Node<T>** _node)
+	void insert_case1(Node<Key, Value>** _node)
 	{
-		Node<T>** grand_parent = GetGrandParent(_node);
-		Node<T>** uncle = GetUncle(_node);
+		Node<Key, Value>** grand_parent = GetGrandParent(_node);
+		Node<Key, Value>** uncle = GetUncle(_node);
 		if ((*grand_parent) == nullptr)
 		{
 			return;
@@ -208,7 +218,7 @@ private:
 	}
 	//case 2 : 왼쪽에 push 됐을 때 부모의 오른쪽 push 그리고 부모가 레드 , 삼촌은 블랙 
 	//  => 왼쪽으로 회전. 
-	void insert_case2(Node<T>** _node)
+	void insert_case2(Node<Key, Value>** _node)
 	{
 		//Node<T>** parent = &(*_node)->parent;
 		//본인 = black
@@ -218,13 +228,13 @@ private:
 		//본인의 left = 이전 부모
 		//이전 부모 right = 잠깐 빼둔 노드 주소.
 		//본인의 왼쪽으로 설정된 노드를 기준으로 다시 검색하기.
-		Node<T>* curnode = (*_node);
-		Node<T>** serch = nullptr;
-		Node<T>* left_backup = curnode->left;
+		Node<Key, Value>* curnode = (*_node);
+		Node<Key, Value>** serch = nullptr;
+		Node<Key, Value>* left_backup = curnode->left;
 		curnode->left = nullptr;
 		left_backup->parent = nullptr;
-		serch_node(&root, curnode->parent->data, serch);
-		Node<T>* temp = *serch;
+		serch_node(&root, curnode->parent->key, serch);
+		Node<Key, Value>* temp = *serch;
 
 		(*serch) = curnode;
 
@@ -239,10 +249,10 @@ private:
 		RBT_Insert(&(*serch)->left);
 	}
 	//case 3 : 왼쪽에 push 됐을 때 부모의 왼쪽 push 그리고 부모가 레드 , 삼촌은 블랙
-	void insert_case3(Node<T>** _node)
+	void insert_case3(Node<Key, Value>** _node)
 	{
-		Node<T>** grand_parent = GetGrandParent(_node);
-		Node<T>** uncle = GetUncle(_node);
+		Node<Key, Value>** grand_parent = GetGrandParent(_node);
+		Node<Key, Value>** uncle = GetUncle(_node);
 
 
 		//부모 = black 할아버지 = red 로 변경
@@ -251,15 +261,15 @@ private:
 
 		//할아버지의 위치에 부모를 넣고, 부모의 오른쪽에 할아버지가 들어가게 함.
 		//이중포인터 작업 해줘야 하는데 일단 틀만 짜기.
-		Node<T>* g_p_p = (*grand_parent)->parent;
-		Node<T>* temp_gpp = (*_node)->parent->parent;
+		Node<Key, Value>* g_p_p = (*grand_parent)->parent;
+		Node<Key, Value>* temp_gpp = (*_node)->parent->parent;
 		temp_gpp->left = nilnode;
-		Node<T>** serch = nullptr;
-		serch_node(&root, temp_gpp->data, serch);
+		Node<Key, Value>** serch = nullptr;
+		serch_node(&root, temp_gpp->key, serch);
 		//부모에 기존 할아버지의 조상과 연결
 		(*_node)->parent->parent = g_p_p;
 		//부모에 오른쪽 기존 할아버지 연결 
-		Node<T>* right_backup = (*_node)->parent->right;
+		Node<Key, Value>* right_backup = (*_node)->parent->right;
 		temp_gpp->left = right_backup;
 		right_backup->parent = temp_gpp;
 		(*_node)->parent->right = temp_gpp;
@@ -269,15 +279,15 @@ private:
 		RBT_Insert(&(*_node));
 	}
 	//case 4 : 오른쪽 push 됐을 때 부모의 왼쪽 push 그리고 부모가 레드 , 삼촌은 블랙
-	void insert_case4(Node<T>** _node)
+	void insert_case4(Node<Key, Value>** _node)
 	{
-		Node<T>* curnode = (*_node);
-		Node<T>** serch = nullptr;
-		Node<T>* right_backup = curnode->right;
+		Node<Key, Value>* curnode = (*_node);
+		Node<Key, Value>** serch = nullptr;
+		Node<Key, Value>* right_backup = curnode->right;
 		curnode->right = nullptr;
 		right_backup->parent = nullptr;
-		serch_node(&root, curnode->parent->data, serch);
-		Node<T>* temp = *serch;
+		serch_node(&root, curnode->parent->key, serch);
+		Node<Key, Value>* temp = *serch;
 
 		(*serch) = curnode;
 
@@ -292,10 +302,10 @@ private:
 		RBT_Insert(&(*serch)->left);
 	}
 	//case 5 : 오른쪽 push 됐을 때 부모의 오른쪽 push 그리고 부모가 레드, 삼촌은 블랙 
-	void insert_case5(Node<T>** _node)
+	void insert_case5(Node<Key, Value>** _node)
 	{
-		Node<T>** grand_parent = GetGrandParent(_node);
-		Node<T>** uncle = GetUncle(_node);
+		Node<Key, Value>** grand_parent = GetGrandParent(_node);
+		Node<Key, Value>** uncle = GetUncle(_node);
 
 
 		//부모 = black 할아버지 = red 로 변경
@@ -304,15 +314,15 @@ private:
 
 		//할아버지의 위치에 부모를 넣고, 부모의 오른쪽에 할아버지가 들어가게 함.
 		//이중포인터 작업 해줘야 하는데 일단 틀만 짜기.
-		Node<T>* g_p_p = (*grand_parent)->parent;
-		Node<T>* temp_gpp = (*_node)->parent->parent;
+		Node<Key, Value>* g_p_p = (*grand_parent)->parent;
+		Node<Key, Value>* temp_gpp = (*_node)->parent->parent;
 		temp_gpp->right = nilnode;
-		Node<T>** serch = nullptr;
-		serch_node(&root, temp_gpp->data, serch);
+		Node<Key, Value>** serch = nullptr;
+		serch_node(&root, temp_gpp->key, serch);
 		//부모에 기존 할아버지의 조상과 연결
 		(*_node)->parent->parent = g_p_p;
 		//부모에 왼쪽 기존 할아버지 연결 
-		Node<T>* left_backup = (*_node)->parent->left;
+		Node<Key, Value>* left_backup = (*_node)->parent->left;
 		temp_gpp->right = left_backup;
 		left_backup->parent = temp_gpp;
 		(*_node)->parent->left = temp_gpp;
@@ -321,7 +331,7 @@ private:
 		RBT_Insert(&(*_node));
 	}
 
-	void RBT_Insert(Node<T>** _node)
+	void RBT_Insert(Node<Key, Value>** _node)
 	{
 
 		if ((*_node) == nilnode)
@@ -335,8 +345,8 @@ private:
 			return;
 		}
 
-		Node<T>** grand_parent = GetGrandParent(_node);
-		Node<T>** uncle = GetUncle(_node);
+		Node<Key, Value>** grand_parent = GetGrandParent(_node);
+		Node<Key, Value>** uncle = GetUncle(_node);
 
 		if ((uncle != nullptr) && (*_node)->parent->type == NodeType::Red && (*uncle)->type == NodeType::Red)
 		{
@@ -376,7 +386,7 @@ private:
 	   형제의 오른쪽 자녀(Red) = Black
 	   부모 = Black
 	   왼쪽일 시 : 왼쪽 회전 (부모 기준)
-	  
+
 
 		해답 (extra node 가 오른쪽 기준)
 	:  왼쪽 형제 = 부모 색
@@ -385,7 +395,7 @@ private:
 	   오른쪽일  시  : 오른쪽 회전(부모기준)
 	*/
 	//case 4 - r
-	void delete_case4_r(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
+	void delete_case4_r(Node<Key, Value>** _node, Node<Key, Value>* parent, Node<Key, Value>* sibling)
 	{
 		NodeType tempcolor = parent->type;
 		//형제 부모의 색으로 변경
@@ -398,7 +408,7 @@ private:
 		RightRotation(_node, parent, sibling);
 	}
 	//case 4 - l
-	void delete_case4_l(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
+	void delete_case4_l(Node<Key, Value>** _node, Node<Key, Value>* parent, Node<Key, Value>* sibling)
 	{
 		NodeType tempcolor = parent->type;
 		//형제 부모의 색으로 변경
@@ -421,28 +431,28 @@ private:
 	   case 4 수행.
 	*/
 	//case 3 - r
-	void delete_case3_r(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
+	void delete_case3_r(Node<Key, Value>** _node, Node<Key, Value>* parent, Node<Key, Value>* sibling)
 	{
 		NodeType tempcolor = sibling->type;
 		//형제와 형제의 오른쪽(Red)의 색과 바꾼다.
 		sibling->type = sibling->right->type;
 		sibling->right->type = tempcolor;
 		//형제 기준 왼쪽 회전.
-		Node<T>** sibling_right_child = &((*_node)->parent->left->right);
+		Node<Key, Value>** sibling_right_child = &((*_node)->parent->left->right);
 		LeftRotation(sibling_right_child, sibling, sibling->left);
-		
+
 		//case 4
 		delete_case4_r(_node, parent, sibling->parent);
 	}
 	//case 3 - l
-	void delete_case3_l(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
+	void delete_case3_l(Node<Key, Value>** _node, Node<Key, Value>* parent, Node<Key, Value>* sibling)
 	{
 		NodeType tempcolor = sibling->type;
 		//형제와 형제의 왼쪽(Red)의 색과 바꾼다.
 		sibling->type = sibling->left->type;
 		sibling->left->type = tempcolor;
 		//형제 기준 오른쪽 회전.
-		Node<T>** sibling_left_child = &((*_node)->parent->right->left);
+		Node<Key, Value>** sibling_left_child = &((*_node)->parent->right->left);
 		RightRotation(sibling_left_child, sibling, sibling->right);
 		//case 4
 		delete_case4_l(_node, parent, sibling->parent);
@@ -464,7 +474,7 @@ private:
 	   doubly black 이면 다시 case문들을 수행 한다. RBT_Delete() 호출.
 	*/
 	//case 2
-	void delete_case2(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
+	void delete_case2(Node<Key, Value>** _node, Node<Key, Value>* parent, Node<Key, Value>* sibling)
 	{
 		//extra node 의 extra 상태를 해제 한다.
 		(*_node)->is_extra = false;
@@ -473,13 +483,13 @@ private:
 		//부모의 상태에 extra 상태 추가.
 		parent->is_extra = true;
 
-		if (parent->type == NodeType::Red|| parent->parent == nullptr)
+		if (parent->type == NodeType::Red || parent->parent == nullptr)
 		{
 			parent->type = NodeType::Black;
 			parent->is_extra = false;
 		}
 		//부모가 doubly black 일 때 
-		else 
+		else
 		{
 			RBT_Delete(&(*_node)->parent);
 		}
@@ -493,34 +503,34 @@ private:
 	:  형제를 Black 으로 만들고 회전 후  RBT_Delete().
 	*/
 	//case 1 - r
-	void delete_case1_r(Node<T>** _node, Node<T>* parent, Node<T>* sibling)
+	void delete_case1_r(Node<Key, Value>** _node, Node<Key, Value>* parent, Node<Key, Value>* sibling)
 	{
 		NodeType tempcolor = parent->type;
 		parent->type = sibling->type;
 
-		Node<T>** parent_space = &(*_node)->parent;
+		Node<Key, Value>** parent_space = &(*_node)->parent;
 
 		RightRotation(_node, parent, sibling);
 
 		RBT_Delete(_node);
 	}
 	//case 1 - l
-	void delete_case1_l(Node<T>** _node,Node<T>* parent,Node<T>* sibling)
+	void delete_case1_l(Node<Key, Value>** _node, Node<Key, Value>* parent, Node<Key, Value>* sibling)
 	{
 		NodeType tempcolor = parent->type;
 		parent->type = sibling->type;
 
-		Node<T>** parent_space = &(*_node)->parent;
-		
+		Node<Key, Value>** parent_space = &(*_node)->parent;
+
 		LeftRotation(_node, parent, sibling);
 
 		RBT_Delete(_node);
 	}
 #pragma endregion
-	void RBT_Delete(Node<T>** _node)
+	void RBT_Delete(Node<Key, Value>** _node)
 	{
-		Node<T>* parent = (*_node)->parent;
-		Node<T>* sibling = nullptr;
+		Node<Key, Value>* parent = (*_node)->parent;
+		Node<Key, Value>* sibling = nullptr;
 
 		// 현재 노드가 부모기준 왼쪽이다.
 		if (parent->left == (*_node))
@@ -529,25 +539,25 @@ private:
 			if (sibling->type == NodeType::Black)
 			{
 				//자식 둘다 Red
-				if (sibling->left->type== NodeType::Red && sibling->right->type == NodeType::Red)
+				if (sibling->left->type == NodeType::Red && sibling->right->type == NodeType::Red)
 				{
 					Children_Alter_Black(parent, sibling->left, sibling->right);
-					delete_case1_l(_node,parent,sibling);
+					delete_case1_l(_node, parent, sibling);
 				}
 				//오른쪽만 Red
 				else if (sibling->right->type == NodeType::Red)
 				{
-					delete_case4_l(_node,parent,sibling);
+					delete_case4_l(_node, parent, sibling);
 				}
 				//왼쪽만 Red
-				else if(sibling->left->type == NodeType::Red)
+				else if (sibling->left->type == NodeType::Red)
 				{
 					delete_case3_l(_node, parent, sibling);
 				}
 				/*
 				  형제: 검정
-				  형제의 자식1 : 검정 
-				  형제의 자식 2 : 검정 
+				  형제의 자식1 : 검정
+				  형제의 자식 2 : 검정
 				*/
 				else
 				{
@@ -599,30 +609,30 @@ private:
 #pragma endregion
 #pragma endregion
 #pragma region BST func
-	void push_node(Node<T>** _root, Node<T>* _node)
+	void push_node(Node<Key, Value>** _root, Node<Key, Value>* _node)
 	{
-		Node<T>* ptr = (*_root);
+		Node<Key, Value>* ptr = (*_root);
 		// 노드가 nil 이면 추가할 node 넣기.
 		if (*_root == nilnode)
 		{
 			*_root = _node;
 		}
-		else if (ptr->data > _node->data)
+		else if (ptr->key > _node->key)
 		{
 			_node->parent = (*_root);
 			push_node(&((*_root)->left), _node);
 		}
-		else if (ptr->data < _node->data)
+		else if (ptr->key < _node->key)
 		{
 			_node->parent = (*_root);
 			push_node(&((*_root)->right), _node);
 		}
 	}
-	Node<T>* child_up(Node<T>** _root, NodeType& _delete_color)
+	Node<Key, Value>* child_up(Node<Key, Value>** _root, NodeType& _delete_color)
 	{
-		Node<T>* ptr = (*_root);
-		Node<T>* parent_ptr = (*_root)->parent;
-		Node<T>* extranode = nullptr;
+		Node<Key, Value>* ptr = (*_root);
+		Node<Key, Value>* parent_ptr = (*_root)->parent;
+		Node<Key, Value>* extranode = nullptr;
 		if (*_root == nilnode)
 		{
 			return nilnode;
@@ -652,10 +662,10 @@ private:
 		else
 		{
 			NodeType use_color = NodeType::None;
-			Node<T>* root_left;
-			Node<T>* root_right;
-			Node<T>* temp = (*_root);
-			Node<T>* leftest = ptr->right;
+			Node<Key, Value>* root_left;
+			Node<Key, Value>* root_right;
+			Node<Key, Value>* temp = (*_root);
+			Node<Key, Value>* leftest = ptr->right;
 			while (leftest->left != nilnode)
 			{
 				temp = leftest;
@@ -685,7 +695,7 @@ private:
 			}
 			else
 			{
-				Node<T>** tempnode = _root;
+				Node<Key, Value>** tempnode = _root;
 				root_left = temp->left;
 				(*tempnode) = leftest;
 				(*tempnode)->left = root_left;
@@ -704,13 +714,13 @@ private:
 
 		return extranode;
 	}
-	void pop_node(Node<T>** _root)
+	void pop_node(Node<Key, Value>** _root)
 	{
 		if (_root == nullptr)
 			return;
-		Node<T>* ptr = *_root;
+		Node<Key, Value>* ptr = *_root;
 		NodeType delete_color = NodeType::None;
-		Node<T>* extranode = nullptr;
+		Node<Key, Value>* extranode = nullptr;
 		extranode = child_up(_root, delete_color);
 		//위반 속성이 있는지 체크
 		if (delete_color == NodeType::Black)
@@ -740,12 +750,12 @@ private:
 				extranode->type = NodeType::Black;
 				return;
 			}
-			
+
 			//extra 노드 기준으로 속성에 부합하게 노드 재배치.
 			//삭제한 노드의 자식이 0-1 이면 본인의 위치가 extra 이지만
 			//삭제한 노드의 자식이 2 이면 successor 위치가 extra 이다.
-			Node<T>** extra_space;
-			serch_node(_root, extranode->data, extra_space);
+			Node<Key, Value>** extra_space;
+			serch_node(_root, extranode->key, extra_space);
 			RBT_Delete(extra_space);
 		}
 		//삭제될 색상이 Red 이면 extra 속성 X
@@ -765,23 +775,59 @@ public:
 	{
 
 	}
-	void Push(T  data)
+	void Push(Key _key, Value  _value)
 	{
-		Node<T>* node = new Node<T>(data, nilnode, NodeType::Red);
+		Node<Key, Value>* node = new Node<Key, Value>(_key, _value, nilnode, NodeType::Red);
 		push_node(&root, node);
 		RBT_Insert(&node);
+		count++;
 	}
-	bool Pop(T data)
+	bool Pop(Key _key)
 	{
-		Node<T>** serchnode;
-		if (serch_node(&root, data, serchnode))
+		Node<Key, Value>** serchnode;
+		if (serch_node(&root, _key, serchnode))
+		{
 			pop_node(serchnode);
-
-		return true;
+			count--;
+			return true;
+		}
+		return false;
 	}
+	bool Find(Key _key, Value& _value)
+	{
+		Node<Key, Value> dummy;
+		Node<Key, Value>** serchnode;
+		if (serch_node(&root, _key, serchnode))
+		{
+			_value = (*serchnode)->data;
+			return true;
+		}
+		return false;
+	}
+	int Size()
+	{
+		return count;
+	}
+	Value operator[](Key _key)
+	{
+		Value value;
+		bool flag = Find(_key, value);
+		if (flag)
+		{
+			return value;
+		}
+		else
+		{
+			printf("없는 key 값으로 map 접근.");
+			//에러처리! key값을 찾지 못함!
+			int* test = nullptr;
 
+			test[100] = 100;
+
+		}
+	}
 };
-template<typename T>
-Node<T>* RBT<T>::nilnode = new Node<T>(NodeType::Black);
+template<typename Key, typename Value>
+Node<Key, Value>* RBT<Key, Value>::nilnode = new Node<Key, Value>(NodeType::Black);
 //template<typename T>
 //Node<T>* RBT<T>::extranode = new Node<T>(NodeType::Black);

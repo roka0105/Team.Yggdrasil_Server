@@ -94,7 +94,7 @@ int main()
 #pragma endregion
 
 #pragma region RBT Push Test
-	RBT<int> tree;
+	RBT<int,char> tree;
 	//test1
 
 	/*
@@ -135,7 +135,7 @@ int main()
 #pragma endregion
 
 #pragma region  RBT Pop Test
-	tree.Push(35);
+	/*tree.Push(35);
 	tree.Push(20);
 	tree.Push(50);
 	tree.Push(10);
@@ -158,7 +158,38 @@ int main()
 	tree.Pop(40);
 	tree.Pop(50);
 	tree.Pop(80);
-	tree.Pop(27);
+	tree.Pop(27);*/
 #pragma endregion
 
+#pragma region RBT Map Test
+	tree.Push(1, 'A');
+	tree.Push(2, 'B');
+	tree.Push(3, 'C');
+	tree.Push(4, 'D');
+	tree.Push(5, 'E');
+	tree.Push(6, 'F');
+	tree.Push(7, 'G');
+	tree.Push(8, 'H');
+
+
+	int size = tree.Size();
+	for (int i = 1; i <= size; i++)
+	{
+		std::cout << tree[i] << std::endl;
+	}
+
+	std::cout << "====================" << std::endl;
+	tree.Pop(5);
+	size = tree.Size();
+	for (int i = 1; i <= size+1; i++)
+	{
+		if (i == 5)
+		{
+			continue;
+		}
+		std::cout << tree[i] << std::endl;
+	}
+
+	
+#pragma endregion
 }
