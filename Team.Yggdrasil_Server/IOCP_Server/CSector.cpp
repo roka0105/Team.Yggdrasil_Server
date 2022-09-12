@@ -58,10 +58,12 @@ int QuadNode::GetID()
 	return m_id;
 }
 
+
 QuadNode* QuadNode::GetParent()
 {
 	return m_parent;
 }
+
 
 CSector::CSector()
 {
