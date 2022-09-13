@@ -67,7 +67,6 @@ public:
 
 private:
 	CLock* m_lock;
-	list<HexTile*> m_tiles;
 	RBT<UINT,t_MapInfo*> m_maps;
 };
 

@@ -51,13 +51,12 @@ public :
 
 	//void LobbyEnterFunc(CSession* _session);
 	//void AllRoomFunc(CSession* _session);
+	void RemoveSession(CSession* _session);
+	void AddSession(CSession* _session);
+private:
 	void CreateRoomFunc(CSession* _session);
 	void PageRoomFunc(CSession* _session);
 	void ChattingFunc(CSession* _session);
-
-	void AddSession(CSession* _session);
-    void RemoveSession(CSession* _session);
-
 private:
 	CLobbyMgr();
 	~CLobbyMgr();

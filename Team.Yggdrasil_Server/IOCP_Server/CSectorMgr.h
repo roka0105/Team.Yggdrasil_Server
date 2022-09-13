@@ -41,9 +41,8 @@ public:
 	void SetViewNode(CSession* _session);
 	void AddObjectNode(QuadNode* _parent, GameObject* obj, int _curdepth);
 	void RemoveObjectNode(QuadNode* _parent, GameObject* obj, int _curdepth);
-	
-	
 	bool IsInView(QuadNode* _parent, Vector3 _startview, Vector3 _endview);
+	
 	//플레이어 샌드패킷
 	void PlayerSendPacket(CSession* _session, unsigned long _protocol, bool moveflag);
 	//void checksector()

@@ -11,7 +11,6 @@ protected:
     virtual ~CSector();
 public:
     void AddObject(GameObject* _object);      // 오브젝트 등록
-    void SetArea(Vector3 _senter_pos);
     const Vector3 GetDistance();
     void SetDistance(Vector3 _pos);
     const Vector3 GetSenter();
@@ -42,12 +41,7 @@ public:
 
     void SetID();
     int GetID();
-    void SetParent(QuadNode* _parent_node);// 부모노드 설정
     QuadNode* GetParent();                 // 부모노드 가져오기
-
-    void CullNode(BOOL _culling);          // 노드 컬링 여부
-    BOOL IsCulled();                       // 노드가 컬링상태인지 판별.
-    void Render();                         // 노드 정보 렌더링
 
     int Child_Size();
 private:

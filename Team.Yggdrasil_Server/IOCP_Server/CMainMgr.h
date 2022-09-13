@@ -24,9 +24,11 @@ private:
 
 public:
 	void Loop();
-	void Run();
 	virtual void Init();
 	virtual void End();
+protected:
+	void Run();
+	
 	virtual BOOL Send(void* _session)final;
 	virtual BOOL Recv(void* _session)final;
 	virtual int DisConnect(OVERLAP_EX* _overlap)final;

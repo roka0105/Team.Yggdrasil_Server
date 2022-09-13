@@ -28,7 +28,6 @@ public:
 private:
 	CLock* m_lock;
 	MYSQL m_mysql;
-	MYSQL* m_test;
 	MYSQL_RES* m_sql_result;
 	MYSQL_ROW m_sql_row;
 };

@@ -6,7 +6,7 @@
 // recv, send, accept, disconnected
 class CIocp
 {
-public:
+protected:
 	virtual void Init();
 	virtual void End();
 
@@ -20,7 +20,6 @@ public:
 	virtual void SizeCheck_And_Send(void* _session, int _combytes, t_ThreadInfo* _threadinfo) = 0;
 	void PostDisConnect(void* _ptr);
 	virtual bool GetQueueErrorCheck(int _retval, int _cb_t, OVERLAP_EX* _overlapex); // iocp에서만 쓰는 함수
-
 public:
 	static RBT<DWORD, t_ThreadInfo*> g_threadinfo;
 protected:
