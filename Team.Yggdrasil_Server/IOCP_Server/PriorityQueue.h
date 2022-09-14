@@ -65,7 +65,7 @@ public:
 	{
 		contain.reserve(capacity);
 	}
-	virtual void Push(T _data)
+	void Push(T _data)
 	{
 		VecPush(_data);
 		//VecSort();

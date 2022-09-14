@@ -446,12 +446,14 @@ void CSectorMgr::PlayerSendPacket(CSession* _session, unsigned long _protocol, b
 
 void CSectorMgr::TestSendViewSectorProcess(CSession* _session, t_GameInfo* _gameinfo,Vector3 _objpos)
 {
-	/*지금 player가 있는 sector의 viewlist만 전송하는데 렌더할 때는 자기 자신의 정보까지 보내야 함.*/
-	/*byte data[BUFSIZE];
+	/*
+	//지금 player가 있는 sector의 viewlist만 전송하는데 렌더할 때는 자기 자신의 정보까지 보내야 함.
+	byte data[BUFSIZE];
 	ZeroMemory(data, BUFSIZE);
 	_session->UnPacking(data);
 	Vector3 obj_pos;
 	UnPacking(data, obj_pos);*/
+	CLockGuard<CLock> lock(m_lock);
 	unsigned long protocol = 0;
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::TEST));
 	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(CGameMgr::SUBPROTOCOL::SECTOR));
@@ -484,6 +486,7 @@ void CSectorMgr::TestSendViewTileProcess(CSession* _session, t_GameInfo* _gamein
 	//_session->UnPacking(data);
 	//Vector3 obj_pos;
 	//UnPacking(data, obj_pos);
+	CLockGuard<CLock> lock(m_lock);
 	unsigned long protocol = 0;
 	CProtocolMgr::GetInst()->AddMainProtocol(&protocol, static_cast<unsigned long>(MAINPROTOCOL::TEST));
 	CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(CGameMgr::SUBPROTOCOL::Object));
@@ -492,8 +495,6 @@ void CSectorMgr::TestSendViewTileProcess(CSession* _session, t_GameInfo* _gamein
 	Vector3 distance;
 
 	//QuadNode* sector = reinterpret_cast<QuadNode*>(*SerchObjectNode(m_roots[_gameinfo->m_id], _objpos, 0, _gameinfo->m_mapinfo));
-
-
 	//unordered_set<CSector*> viewlist = sector->GetViewSector();
 	////viewlist.push_back(sector);
 
@@ -519,6 +520,7 @@ void CSectorMgr::TestSendViewTileProcess(CSession* _session, t_GameInfo* _gamein
 
 void CSectorMgr::TestPlayerMove(CSession* _session, t_GameInfo* _gameinfo)
 {
+	CLockGuard<CLock> lock(m_lock);
 	byte data[BUFSIZE];
 	ZeroMemory(data, BUFSIZE);
 	_session->UnPacking(data);
