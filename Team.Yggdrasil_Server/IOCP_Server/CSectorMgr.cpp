@@ -234,98 +234,98 @@ void CSectorMgr::SetViewNode(QuadNode* _parent, int _curdepth, t_MapInfo* _mapin
 
 }
 #pragma endregion
-#pragma region viewsector stting ver2
-void CSectorMgr::SetViewNode(CSession* _session)
-{
-	/*
-	CPlayer* player = _session->GetPlayer();
-	Vector3 playerpos = player->GetPos();
-	float firstcheck_x = 45;
-	float firstcheck_z = 10;
-	float secondcheck_x = 116;
-	float secondcheck_z = 144;
-	Vector3 start_check_1(playerpos.x-firstcheck_x,0,playerpos.z+firstcheck_x);
-	Vector3 end_check_1(playerpos.x + firstcheck_x, 0, playerpos.z - firstcheck_x);
-	Vector3 start_check_2(playerpos.x - secondcheck_x, 0, playerpos.z + firstcheck_z + secondcheck_z);
-	Vector3 end_check_2(playerpos.x + secondcheck_x, 0, playerpos.z + firstcheck_z);
-	//범위 비교 
-	//1차 검사 : 플레이어위치 기준 x= +-47 z= +-11 에 들어오는 섹터들 view 에 넣기
-	//2차 검사 : 플레이어위치 + z(11) 기준 x= +-118 z= +146에 들어오는 섹터들 view 에 넣기
-	for (int i = 0; i < m_sector_count; i++)
-	{
-		QuadNode* node = reinterpret_cast<QuadNode*>(*SerchNode(root, i, 0));
-		if (node->IsInSector(start_check_1) || node->IsInSector(end_check_1)||node->IsInSector(start_check_2)||node->IsInSector(end_check_2))
-		{
-			_session->GetSector()->SetViewSector(node);
-		}
-	}
-	*/
-	/*if (_curdepth == *m_depth)
-	{
-	}
-	QuadNode* child = nullptr;
-	int size = _parent->Child_Size();
-	for (int i = 0; i < size; i++)
-	{
-		child = _parent->GetChildNode(i);
-		if (child->GetID() == -1)
-		{
-			SetViewNode(child, _curdepth + 1);
-		}
-	}*/
-}
-#pragma endregion
-
-void CSectorMgr::AddObjectNode(QuadNode* _parent, GameObject* obj, int curdepth)
-{/*
-	Vector3 obj_pos = obj->GetVector();
-	if (*m_depth == curdepth)
-	{
-		//마지막 깊이에서 검색된 노드의 위치안에 오브젝트 위치가 속하면 해당 노드에 오브젝트 추가.
-		if (_parent->IsInSector(obj_pos))
-		{
-			_parent->AddObject(obj);
-		}
-	}
-	QuadNode* child = nullptr;
-	int size = _parent->Child_Size();
-	for (int i = 0; i < size; i++)
-	{
-		child = _parent->GetChildNode(i);
-		//아직 최대 깊이까지 도달 안했을때 
-		//부모의 범위 내에 obj_pos가 일치할 때만 해당 영역의 
-		//자식 노드를 순회하도록 한다.
-		if (child->IsInSector(obj_pos))
-			AddObjectNode(child, obj, curdepth + 1);
-	}
-	*/
-}
-
-void CSectorMgr::RemoveObjectNode(QuadNode* _parent, GameObject* _obj, int _curdepth)
-{
-	/*
-	Vector3 obj_pos = _obj->GetVector();
-	if (*m_depth == _curdepth)
-	{
-		//마지막 깊이에서 검색된 노드의 위치안에 오브젝트 위치가 속하면 해당 노드에 오브젝트 추가.
-		if (_parent->IsInSector(obj_pos))
-		{
-			_parent->AddObject(_obj);
-		}
-	}
-	QuadNode* child = nullptr;
-	int size = _parent->Child_Size();
-	for (int i = 0; i < size; i++)
-	{
-		child = _parent->GetChildNode(i);
-		//아직 최대 깊이까지 도달 안했을때 
-		//부모의 범위 내에 obj_pos가 일치할 때만 해당 영역의 
-		//자식 노드를 순회하도록 한다.
-		if (child->IsInSector(obj_pos))
-			RemoveObjectNode(child, _obj, _curdepth + 1);
-	}
-	*/
-}
+//#pragma region viewsector stting ver2
+//void CSectorMgr::SetViewNode(CSession* _session)
+//{
+//	/*
+//	CPlayer* player = _session->GetPlayer();
+//	Vector3 playerpos = player->GetPos();
+//	float firstcheck_x = 45;
+//	float firstcheck_z = 10;
+//	float secondcheck_x = 116;
+//	float secondcheck_z = 144;
+//	Vector3 start_check_1(playerpos.x-firstcheck_x,0,playerpos.z+firstcheck_x);
+//	Vector3 end_check_1(playerpos.x + firstcheck_x, 0, playerpos.z - firstcheck_x);
+//	Vector3 start_check_2(playerpos.x - secondcheck_x, 0, playerpos.z + firstcheck_z + secondcheck_z);
+//	Vector3 end_check_2(playerpos.x + secondcheck_x, 0, playerpos.z + firstcheck_z);
+//	//범위 비교 
+//	//1차 검사 : 플레이어위치 기준 x= +-47 z= +-11 에 들어오는 섹터들 view 에 넣기
+//	//2차 검사 : 플레이어위치 + z(11) 기준 x= +-118 z= +146에 들어오는 섹터들 view 에 넣기
+//	for (int i = 0; i < m_sector_count; i++)
+//	{
+//		QuadNode* node = reinterpret_cast<QuadNode*>(*SerchNode(root, i, 0));
+//		if (node->IsInSector(start_check_1) || node->IsInSector(end_check_1)||node->IsInSector(start_check_2)||node->IsInSector(end_check_2))
+//		{
+//			_session->GetSector()->SetViewSector(node);
+//		}
+//	}
+//	*/
+//	/*if (_curdepth == *m_depth)
+//	{
+//	}
+//	QuadNode* child = nullptr;
+//	int size = _parent->Child_Size();
+//	for (int i = 0; i < size; i++)
+//	{
+//		child = _parent->GetChildNode(i);
+//		if (child->GetID() == -1)
+//		{
+//			SetViewNode(child, _curdepth + 1);
+//		}
+//	}*/
+//}
+//#pragma endregion
+//
+//void CSectorMgr::AddObjectNode(QuadNode* _parent, GameObject* obj, int curdepth)
+//{/*
+//	Vector3 obj_pos = obj->GetVector();
+//	if (*m_depth == curdepth)
+//	{
+//		//마지막 깊이에서 검색된 노드의 위치안에 오브젝트 위치가 속하면 해당 노드에 오브젝트 추가.
+//		if (_parent->IsInSector(obj_pos))
+//		{
+//			_parent->AddObject(obj);
+//		}
+//	}
+//	QuadNode* child = nullptr;
+//	int size = _parent->Child_Size();
+//	for (int i = 0; i < size; i++)
+//	{
+//		child = _parent->GetChildNode(i);
+//		//아직 최대 깊이까지 도달 안했을때 
+//		//부모의 범위 내에 obj_pos가 일치할 때만 해당 영역의 
+//		//자식 노드를 순회하도록 한다.
+//		if (child->IsInSector(obj_pos))
+//			AddObjectNode(child, obj, curdepth + 1);
+//	}
+//	*/
+//}
+//
+//void CSectorMgr::RemoveObjectNode(QuadNode* _parent, GameObject* _obj, int _curdepth)
+//{
+//	/*
+//	Vector3 obj_pos = _obj->GetVector();
+//	if (*m_depth == _curdepth)
+//	{
+//		//마지막 깊이에서 검색된 노드의 위치안에 오브젝트 위치가 속하면 해당 노드에 오브젝트 추가.
+//		if (_parent->IsInSector(obj_pos))
+//		{
+//			_parent->AddObject(_obj);
+//		}
+//	}
+//	QuadNode* child = nullptr;
+//	int size = _parent->Child_Size();
+//	for (int i = 0; i < size; i++)
+//	{
+//		child = _parent->GetChildNode(i);
+//		//아직 최대 깊이까지 도달 안했을때 
+//		//부모의 범위 내에 obj_pos가 일치할 때만 해당 영역의 
+//		//자식 노드를 순회하도록 한다.
+//		if (child->IsInSector(obj_pos))
+//			RemoveObjectNode(child, _obj, _curdepth + 1);
+//	}
+//	*/
+//}
 
 QuadNode** CSectorMgr::SerchNode(QuadNode* _parent, Vector3 _pos, int _curdepth, t_MapInfo* _mapinfo)
 {
@@ -420,31 +420,31 @@ QuadNode** CSectorMgr::SerchNode(QuadNode* _parent, int _id, int _curdepth, t_Ma
 	return nullptr;
 }
 
-bool CSectorMgr::IsInView(QuadNode* _parent, Vector3 _startview, Vector3 _endview)
-{
-	/*
-	for (int i = 0; i < m_sector_count; i++)
-	{
-		QuadNode* node = reinterpret_cast<QuadNode*>(*SerchNode(root, i, 0));
-		if (node->IsInSector(_startview) || node->IsInSector(_endview))
-		{
-			return true;
-		}
-	}
-    */
-	return false;
-}
+//bool CSectorMgr::IsInView(QuadNode* _parent, Vector3 _startview, Vector3 _endview)
+//{
+//	/*
+//	for (int i = 0; i < m_sector_count; i++)
+//	{
+//		QuadNode* node = reinterpret_cast<QuadNode*>(*SerchNode(root, i, 0));
+//		if (node->IsInSector(_startview) || node->IsInSector(_endview))
+//		{
+//			return true;
+//		}
+//	}
+//    */
+//	return false;
+//}
+//
+//void CSectorMgr::PlayerSendPacket(CSession* _session, unsigned long _protocol, bool moveflag)
+//{
+//	/*
+//	플레이어 정보를 전송합니다.
+//	moveflag=true이면 이동이 있었다는걸로 섹터 이동이 있는지 체크 후
+//	섹터 이동이 있을 시 섹터 정보들을 변경시킵니다.
+//	*/
+//}
 
-void CSectorMgr::PlayerSendPacket(CSession* _session, unsigned long _protocol, bool moveflag)
-{
-	/*
-	플레이어 정보를 전송합니다.
-	moveflag=true이면 이동이 있었다는걸로 섹터 이동이 있는지 체크 후
-	섹터 이동이 있을 시 섹터 정보들을 변경시킵니다.
-	*/
-}
-
-void CSectorMgr::TestSendViewSectorProcess(CSession* _session, t_GameInfo* _gameinfo,Vector3 _objpos)
+void CSectorMgr::SendViewSectorFunc(CSession* _session, t_GameInfo* _gameinfo,Vector3 _objpos)
 {
 	/*
 	//지금 player가 있는 sector의 viewlist만 전송하는데 렌더할 때는 자기 자신의 정보까지 보내야 함.
@@ -479,7 +479,7 @@ void CSectorMgr::TestSendViewSectorProcess(CSession* _session, t_GameInfo* _game
 	Packing(protocol, starts, distance, _session);
 }
 
-void CSectorMgr::TestSendViewTileProcess(CSession* _session, t_GameInfo* _gameinfo,Vector3 _objpos)
+void CSectorMgr::SendViewTileFunc(CSession* _session, t_GameInfo* _gameinfo,Vector3 _objpos)
 {
 	//byte data[BUFSIZE];
 	//ZeroMemory(data, BUFSIZE);
@@ -518,7 +518,7 @@ void CSectorMgr::TestSendViewTileProcess(CSession* _session, t_GameInfo* _gamein
 	Packing(protocol, starts, distance, _session);
 }
 
-void CSectorMgr::TestPlayerMove(CSession* _session, t_GameInfo* _gameinfo)
+void CSectorMgr::PlayerMoveProcess(CSession* _session, t_GameInfo* _gameinfo)
 {
 	CLockGuard<CLock> lock(m_lock);
 	byte data[BUFSIZE];
@@ -530,8 +530,8 @@ void CSectorMgr::TestPlayerMove(CSession* _session, t_GameInfo* _gameinfo)
 	player->SetVector(obj_pos);
 	QuadNode* sector = SerchObjectNode(_gameinfo,obj_pos);
 	_session->SetSector(sector);
-	TestSendViewSectorProcess(_session,_gameinfo,obj_pos);
-	TestSendViewTileProcess(_session, _gameinfo, obj_pos);
+	SendViewSectorFunc(_session,_gameinfo,obj_pos);
+	SendViewTileFunc(_session, _gameinfo, obj_pos);
 }
 
 void CSectorMgr::Packing(unsigned long _protocol, Vector3 _startpos, Vector3 _endpos, float _h_distance, float _v_distance, int _sectorcount, CSession* _session)

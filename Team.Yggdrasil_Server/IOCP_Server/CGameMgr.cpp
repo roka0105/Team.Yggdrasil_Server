@@ -260,7 +260,7 @@ void CGameMgr::TestFunc(CSession* _session)
 {
 	t_GameInfo* game = FindGameInfo(_session->GetRoomID());
 	//CSectorMgr::GetInst()->TestSendViewTileProcess(_session, game);
-	CSectorMgr::GetInst()->TestPlayerMove(_session, game);
+	CSectorMgr::GetInst()->PlayerMoveProcess(_session, game);
 }
 
 void CGameMgr::Packing(unsigned long _protocol, CSession* _session)

@@ -25,6 +25,8 @@ private:
 	QuadNode** SerchNode(QuadNode* _parent, Vector3 _pos, int _curdepth, t_MapInfo* _mapinfo);
 	QuadNode** SerchObjectNode(QuadNode* _parent, Vector3 _pos, int _curdepth, t_MapInfo* _mapinfo);
 
+	void SendViewSectorFunc(CSession* _session, t_GameInfo* _gameinfo, Vector3 _objpos);
+	void SendViewTileFunc(CSession* _session, t_GameInfo* _gameinfo, Vector3 _objpos);
 public:
 	void Init();
 	void End();
@@ -36,7 +38,7 @@ public:
 	{
 		return m_roots[gameid];
 	}
-	
+	/*
 	// 미완성
 	void SetViewNode(CSession* _session);
 	void AddObjectNode(QuadNode* _parent, GameObject* obj, int _curdepth);
@@ -50,11 +52,11 @@ public:
 	//void MonsterSendPacket(CSession*,CMonster*, Protocol,moveflag)
 	//아이템 샌드패킷
 	//void ItemSendPacket(CSession*,Protocol,_onoff_flag)
-
+	
 	// TEST Func
-	void TestSendViewSectorProcess(CSession* _session,t_GameInfo* _gameinfo,Vector3 _objpos);
-	void TestSendViewTileProcess(CSession* _session, t_GameInfo* _gameinfo,Vector3 _objpos);
-	void TestPlayerMove(CSession* _session, t_GameInfo* _gameinfo);
+	*/
+	
+	void PlayerMoveProcess(CSession* _session, t_GameInfo* _gameinfo);
 public:
 	void Packing(unsigned long _protocol, Vector3 _startpos, Vector3 _endpos, float _h_distance, float _v_distance, int _sectorcount, CSession* _session);
 	void Packing(unsigned long _protocol, list<Vector3>& _starts, Vector3& _distances, CSession* _session);

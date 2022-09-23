@@ -316,15 +316,15 @@ void CRoomMgr::HostReadyFunc(CSession* _session, CRoomState::SendCompType& _stat
 		CProtocolMgr::GetInst()->AddSubProtocol(&protocol, static_cast<unsigned long>(SUBPROTOCOL::Multi));
 		CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::ReadyResult));
 		CProtocolMgr::GetInst()->AddDetailProtocol(&protocol, static_cast<unsigned long>(DETAILPROTOCOL::HostReady));
-		//클라 한개로 test를 위해 host session에만 전송.
-		Packing(protocol, true, allready, _session);
 
+		Packing(protocol, true, allready, _session);
+		//test 로 잠깐 주석 호스트만 있을때 게임 시작 가능하게 하는중
 		/*for (auto session : room->sessions)
 		{
-			if (memcmp(_session, session,sizeof(CSession)) == 0)
+			if (memcmp(_session, session, sizeof(CSession)) == 0)
 				continue;
 			session->SetGameID(game->m_id);
-			Packing(protocol,false, allready, session);
+			Packing(protocol, false, allready, session);
 		}*/
 	}
 	else
