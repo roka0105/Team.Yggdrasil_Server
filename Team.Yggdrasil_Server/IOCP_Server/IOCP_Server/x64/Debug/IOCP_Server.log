@@ -1,0 +1,77 @@
+﻿  CRoomMgr.cpp
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(1,1): warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.h(1,1): warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\MemoryPool_2.h(21,9): warning C4101: 'ptr3' :참조되지 않은 지역 변수입니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\MemoryPool_2.h(44,1): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CSector.h(1,1): warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CPlayer.h(26,3): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CSession.h(31,3): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CSession.h(32,3): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CSession.h(33,3): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CSession.h(114,3): warning C4996: 'wcsncpy': This function or variable may be unsafe. Consider using wcsncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CSession.h(115,3): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CSession.h(116,3): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CSession.h(142,26): warning C4244: '인수': 'time_t'에서 'UINT'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CSession.h(180,25): warning C4244: '인수': 'time_t'에서 'UINT'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.h(22,3): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.h(23,3): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CLobbyMgr.h(1,1): warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CMapMgr.h(21,17): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CMapMgr.h(22,17): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CMapMgr.h(35,31): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CMapMgr.h(36,31): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CGameMgr.h(12,1): warning C4150: 불완전한 형식 'Boss'에 대한 포인터를 삭제했습니다. 소멸자가 호출되지 않습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CGameMgr.h(5): message : 'Boss' 선언을 참조하십시오.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CGameMgr.h(13,1): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CGameMgr.h(18,1): warning C4150: 불완전한 형식 'Item'에 대한 포인터를 삭제했습니다. 소멸자가 호출되지 않습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CGameMgr.h(3): message : 'Item' 선언을 참조하십시오.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(33,3): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(82,44): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(141,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(366,3): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(518,17): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(593,17): warning C4018: '>=': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(670,29): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(693,44): warning C4267: '=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(712,43): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(748,44): warning C4267: '=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(759,43): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(790,51): warning C4267: '=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(839,56): warning C4267: '=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CRoomMgr.cpp(910,39): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\PriorityQueue.h(92,1): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\PriorityQueue.h(90): message : 클래스 템플릿 멤버 함수 'T PriorityQueue<T,_Pr>::Front(void)'을(를) 컴파일하는 중입니다.
+          with
+          [
+              T=HexTile *,
+              _Pr=mygreater
+          ]
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\LRU_Queue.h(25): message : 컴파일되는 함수 템플릿 인스턴스화 'T PriorityQueue<T,_Pr>::Front(void)'에 대한 참조를 확인하세요.
+          with
+          [
+              T=HexTile *,
+              _Pr=mygreater
+          ]
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\LRU_Queue.h(29): message : 컴파일되는 클래스 템플릿 인스턴스화 'PriorityQueue<T,_Pr>'에 대한 참조를 확인하세요.
+          with
+          [
+              T=HexTile *,
+              _Pr=mygreater
+          ]
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\LRU_Queue.h(28): message : 클래스 템플릿 멤버 함수 'void LRU_Queue<HexTile *,mygreater>::Pop(void)'을(를) 컴파일하는 중입니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CSession.h(134): message : 컴파일되는 함수 템플릿 인스턴스화 'void LRU_Queue<HexTile *,mygreater>::Pop(void)'에 대한 참조를 확인하세요.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\CSession.h(79): message : 컴파일되는 클래스 템플릿 인스턴스화 'LRU_Queue<HexTile *,mygreater>'에 대한 참조를 확인하세요.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\PriorityQueue.h(75,1): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\PriorityQueue.h(74): message : 클래스 템플릿 멤버 함수 'void PriorityQueue<T,_Pr>::Pop(void)'을(를) 컴파일하는 중입니다.
+          with
+          [
+              T=HexTile *,
+              _Pr=mygreater
+          ]
+C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\LRU_Queue.h(29): message : 컴파일되는 함수 템플릿 인스턴스화 'void PriorityQueue<T,_Pr>::Pop(void)'에 대한 참조를 확인하세요.
+          with
+          [
+              T=HexTile *,
+              _Pr=mygreater
+          ]
+  IOCP_Server.vcxproj -> C:\Users\user\Desktop\Team.Yggdrasil_Server\Team.Yggdrasil_Server\IOCP_Server\x64\Debug\IOCP_Server.exe
